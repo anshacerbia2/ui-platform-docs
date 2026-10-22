@@ -105,6 +105,11 @@ try {
 
 if (failures.length) {
   console.error(failures.join("\n"));
+  // In GitHub Actions, each distinct failure is also an annotation on the check.
+  if (process.env.GITHUB_ACTIONS === "true") {
+    const escape = (text) => text.replaceAll("%", "%25").replaceAll("\r", "%0D").replaceAll("\n", "%0A");
+    for (const failure of [...new Set(failures)].slice(0, 40)) console.log(`::error title=Smoke test::${escape(failure.slice(0, 900))}`);
+  }
   process.exit(1);
 }
 console.log(`Smoke test passed: ${ROUTES.length} routes in ${browsers.join(", ")}, light and dark, with zero errors and zero CSP violations`);
