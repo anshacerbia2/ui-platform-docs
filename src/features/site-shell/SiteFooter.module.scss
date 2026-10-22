@@ -1,0 +1,83 @@
+@use "../../styles/settings" as *;
+@use "../../styles/tools" as *;
+
+@layer docs.components {
+  .footer {
+    margin-block-start: $space-3xl;
+    background: var(--ds-color-neutral-surface-sunken-default);
+    color: $text-muted;
+  }
+
+  .inner {
+    display: flex;
+    flex-direction: column;
+    gap: $space-xl;
+    padding-block: $space-2xl $space-xl;
+  }
+
+  .columns {
+    display: flex;
+    flex-wrap: wrap;
+    gap: $space-xl 3rem;
+  }
+
+  .about {
+    display: flex;
+    flex: 2 1 16rem;
+    flex-direction: column;
+    gap: $space-sm;
+  }
+
+  .name {
+    color: $text;
+    font-weight: 600;
+  }
+
+  .blurb {
+    max-inline-size: 20rem;
+    font-size: var(--ds-typography-body-small-font-size);
+  }
+
+  .column {
+    display: flex;
+    flex: 1 1 9rem;
+    flex-direction: column;
+    gap: 0.625rem;
+  }
+
+  .title {
+    margin: 0;
+    font-weight: 400;
+    @include eyebrow;
+    color: $text-muted;
+  }
+
+  .list {
+    display: grid;
+    gap: 0.625rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .link {
+    color: $text;
+    font-size: var(--ds-typography-body-small-font-size);
+    text-decoration: none;
+
+    &:hover {
+      text-decoration: underline;
+      text-underline-offset: 0.2em;
+    }
+  }
+
+  .legal {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: $space-sm;
+    padding-block-start: $space-lg;
+    border-block-start: 1px solid $surface-inset;
+    @include mono(small);
+  }
+}

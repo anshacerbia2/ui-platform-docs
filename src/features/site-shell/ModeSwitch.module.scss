@@ -1,0 +1,32 @@
+@use "../../styles/settings" as *;
+@use "../../styles/tools" as *;
+
+@layer docs.components {
+  .group {
+    display: flex;
+    gap: 2px;
+    padding: 3px;
+    border-radius: 0.75rem;
+    background: $surface-chip;
+  }
+
+  .button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    inline-size: 2.25rem;
+    block-size: 2.25rem;
+    border: 0;
+    border-radius: 0.5625rem;
+    background: transparent;
+    color: $text-muted;
+    cursor: pointer;
+    @include focus-ring(1px);
+
+    &[aria-pressed="true"] {
+      background: $surface-card;
+      color: $text;
+      box-shadow: var(--ds-effect-shadow-low);
+    }
+  }
+}
