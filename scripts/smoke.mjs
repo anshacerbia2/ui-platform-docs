@@ -76,16 +76,24 @@ try {
         );
       });
       const chooser = await context.newPage();
-      await chooser.goto(origin, { waitUntil: "networkidle" });
+      // A page without the WebGL hero: software GL in CI can starve the main thread.
+      await chooser.goto(`${origin}/releases`, { waitUntil: "networkidle" });
       // A click before hydration does nothing, so press until the site has stored the choice.
       const control = chooser.getByRole("button", { name: mode === "dark" ? "Dark mode" : "Light mode" });
       let stored = false;
-      for (let attempt = 0; attempt < 40 && !stored; attempt++) {
+      for (const deadline = Date.now() + 30_000; !stored && Date.now() < deadline;) {
         await control.click();
         stored = await chooser.evaluate((m) => document.cookie.includes(`scnx-theme-mode=${m}`), mode);
         if (!stored) await chooser.waitForTimeout(250);
       }
-      if (!stored) throw new Error(`${name}: the mode switch did not store ${mode}`);
+      if (!stored) {
+        const state = await chooser.evaluate(() => ({
+          cookie: document.cookie,
+          pressed: document.querySelector('[aria-label="Color mode"] [aria-pressed="true"]')?.getAttribute("aria-label"),
+          secure: window.isSecureContext,
+        }));
+        throw new Error(`${name}: the mode switch did not store ${mode} (${JSON.stringify(state)})`);
+      }
       await chooser.close();
       for (const route of ROUTES) {
         const page = await context.newPage();
