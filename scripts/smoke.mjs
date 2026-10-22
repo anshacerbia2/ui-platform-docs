@@ -63,7 +63,8 @@ try {
     );
     for (const mode of ["light", "dark"]) {
       const context = await browser.newContext({ viewport: { width: 1440, height: 900 }, colorScheme: mode });
-      await context.addCookies([{ name: "scnx-theme-mode", value: mode, url: origin }]);
+      // The cookie the site itself writes: SameSite=Lax (Firefox rejects the default None without Secure).
+      await context.addCookies([{ name: "scnx-theme-mode", value: mode, url: origin, sameSite: "Lax" }]);
       // Report every CSP violation to the console, where it is collected below.
       await context.addInitScript(() => {
         document.addEventListener("securitypolicyviolation", (e) =>
