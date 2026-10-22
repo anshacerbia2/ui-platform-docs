@@ -6,7 +6,7 @@ import { type NextRequest, NextResponse } from "next/server";
 // and applies it to its own scripts; 'strict-dynamic' lets those scripts load
 // the chunks they need. No inline style attribute is allowed, so the site
 // sets dynamic styles through the CSSOM only.
-const directives = (nonce: string, development: boolean) =>
+const directives = (nonce: string, development: boolean, https: boolean) =>
   [
     "default-src 'self'",
     `script-src 'self' 'nonce-${nonce}' 'strict-dynamic'${development ? " 'unsafe-eval'" : ""}`,
@@ -20,12 +20,14 @@ const directives = (nonce: string, development: boolean) =>
     "base-uri 'none'",
     "form-action 'self'",
     "frame-ancestors 'none'",
-    ...(development ? [] : ["upgrade-insecure-requests"]),
+    // Only meaningful on a page served over HTTPS; on plain HTTP (a local production
+    // server) WebKit would upgrade the page's own same-origin requests and fail them.
+    ...(https ? ["upgrade-insecure-requests"] : []),
   ].join("; ");
 
 export function proxy(request: NextRequest) {
   const nonce = btoa(String.fromCharCode(...crypto.getRandomValues(new Uint8Array(16))));
-  const policy = directives(nonce, process.env.NODE_ENV === "development");
+  const policy = directives(nonce, process.env.NODE_ENV === "development", request.nextUrl.protocol === "https:");
   const headers = new Headers(request.headers);
   headers.set("x-nonce", nonce);
   headers.set("Content-Security-Policy", policy);
