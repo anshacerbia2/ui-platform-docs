@@ -76,8 +76,15 @@ try {
       });
       const chooser = await context.newPage();
       await chooser.goto(origin, { waitUntil: "networkidle" });
-      await chooser.getByRole("button", { name: mode === "dark" ? "Dark mode" : "Light mode" }).click();
-      await chooser.waitForFunction((m) => document.cookie.includes(`scnx-theme-mode=${m}`), mode);
+      // A click before hydration does nothing, so press until the site has stored the choice.
+      const control = chooser.getByRole("button", { name: mode === "dark" ? "Dark mode" : "Light mode" });
+      let stored = false;
+      for (let attempt = 0; attempt < 40 && !stored; attempt++) {
+        await control.click();
+        stored = await chooser.evaluate((m) => document.cookie.includes(`scnx-theme-mode=${m}`), mode);
+        if (!stored) await chooser.waitForTimeout(250);
+      }
+      if (!stored) throw new Error(`${name}: the mode switch did not store ${mode}`);
       await chooser.close();
       for (const route of ROUTES) {
         const page = await context.newPage();
