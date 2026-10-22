@@ -38,8 +38,9 @@ const server = spawn(process.execPath, [path.join(root, "node_modules/next/dist/
   stdio: ["ignore", "pipe", "pipe"],
   env: { ...process.env, NEXT_TELEMETRY_DISABLED: "1" },
 });
-// localhost is a secure context in every engine, as the production origin is.
-const origin = `http://localhost:${port}`;
+// 127.0.0.1 is a potentially trustworthy origin in every engine; Playwright's WebKit
+// on Linux does not store a cookie that a page on http://localhost writes.
+const origin = `http://127.0.0.1:${port}`;
 for (let i = 0; i < 100; i++) {
   try {
     await fetch(origin);
