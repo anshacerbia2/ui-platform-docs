@@ -6,7 +6,8 @@ import "@/generated/swatches.css";
 import type { Metadata, Viewport } from "next";
 import { cookies, headers } from "next/headers";
 import type { ReactNode } from "react";
-import { MODE_COOKIE, SiteTheme } from "@/features/site-shell/SiteTheme";
+import { MODE_COOKIE } from "@/features/site-shell/modeCookie";
+import { SiteTheme } from "@/features/site-shell/SiteTheme";
 
 export const metadata: Metadata = {
   metadataBase: new URL(process.env.VERCEL_PROJECT_PRODUCTION_URL ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}` : "http://localhost:3000"),

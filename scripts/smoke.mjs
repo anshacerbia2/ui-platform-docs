@@ -25,6 +25,8 @@ const shots = arg("--shots");
 const reference = JSON.parse(fs.readFileSync(path.join(root, "src/generated/reference.json"), "utf8"));
 const ROUTES = ["/", "/components", "/primitives", "/tokens", "/releases", ...reference.entries.filter((e) => e.page).map((e) => e.page)];
 
+const escapeAnnotation = (text) => text.replaceAll("%", "%25").replaceAll("\r", "%0D").replaceAll("\n", "%0A");
+
 const port = await new Promise((resolve) => {
   const server = net.createServer().listen(0, () => {
     const { port: free } = server.address();
@@ -36,7 +38,8 @@ const server = spawn(process.execPath, [path.join(root, "node_modules/next/dist/
   stdio: ["ignore", "pipe", "pipe"],
   env: { ...process.env, NEXT_TELEMETRY_DISABLED: "1" },
 });
-const origin = `http://127.0.0.1:${port}`;
+// localhost is a secure context in every engine, as the production origin is.
+const origin = `http://localhost:${port}`;
 for (let i = 0; i < 100; i++) {
   try {
     await fetch(origin);
@@ -62,15 +65,20 @@ try {
       name === "chromium" && fs.existsSync("/opt/pw-browsers/chromium") && process.env.CI !== "true" ? { executablePath: "/opt/pw-browsers/chromium" } : {},
     );
     for (const mode of ["light", "dark"]) {
-      const context = await browser.newContext({ viewport: { width: 1440, height: 900 }, colorScheme: mode });
-      // The cookie the site itself writes: SameSite=Lax (Firefox rejects the default None without Secure).
-      await context.addCookies([{ name: "scnx-theme-mode", value: mode, url: origin, sameSite: "Lax" }]);
+      // The system preference is the opposite mode, so a page that renders `mode`
+      // proves the server read the preference the site itself stored.
+      const context = await browser.newContext({ viewport: { width: 1440, height: 900 }, colorScheme: mode === "dark" ? "light" : "dark" });
       // Report every CSP violation to the console, where it is collected below.
       await context.addInitScript(() => {
         document.addEventListener("securitypolicyviolation", (e) =>
           console.error(`CSP violation: ${e.violatedDirective} ${e.blockedURI} ${e.sourceFile}:${e.lineNumber}`),
         );
       });
+      const chooser = await context.newPage();
+      await chooser.goto(origin, { waitUntil: "networkidle" });
+      await chooser.getByRole("button", { name: mode === "dark" ? "Dark mode" : "Light mode" }).click();
+      await chooser.waitForFunction((m) => document.cookie.includes(`scnx-theme-mode=${m}`), mode);
+      await chooser.close();
       for (const route of ROUTES) {
         const page = await context.newPage();
         const problems = [];
@@ -108,8 +116,7 @@ if (failures.length) {
   console.error(failures.join("\n"));
   // In GitHub Actions, each distinct failure is also an annotation on the check.
   if (process.env.GITHUB_ACTIONS === "true") {
-    const escape = (text) => text.replaceAll("%", "%25").replaceAll("\r", "%0D").replaceAll("\n", "%0A");
-    for (const failure of [...new Set(failures)].slice(0, 40)) console.log(`::error title=Smoke test::${escape(failure.slice(0, 900))}`);
+    for (const failure of [...new Set(failures)].slice(0, 40)) console.log(`::error title=Smoke test::${escapeAnnotation(failure.slice(0, 900))}`);
   }
   process.exit(1);
 }
