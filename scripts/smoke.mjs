@@ -76,6 +76,11 @@ try {
         );
       });
       const chooser = await context.newPage();
+      const chooserErrors = [];
+      chooser.on("pageerror", (e) => chooserErrors.push(`page error: ${e.message}`));
+      chooser.on("console", (m) => {
+        if (m.type() === "error") chooserErrors.push(`console: ${m.text()}`);
+      });
       // A page without the WebGL hero: software GL in CI can starve the main thread.
       await chooser.goto(`${origin}/releases`, { waitUntil: "networkidle" });
       // A click before hydration does nothing, so press until the site has stored the choice.
@@ -92,7 +97,7 @@ try {
           pressed: document.querySelector('[aria-label="Color mode"] [aria-pressed="true"]')?.getAttribute("aria-label"),
           secure: window.isSecureContext,
         }));
-        throw new Error(`${name}: the mode switch did not store ${mode} (${JSON.stringify(state)})`);
+        throw new Error(`${name}: the mode switch did not store ${mode} (${JSON.stringify({ ...state, errors: chooserErrors.slice(0, 5) })})`);
       }
       await chooser.close();
       for (const route of ROUTES) {
