@@ -56,6 +56,8 @@ jobs:
   site:
     name: Build and browser smoke test
     runs-on: ubuntu-24.04
+    # A hung browser download fails the job instead of leaving it pending for hours.
+    timeout-minutes: 30
     steps:
       - uses: actions/checkout@v4
       - uses: pnpm/action-setup@v4
@@ -65,11 +67,21 @@ jobs:
           cache: pnpm
       - run: pnpm install --frozen-lockfile
       - run: pnpm build
+      # Browser builds are cached per Playwright version; system libraries are installed every run.
+      - name: Playwright version
+        id: playwright
+        run: echo "version=$(node -p "require('playwright/package.json').version")" >> "$GITHUB_OUTPUT"
+      - uses: actions/cache@v4
+        with:
+          path: ~/.cache/ms-playwright
+          key: playwright-${{ runner.os }}-${{ steps.playwright.outputs.version }}
       - name: Install the browsers
+        timeout-minutes: 15
         run: pnpm exec playwright install --with-deps chromium firefox webkit
       # Every route in Chromium, Firefox, and WebKit, light and dark: no page
       # error, no console error, no CSP violation, and a nonce on every response.
       - name: Smoke test
+        timeout-minutes: 10
         run: node scripts/smoke.mjs --browsers chromium,firefox,webkit --shots artifacts/screenshots
       - uses: actions/upload-artifact@v4
         if: always()
