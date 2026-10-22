@@ -108,6 +108,9 @@ try {
     await browser.close();
     console.log(`${name}: ${ROUTES.length} routes × 2 modes`);
   }
+} catch (error) {
+  // An exception (a control the test drives is missing, a browser that does not start) is a failure too.
+  failures.push(`smoke test stopped: ${error?.stack ?? error}`);
 } finally {
   server.kill();
 }
