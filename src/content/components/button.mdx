@@ -1,0 +1,28 @@
+## When to use
+
+Use a button for an action on the current page: submitting a form, opening a dialog, saving a change. When the result is a new address, render the same component with `href`; it becomes a link, so the browser's own navigation, history, and "open in new tab" keep working.
+
+## One primary per view
+
+The primary variant marks the action the view exists for. Give each view at most one, and pair it with a secondary for the alternative, such as Cancel beside Save. When two actions compete for primary, the reader cannot tell which one is safe.
+
+```tsx
+import { Button } from "@scnx/system/components/button";
+
+<div className="actions">
+  <Button variant="secondary">Cancel</Button>
+  <Button variant="primary" type="submit">
+    Save changes
+  </Button>
+</div>;
+```
+
+## Labels
+
+- Start with a verb and name the result: "Save changes", "Send invite", not "OK".
+- Use sentence case, and keep the label on one line.
+- A button that only shows an icon still needs a text name: pass `aria-label`.
+
+## Disabled buttons
+
+A disabled button cannot be focused, so a keyboard or screen reader user may never learn why it is unavailable. Prefer an enabled button that explains what is missing when pressed. When an action is truly unavailable, say why next to it.

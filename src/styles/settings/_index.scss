@@ -1,0 +1,7 @@
+// ITCSS settings: Sass values only, no CSS output. Every color, space, radius,
+// type and motion value of the site is a ui-platform token (TDD docs-site D4);
+// the site adds only roles that map tokens per mode, and a display scale for
+// marketing headlines larger than the system's heading scale.
+@forward "breakpoints";
+@forward "scale";
+@forward "roles";

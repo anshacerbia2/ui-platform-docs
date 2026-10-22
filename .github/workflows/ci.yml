@@ -1,0 +1,98 @@
+name: CI
+
+# TDD docs-site D7: every pull request and every push to main proves the pin,
+# the code, the build, and the built site in three engines. Vercel builds the
+# preview and production deployments; this workflow is the gate in front of them.
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+env:
+  NEXT_TELEMETRY_DISABLED: "1"
+
+jobs:
+  pin:
+    name: Pinned ui-platform provenance
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: read
+      attestations: read
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .node-version
+      # Digests against the pin, then SLSA provenance: signed by ui-platform's
+      # CI workflow and built from the pinned commit on main.
+      - name: Verify the vendored tarballs
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: node scripts/ui-platform.mjs verify
+
+  check:
+    name: Format, lint, types, and tests
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .node-version
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm test
+      - run: pnpm lint
+      - run: pnpm typecheck
+
+  site:
+    name: Build and browser smoke test
+    runs-on: ubuntu-24.04
+    # A hung browser download fails the job instead of leaving it pending for hours.
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .node-version
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm build
+      # Browser builds are cached per Playwright version; system libraries are installed every run.
+      - name: Playwright version
+        id: playwright
+        run: echo "version=$(node -p "require('playwright/package.json').version")" >> "$GITHUB_OUTPUT"
+      - uses: actions/cache@v4
+        with:
+          path: ~/.cache/ms-playwright
+          key: playwright-${{ runner.os }}-${{ steps.playwright.outputs.version }}
+      - name: Install the browsers
+        timeout-minutes: 15
+        run: pnpm exec playwright install --with-deps chromium firefox webkit
+      # Every route in Chromium, Firefox, and WebKit, light and dark: no page
+      # error, no console error, no CSP violation, and a nonce on every response.
+      - name: Smoke test
+        timeout-minutes: 10
+        run: node scripts/smoke.mjs --browsers chromium,firefox,webkit --shots artifacts/screenshots
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: screenshots
+          path: artifacts/screenshots
+          retention-days: 14
+
+  governance:
+    name: Central governance linter
+    uses: anshacerbia2/scnehaux-architecture/.github/workflows/linter.yml@main
+    with:
+      target_dir: docs/designs
+      governance_ref: main

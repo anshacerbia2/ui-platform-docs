@@ -1,0 +1,26 @@
+// The site's global stylesheet, in ITCSS order (TDD docs-site D4). The
+// ui-platform stylesheets load first and declare their own layers; the site's
+// layers come after them, so site layout never needs specificity to win, and
+// the site never selects a ui-platform class (scripts/check-styles.mjs).
+// Settings and tools emit no CSS; components are CSS Modules in
+// @layer docs.components, next to each component.
+@use "sass:meta";
+
+@layer docs.generic, docs.elements, docs.objects, docs.components, docs.utilities;
+
+@layer docs.generic {
+  @include meta.load-css("generic/document");
+  @include meta.load-css("generic/roles");
+}
+
+@layer docs.elements {
+  @include meta.load-css("elements/page");
+}
+
+@layer docs.objects {
+  @include meta.load-css("objects/container");
+}
+
+@layer docs.utilities {
+  @include meta.load-css("utilities/a11y");
+}

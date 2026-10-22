@@ -1,0 +1,10 @@
+// The document outside the theme root: no margin, the page role behind overscroll.
+html {
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+  scroll-padding-top: 6rem;
+}
+
+body {
+  margin: 0;
+}

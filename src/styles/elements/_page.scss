@@ -1,0 +1,41 @@
+@use "../settings" as *;
+@use "../tools" as *;
+
+// The theme root is the page: it carries the page role and the body text style.
+:where([data-site-root]) {
+  min-height: 100dvh;
+  background-color: $surface-page;
+  background-image: radial-gradient($dot 1px, transparent 1px);
+  background-size: 22px 22px;
+  color: $text;
+  font-family: $font-sans;
+  font-size: var(--ds-typography-body-default-font-size);
+  line-height: var(--ds-typography-body-default-line-height);
+  font-feature-settings: "cv11" 1;
+  -webkit-font-smoothing: antialiased;
+}
+
+:where([data-site-root]) :where(a) {
+  color: inherit;
+}
+
+:where([data-site-root]) :where(a, button, [tabindex]) {
+  @include focus-ring;
+}
+
+:where([data-site-root]) :where(h1, h2, h3, h4, p, ul, ol, figure) {
+  margin: 0;
+}
+
+:where([data-site-root]) :where(code, kbd, samp, pre) {
+  font-family: $font-mono;
+}
+
+// Accent parts of the site's icons (SVG presentation attributes cannot read custom properties).
+:where([data-site-root]) :where(.site-icon-accent) {
+  fill: $accent;
+}
+
+:where([data-site-root]) :where(.site-icon-accent-stroke) {
+  stroke: $accent;
+}

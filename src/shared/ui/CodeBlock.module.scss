@@ -1,0 +1,60 @@
+@use "../../styles/settings" as *;
+@use "../../styles/tools" as *;
+
+@layer docs.components {
+  .block {
+    position: relative;
+    margin: 0;
+    overflow: hidden;
+    border-radius: $radius-inner;
+    background: var(--ds-color-neutral-surface-sunken-default);
+    color: $text;
+  }
+
+  .caption {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: $space-sm;
+    padding: $space-xs $space-xs $space-xs $space-md;
+    border-block-end: 1px solid $surface-inset;
+    color: $text-muted;
+    @include mono(small);
+  }
+
+  .pre {
+    margin: 0;
+    padding: $space-md 0;
+    overflow-x: auto;
+    counter-reset: line;
+    @include mono(default);
+    line-height: 1.85;
+  }
+
+  .line {
+    display: block;
+    padding-inline: $space-md 3.5rem;
+    white-space: pre;
+
+    .pre[data-numbered] & {
+      counter-increment: line;
+
+      &::before {
+        content: counter(line);
+        display: inline-block;
+        inline-size: 2ch;
+        margin-inline-end: $space-md;
+        text-align: end;
+        color: $text-muted;
+        opacity: 0.6;
+        user-select: none;
+      }
+    }
+  }
+
+  .floating {
+    position: absolute;
+    inset-block-start: $space-xs;
+    inset-inline-end: $space-xs;
+  }
+}

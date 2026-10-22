@@ -1,0 +1,23 @@
+// The site's display scale: fluid sizes for headlines above heading.xxlarge.
+// Body, label, code, and heading text use the system's typography tokens.
+$display-1: clamp(2.75rem, 1.6rem + 4.6vw, 5rem);
+$display-2: clamp(2rem, 1.4rem + 2.4vw, 2.75rem);
+$display-3: clamp(1.75rem, 1.3rem + 1.8vw, 2.25rem);
+$display-tracking-1: -0.055em;
+$display-tracking-2: -0.04em;
+
+// Radii of the site's cards; controls use dimension.radius.* tokens.
+$radius-card: 1.5rem;
+$radius-panel: 1.75rem;
+$radius-inner: 1rem;
+
+// Space: system tokens, plus two layout steps larger than spacing.section.
+$space-2xs: var(--ds-dimension-spacing-stack-compact);
+$space-xs: var(--ds-dimension-spacing-stack-default);
+$space-sm: var(--ds-dimension-spacing-inset-compact);
+$space-md: var(--ds-dimension-spacing-inset-default);
+$space-lg: var(--ds-dimension-spacing-inset-comfortable);
+$space-xl: var(--ds-dimension-spacing-section);
+$space-2xl: calc(var(--ds-dimension-spacing-section) * 1.5);
+$space-3xl: calc(var(--ds-dimension-spacing-section) * 2.25);
+$page-gutter: var(--ds-dimension-spacing-page);

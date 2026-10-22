@@ -1,0 +1,44 @@
+{
+  "name": "scnehaux-ui-platform-docs",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "packageManager": "pnpm@10.23.0",
+  "engines": {
+    "node": "24.x"
+  },
+  "scripts": {
+    "dev": "node scripts/reference.mjs && next dev",
+    "build": "node scripts/reference.mjs && next build",
+    "start": "next start",
+    "typecheck": "node scripts/reference.mjs && next typegen && tsc --noEmit",
+    "lint": "prettier --check . && oxlint --deny-warnings && node scripts/check-styles.mjs",
+    "vendor:check": "node scripts/ui-platform.mjs check",
+    "vendor:verify": "node scripts/ui-platform.mjs verify",
+    "test": "node --test scripts/*.test.mjs && node scripts/check-styles.mjs --self-test",
+    "format": "prettier --write ."
+  },
+  "dependencies": {
+    "@mdx-js/loader": "3.1.1",
+    "@mdx-js/react": "3.1.1",
+    "@next/mdx": "16.4.2",
+    "@scnx/core-ui": "file:vendor/ui-platform/scnx-core-ui-2.0.0-beta.0.tgz",
+    "@scnx/system": "file:vendor/ui-platform/scnx-system-2.0.0-beta.0.tgz",
+    "next": "16.4.2",
+    "react": "19.3.1",
+    "react-dom": "19.3.1",
+    "server-only": "0.0.1"
+  },
+  "devDependencies": {
+    "@types/mdx": "2.0.14",
+    "@types/node": "24.19.2",
+    "@types/react": "19.3.0",
+    "@types/react-dom": "19.3.0",
+    "colorjs.io": "0.7.1",
+    "oxlint": "1.89.0",
+    "playwright": "1.63.0",
+    "prettier": "3.9.10",
+    "sass": "1.106.1",
+    "typescript": "5.9.3"
+  }
+}

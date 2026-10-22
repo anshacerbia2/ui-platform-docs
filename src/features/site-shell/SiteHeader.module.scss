@@ -1,0 +1,105 @@
+@use "../../styles/settings" as *;
+@use "../../styles/tools" as *;
+
+@layer docs.components {
+  .header {
+    position: sticky;
+    inset-block-start: $space-sm;
+    z-index: var(--ds-dimension-z-index-sticky);
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: $space-sm;
+    padding: 0.625rem 0.625rem 0.625rem 1.125rem;
+    @include card(1.25rem);
+  }
+
+  .brand {
+    display: flex;
+    align-items: center;
+    gap: 0.625rem;
+    min-block-size: 2.75rem;
+    font-size: var(--ds-typography-body-default-font-size);
+    font-weight: 600;
+    letter-spacing: -0.01em;
+    text-decoration: none;
+  }
+
+  .nav {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 2px;
+    order: 3;
+    inline-size: 100%;
+
+    @include from(lg) {
+      order: 0;
+      inline-size: auto;
+      margin-inline: auto;
+    }
+  }
+
+  .navLink {
+    display: flex;
+    align-items: center;
+    gap: $space-xs;
+    min-block-size: 2.5rem;
+    padding-inline: 0.875rem;
+    border-radius: 0.625rem;
+    color: $text-muted;
+    font-size: var(--ds-typography-label-default-font-size);
+    text-decoration: none;
+    transition: background-color $duration $ease;
+
+    &:hover {
+      background: $surface-chip;
+    }
+
+    &[aria-current="page"] {
+      background: $surface-chip;
+      color: $text;
+      font-weight: 600;
+    }
+  }
+
+  .actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.375rem;
+    margin-inline-start: auto;
+
+    @include from(lg) {
+      margin-inline-start: 0;
+    }
+  }
+
+  %action {
+    display: inline-flex;
+    align-items: center;
+    gap: $space-xs;
+    min-block-size: 2.75rem;
+    padding-inline: 1rem;
+    border-radius: 0.75rem;
+    font-size: var(--ds-typography-label-default-font-size);
+    font-weight: 500;
+    text-decoration: none;
+    transition: filter $duration $ease;
+
+    &:hover {
+      filter: brightness(0.94);
+    }
+  }
+
+  .ghost {
+    @extend %action;
+    padding-inline: 0.75rem;
+  }
+
+  .primary {
+    @extend %action;
+    background: $ink;
+    color: $on-ink;
+    font-weight: 600;
+  }
+}

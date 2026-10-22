@@ -1,0 +1,18 @@
+// The site's roles per mode (settings/_roles.scss names them). Light mode lifts
+// cards off a tinted page; dark mode raises cards above a darker page, the way
+// the system's elevation steps work in each mode.
+:where([data-scnx-theme]) {
+  --site-surface-page: var(--ds-color-neutral-surface-default-default);
+  --site-surface-card: var(--ds-color-neutral-surface-raised-default);
+  --site-surface-inset: var(--ds-color-neutral-surface-subtle-default);
+  --site-surface-chip: var(--ds-color-neutral-surface-default-default);
+  --site-dot: var(--ds-color-neutral-border-subtle-default);
+}
+
+:where([data-scnx-theme][data-scnx-resolved-mode="dark"]) {
+  --site-surface-page: var(--ds-color-neutral-surface-sunken-default);
+  --site-surface-card: var(--ds-color-neutral-surface-raised-default);
+  --site-surface-inset: var(--ds-color-neutral-surface-floating-default);
+  --site-surface-chip: var(--ds-color-neutral-surface-strong-default);
+  --site-dot: var(--ds-color-neutral-surface-strong-default);
+}
