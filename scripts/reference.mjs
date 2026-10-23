@@ -385,7 +385,7 @@ function generate() {
       "color.primary.surface.solid.hover",
       "color.primary.text.default.default",
     ]);
-  const figma = figmaFiles().map(({ content, ...row }) => row);
+  const figma = figmaFiles().map(({ content: _content, ...row }) => row);
   const reference = { schemaVersion: 1, pin, entries, components, primitives: primitivePages, tokens, tokenList, figma, landing: { lab, swatches } };
 
   // The preview registry: one namespace import per styled entry.
