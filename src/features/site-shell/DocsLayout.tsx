@@ -18,6 +18,7 @@ function groups(): SidebarGroup[] {
         { href: "/components", label: "Components" },
         { href: "/primitives", label: "Primitives" },
         { href: "/tokens", label: "Tokens" },
+        { href: "/tokens/figma", label: "Tokens in Figma" },
         { href: "/releases", label: "Releases" },
       ],
     },

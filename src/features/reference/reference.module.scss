@@ -44,6 +44,15 @@
     line-height: 1.6;
   }
 
+  .steps {
+    display: grid;
+    gap: 0.5rem;
+    max-inline-size: 68ch;
+    margin: 0;
+    padding-inline-start: 1.25rem;
+    line-height: 1.6;
+  }
+
   .chips {
     display: flex;
     flex-wrap: wrap;

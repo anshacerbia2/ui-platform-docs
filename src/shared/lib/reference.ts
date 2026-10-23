@@ -110,7 +110,11 @@ type Reference = {
   tokens: Record<string, { standard: { id: string; version: string; commit: string }; modes: string[]; count: number }>;
   landing: { lab: Lab; swatches: string[] };
   tokenList: TokenRow[];
+  figma: FigmaFile[];
 };
+
+/** A Figma profile file of the pinned @scnx/system (ui-platform TDD tokens FG1-FG6). */
+export type FigmaFile = { file: string; subpath: string; theme: string; mode: string | null; kind: "color" | "dimension"; tokens: number };
 
 export type TokenRow = { name: string; cssName: string; type: string; tier: number; lifecycle: string; values: Record<string, Record<string, string> | null> };
 
@@ -121,6 +125,7 @@ export const entries = reference.entries;
 export const tokenThemes = reference.tokens;
 export const landing = reference.landing;
 export const tokenList = reference.tokenList;
+export const figmaFiles = reference.figma;
 export const componentSlugs = Object.keys(reference.components);
 export const primitiveSlugs = Object.keys(reference.primitives);
 export const getComponent = (slug: string): ComponentReference | undefined => reference.components[slug];

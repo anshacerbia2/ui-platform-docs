@@ -385,7 +385,8 @@ function generate() {
       "color.primary.surface.solid.hover",
       "color.primary.text.default.default",
     ]);
-  const reference = { schemaVersion: 1, pin, entries, components, primitives: primitivePages, tokens, tokenList, landing: { lab, swatches } };
+  const figma = figmaFiles().map(({ content: _content, ...row }) => row);
+  const reference = { schemaVersion: 1, pin, entries, components, primitives: primitivePages, tokens, tokenList, figma, landing: { lab, swatches } };
 
   // The preview registry: one namespace import per styled entry.
   const styled = entries.filter((e) => e.kind === "styled");
@@ -406,10 +407,51 @@ ${styled.map((e, i) => `  ${JSON.stringify(e.slug)}: m${i},`).join("\n")}
   return { "reference.json": `${JSON.stringify(reference, null, 2)}\n`, "registry.tsx": registry, "swatches.css": swatchCss };
 }
 
+// ---------------------------------------------------------------------------
+// Figma profile (ui-platform TDD tokens FG1-FG6; ADR-UIP-TKN-004): the package's
+// tokens/figma exports, served as downloads exactly as published.
+
+const DOWNLOADS = path.join(root, "public/downloads/figma");
+const themeOrder = (t) => (t === "default" ? "" : t);
+const modeOrder = (m) => ({ light: 0, dark: 1 })[m] ?? 2;
+
+export function figmaFiles() {
+  const dir = packageDir("@scnx/system");
+  const manifest = readJson(path.join(dir, "package.json"));
+  const count = (node) =>
+    Object.entries(node).reduce(
+      (n, [key, value]) => n + (key.startsWith("$") || !value || typeof value !== "object" ? 0 : "$value" in value ? 1 : count(value)),
+      0,
+    );
+  const files = [];
+  for (const [subpath, target] of Object.entries(manifest.exports)) {
+    const match = /^\.\/tokens\/figma\/([a-z0-9-]+)\.(?:([a-z0-9-]+)\.color|dimension)\.tokens\.json$/.exec(subpath);
+    if (!match) continue;
+    const content = fs.readFileSync(path.join(dir, target), "utf8");
+    const file = subpath.slice("./tokens/figma/".length);
+    files.push({
+      file,
+      subpath: `@scnx/system${subpath.slice(1)}`,
+      theme: match[1],
+      mode: match[2] ?? null,
+      kind: match[2] ? "color" : "dimension",
+      tokens: count(JSON.parse(content)),
+      content,
+    });
+  }
+  // The default theme first, colors before dimensions, light before dark.
+  return files.toSorted(
+    (a, b) => themeOrder(a.theme).localeCompare(themeOrder(b.theme)) || a.kind.localeCompare(b.kind) || modeOrder(a.mode) - modeOrder(b.mode),
+  );
+}
+
 if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {
   const outputs = generate();
   fs.mkdirSync(OUT, { recursive: true });
   for (const [file, text] of Object.entries(outputs)) fs.writeFileSync(path.join(OUT, file), text);
+  fs.rmSync(DOWNLOADS, { recursive: true, force: true });
+  fs.mkdirSync(DOWNLOADS, { recursive: true });
+  for (const { file, content } of figmaFiles()) fs.writeFileSync(path.join(DOWNLOADS, file), content);
   const data = JSON.parse(outputs["reference.json"]);
   console.log(
     `Reference generated from ${data.pin.packages.map((p) => `${p.name}@${p.version}`).join(", ")} (ui-platform ${data.pin.commit.slice(0, 7)}): ${data.entries.length} entries, ${Object.keys(data.components).length} component pages, ${Object.keys(data.primitives).length} primitive pages`,

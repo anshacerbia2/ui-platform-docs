@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import { DocsLayout } from "@/features/site-shell/DocsLayout";
 import { PageToc } from "@/features/reference/PageToc";
 import { Code, Section, Table } from "@/features/reference/Section";
@@ -19,7 +20,12 @@ export default function Page() {
         <h1 className={styles.title}>Tokens</h1>
         <p className={styles.lead}>
           {tokenList.length} canonical tokens in {themes.length} themes, each in light and dark, generated from the published JSON. Names follow {standard?.id}{" "}
-          {standard?.version}: scheme, role, emphasis, and state. Use the CSS custom property; a value may change in a minor release, a name may not.
+          {standard?.version}: scheme, role, emphasis, and state. Use the CSS custom property; a value may change in a minor release, a name may not. Designers
+          get the same tokens in Figma from the build: see{" "}
+          <Link className={styles.link} href="/tokens/figma">
+            Tokens in Figma
+          </Link>
+          .
         </p>
       </header>
       {GROUPS.map((group) => {
