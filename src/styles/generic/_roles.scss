@@ -6,6 +6,8 @@
   --site-surface-card: var(--ds-color-neutral-surface-raised-default);
   --site-surface-inset: var(--ds-color-neutral-surface-subtle-default);
   --site-surface-chip: var(--ds-color-neutral-surface-default-default);
+  --site-surface-chip-hover: var(--ds-color-neutral-surface-default-hover);
+  --site-surface-chip-pressed: var(--ds-color-neutral-surface-default-pressed);
   --site-dot: var(--ds-color-neutral-border-subtle-default);
 }
 
@@ -14,5 +16,7 @@
   --site-surface-card: var(--ds-color-neutral-surface-raised-default);
   --site-surface-inset: var(--ds-color-neutral-surface-floating-default);
   --site-surface-chip: var(--ds-color-neutral-surface-strong-default);
+  --site-surface-chip-hover: var(--ds-color-neutral-surface-strong-hover);
+  --site-surface-chip-pressed: var(--ds-color-neutral-surface-strong-pressed);
   --site-dot: var(--ds-color-neutral-surface-strong-default);
 }

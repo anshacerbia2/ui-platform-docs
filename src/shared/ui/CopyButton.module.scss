@@ -11,14 +11,9 @@
     block-size: 2.375rem;
     border: 0;
     border-radius: var(--ds-dimension-radius-container);
-    background: $surface-chip;
     color: $text;
     cursor: pointer;
-    transition: filter $duration $ease;
+    @include fill-states($surface-chip, $surface-chip-hover, $surface-chip-pressed);
     @include focus-ring;
-
-    &:hover {
-      filter: brightness(0.94);
-    }
   }
 }

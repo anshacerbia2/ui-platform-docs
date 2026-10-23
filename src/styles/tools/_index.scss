@@ -15,6 +15,32 @@
   }
 }
 
+/// An interactive fill with a token per state: rest, hover, and pressed. The
+/// states are tokens, not a filter, so every state is a measured pair and the
+/// change reads in both modes (a brightness filter darkens a dark-mode fill).
+@mixin fill-states($fill, $hover, $pressed, $label: null, $label-hover: null) {
+  background-color: $fill;
+  @if $label {
+    color: $label;
+  }
+  transition:
+    background-color $duration $ease,
+    color $duration $ease;
+
+  @media (hover: hover) {
+    &:hover {
+      background-color: $hover;
+      @if $label-hover {
+        color: $label-hover;
+      }
+    }
+  }
+
+  &:active {
+    background-color: $pressed;
+  }
+}
+
 @mixin mono($size: small) {
   font-family: $font-mono;
   @if $size == small {
