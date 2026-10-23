@@ -412,6 +412,8 @@ ${styled.map((e, i) => `  ${JSON.stringify(e.slug)}: m${i},`).join("\n")}
 // tokens/figma exports, served as downloads exactly as published.
 
 const DOWNLOADS = path.join(root, "public/downloads/figma");
+const themeOrder = (t) => (t === "default" ? "" : t);
+const modeOrder = (m) => ({ light: 0, dark: 1 })[m] ?? 2;
 
 export function figmaFiles() {
   const dir = packageDir("@scnx/system");
@@ -437,7 +439,10 @@ export function figmaFiles() {
       content,
     });
   }
-  return files.toSorted((a, b) => a.theme.localeCompare(b.theme) || a.kind.localeCompare(b.kind) || (a.mode ?? "").localeCompare(b.mode ?? ""));
+  // The default theme first, colors before dimensions, light before dark.
+  return files.toSorted(
+    (a, b) => themeOrder(a.theme).localeCompare(themeOrder(b.theme)) || a.kind.localeCompare(b.kind) || modeOrder(a.mode) - modeOrder(b.mode),
+  );
 }
 
 if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {

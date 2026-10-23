@@ -8,7 +8,9 @@ import { CodeBlock } from "@/shared/ui/CodeBlock";
 
 export const metadata: Metadata = { title: "Tokens in Figma" };
 
-const modeName = (theme: string, mode: string) => (theme === "default" ? mode : `${theme} ${mode}`);
+// The mode names the plugin writes (ui-platform TDD tokens FG7).
+const title = (s: string) => s.charAt(0).toUpperCase() + s.slice(1);
+const modeName = (theme: string, mode: string) => (theme === "default" ? title(mode) : `${title(theme)} ${mode}`);
 
 export default function Page() {
   const colors = figmaFiles.filter((f) => f.kind === "color");
@@ -37,14 +39,14 @@ export default function Page() {
       <Section id="files" title="Files" source="@scnx/system/tokens/figma, as published">
         <Table
           caption="Figma profile files"
-          head={["File", "Collection mode", "Tokens", "Package export"]}
+          head={["File", "Collection", "Mode", "Tokens"]}
           rows={[...colors, ...dimensions].map((f) => [
             <a key="f" className={styles.link} href={`/downloads/figma/${f.file}`} download>
               {f.file}
             </a>,
-            f.kind === "color" ? modeName(f.theme, f.mode ?? "") : `${f.theme} (Dimension)`,
+            f.kind === "color" ? "Scnehaux / Color" : "Scnehaux / Dimension",
+            f.kind === "color" ? modeName(f.theme, f.mode ?? "") : title(f.theme),
             String(f.tokens),
-            <Code key="s">{f.subpath}</Code>,
           ])}
         />
         <p className={styles.lead}>
