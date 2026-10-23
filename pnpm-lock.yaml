@@ -488,14 +488,14 @@ packages:
     engines: {node: '>= 10.0.0'}
 
   '@scnx/core-ui@file:vendor/ui-platform/scnx-core-ui-2.0.0-beta.0.tgz':
-    resolution: {integrity: sha512-v59pe27L+RnosOyXFjtTctfMGZiQhALZHePVC4RU47WsQd5xag241QODwWjRyCqDNkMVfVKWV42lf3advgwiuw==, tarball: file:vendor/ui-platform/scnx-core-ui-2.0.0-beta.0.tgz}
+    resolution: {integrity: sha512-294XdkKG7xsdd+/m7slNA9B3sMFXR7nO2b8qW6LujGAADU6qO4E7rPqHOquASdvvACpr+KyTE/RKh3dDFLvGHw==, tarball: file:vendor/ui-platform/scnx-core-ui-2.0.0-beta.0.tgz}
     version: 2.0.0-beta.0
     peerDependencies:
       react: ^19.0.0
       react-dom: ^19.0.0
 
   '@scnx/system@file:vendor/ui-platform/scnx-system-2.0.0-beta.0.tgz':
-    resolution: {integrity: sha512-v2LJU8v5sg0MyNV8Z+IOcksd1Wn0ArnRr3REmlA22NHBaCUPZx+/DTpp0NwZJsVJR7iOQiBhU/1OKBuW3JfT8g==, tarball: file:vendor/ui-platform/scnx-system-2.0.0-beta.0.tgz}
+    resolution: {integrity: sha512-JQvKPD3tA9brxf1Ng0Gju5i/bYaLexZOHYol7L+cW2KM5Ud0S/iJt6GAJqVG4kbCR36i09ZwxhZUGJz3hExXQQ==, tarball: file:vendor/ui-platform/scnx-system-2.0.0-beta.0.tgz}
     version: 2.0.0-beta.0
     peerDependencies:
       '@scnx/core-ui': ^2.0.0-beta.0
