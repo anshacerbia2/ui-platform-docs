@@ -23,7 +23,7 @@ const browsers = arg("--browsers", process.env.SMOKE_BROWSERS ?? "chromium,firef
 const shots = arg("--shots");
 
 const reference = JSON.parse(fs.readFileSync(path.join(root, "src/generated/reference.json"), "utf8"));
-const ROUTES = ["/", "/components", "/primitives", "/tokens", "/releases", ...reference.entries.filter((e) => e.page).map((e) => e.page)];
+const ROUTES = ["/", "/components", "/primitives", "/tokens", "/tokens/figma", "/releases", ...reference.entries.filter((e) => e.page).map((e) => e.page)];
 
 const escapeAnnotation = (text) => text.replaceAll("%", "%25").replaceAll("\r", "%0D").replaceAll("\n", "%0A");
 
