@@ -258,21 +258,15 @@
     border-radius: 0.875rem;
     font-weight: 600;
     text-decoration: none;
-    transition: filter $duration $ease;
-
-    &:hover {
-      filter: brightness(0.94);
-    }
   }
 
   .ctaPrimary {
     @extend %cta;
-    background: $ink;
-    color: $on-ink;
+    @include fill-states($ink, $ink-hover, $ink-pressed, $on-ink, $on-ink-hover);
   }
 
   .ctaSecondary {
     @extend %cta;
-    background: $surface-chip;
+    @include fill-states($surface-chip, $surface-chip-hover, $surface-chip-pressed);
   }
 }

@@ -84,22 +84,17 @@
     font-size: var(--ds-typography-label-default-font-size);
     font-weight: 500;
     text-decoration: none;
-    transition: filter $duration $ease;
-
-    &:hover {
-      filter: brightness(0.94);
-    }
   }
 
   .ghost {
     @extend %action;
     padding-inline: 0.75rem;
+    @include fill-states(transparent, $surface-chip, $surface-chip-hover);
   }
 
   .primary {
     @extend %action;
-    background: $ink;
-    color: $on-ink;
+    @include fill-states($ink, $ink-hover, $ink-pressed, $on-ink, $on-ink-hover);
     font-weight: 600;
   }
 }

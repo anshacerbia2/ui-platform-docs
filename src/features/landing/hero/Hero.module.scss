@@ -67,15 +67,9 @@
     min-block-size: 3.25rem;
     padding-inline: 1.5rem;
     border-radius: 0.875rem;
-    background: $ink;
-    color: $on-ink;
+    @include fill-states($ink, $ink-hover, $ink-pressed, $on-ink, $on-ink-hover);
     font-weight: 600;
     text-decoration: none;
-    transition: filter $duration $ease;
-
-    &:hover {
-      filter: brightness(0.94);
-    }
   }
 
   .install {
