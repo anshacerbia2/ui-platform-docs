@@ -495,7 +495,7 @@ packages:
       react-dom: ^19.0.0
 
   '@scnx/system@file:vendor/ui-platform/scnx-system-2.0.0-beta.0.tgz':
-    resolution: {integrity: sha512-Y803A00g8rJs+NMm/OTgRmScELRbjBXceodcSmFfVcxy1nUPYJmdyJAJO+jXinzF0HAIl39BPexqzI0n8Dm19A==, tarball: file:vendor/ui-platform/scnx-system-2.0.0-beta.0.tgz}
+    resolution: {integrity: sha512-8ex9rLBTAAkVDdshWg82j6thbox1vUkCn2HwuADrK9Y6aXg9vhxsYDePYobrZaJPIMDUTWWPfk3GcKqsZWlIhA==, tarball: file:vendor/ui-platform/scnx-system-2.0.0-beta.0.tgz}
     version: 2.0.0-beta.0
     peerDependencies:
       '@scnx/core-ui': ^2.0.0-beta.0
