@@ -1,5 +1,6 @@
 import { ThemeProvider } from "@scnx/core-ui/providers/theme-provider-base";
 import type { ReactNode } from "react";
+import { SITE_THEME } from "@/shared/lib/themes";
 
 /**
  * A theme root fixed to dark mode, for surfaces that are dark in either site
@@ -8,7 +9,7 @@ import type { ReactNode } from "react";
  */
 export function DarkRoot({ children }: { children: ReactNode }) {
   return (
-    <ThemeProvider themeId="default" mode="dark" storage={false}>
+    <ThemeProvider themeId={SITE_THEME} mode="dark" storage={false}>
       {children}
     </ThemeProvider>
   );

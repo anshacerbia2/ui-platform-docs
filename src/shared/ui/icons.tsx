@@ -1,6 +1,9 @@
 import type { SVGProps } from "react";
+import { SCNX_BLUE } from "./brand";
 
-// The site's icons: 24-unit grid, stroked with currentColor, decorative by default.
+// The site's icons (scnehaux-design brand/Brand.html, "Icons"): 24-unit grid,
+// stroked with currentColor, decorative by default; the contract marks' one
+// accent part is Scnx Blue in every theme.
 type IconProps = Omit<SVGProps<SVGSVGElement>, "viewBox"> & { size?: number };
 
 const Svg = ({ size = 16, children, ...rest }: IconProps & { children: React.ReactNode }) => (
@@ -90,25 +93,25 @@ export const External = (p: IconProps) => (
 export const PrimitiveMark = (p: IconProps) => (
   <Svg {...p}>
     <path d="M4 9V6.5A2.5 2.5 0 0 1 6.5 4H9M15 4h2.5A2.5 2.5 0 0 1 20 6.5V9M20 15v2.5a2.5 2.5 0 0 1-2.5 2.5H15M9 20H6.5A2.5 2.5 0 0 1 4 17.5V15" />
-    <circle cx="12" cy="12" r="2.6" className="site-icon-accent" stroke="none" />
+    <circle cx="12" cy="12" r="2.6" fill={SCNX_BLUE} stroke="none" />
   </Svg>
 );
 export const ComponentMark = (p: IconProps) => (
   <Svg {...p}>
     <rect x="3" y="3" width="12.5" height="12.5" rx="3.2" />
-    <rect x="8.5" y="8.5" width="12.5" height="12.5" rx="3.2" className="site-icon-accent" stroke="none" />
+    <rect x="8.5" y="8.5" width="12.5" height="12.5" rx="3.2" fill={SCNX_BLUE} stroke="none" />
   </Svg>
 );
 export const TokenMark = (p: IconProps) => (
   <Svg {...p}>
     <rect x="9" y="4.5" width="6" height="15" rx="3" transform="rotate(-32 12 18)" />
     <rect x="9" y="4.5" width="6" height="15" rx="3" transform="rotate(32 12 18)" />
-    <rect x="9" y="4.5" width="6" height="15" rx="3" className="site-icon-accent" stroke="none" />
+    <rect x="9" y="4.5" width="6" height="15" rx="3" fill={SCNX_BLUE} stroke="none" />
   </Svg>
 );
 export const ReleaseMark = (p: IconProps) => (
   <Svg {...p}>
     <path d="M12 2l2.3 1.4 2.7-.06 1.29 2.37 2.37 1.29-.06 2.7L22 12l-1.4 2.3.06 2.7-2.37 1.29L17 20.66l-2.7-.06L12 22l-2.3-1.4-2.7.06-1.29-2.37L3.34 17l.06-2.7L2 12l1.4-2.3L3.34 7l2.37-1.29L7 3.34l2.7.06z" />
-    <path d="M8.2 12.3l2.6 2.6 5-5.4" className="site-icon-accent-stroke" strokeWidth={2} />
+    <path d="M8.2 12.3l2.6 2.6 5-5.4" stroke={SCNX_BLUE} strokeWidth={2} />
   </Svg>
 );

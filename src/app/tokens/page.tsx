@@ -5,6 +5,7 @@ import { PageToc } from "@/features/reference/PageToc";
 import { Code, Section, Table } from "@/features/reference/Section";
 import styles from "@/features/reference/reference.module.scss";
 import { tokenList, tokenThemes } from "@/shared/lib/reference";
+import { SITE_THEME } from "@/shared/lib/themes";
 
 export const metadata: Metadata = { title: "Tokens" };
 
@@ -13,7 +14,7 @@ const idOf = (group: string) => group.replaceAll(".", "-");
 
 export default function Page() {
   const themes = Object.keys(tokenThemes);
-  const standard = tokenThemes[themes[0] ?? "scnx-platform"]?.standard;
+  const standard = tokenThemes[themes[0] ?? SITE_THEME]?.standard;
   return (
     <DocsLayout aside={<PageToc items={GROUPS.map((g) => ({ id: idOf(g), title: g }))} />}>
       <header className={styles.header}>

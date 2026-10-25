@@ -13,6 +13,7 @@ import fs from "node:fs";
 import { createRequire } from "node:module";
 import path from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
+import { SITE_THEME } from "./reference.mjs";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 
@@ -73,7 +74,7 @@ if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) 
   if (process.argv.includes("--self-test")) selfTest();
   else {
     const require = createRequire(path.join(root, "package.json"));
-    const tokens = JSON.parse(fs.readFileSync(require.resolve("@scnx/system/tokens/json/scnx-platform.json"), "utf8")).tokens;
+    const tokens = JSON.parse(fs.readFileSync(require.resolve(`@scnx/system/tokens/json/${SITE_THEME}.json`), "utf8")).tokens;
     const published = new Set(tokens.map((t) => t.cssName));
     const files = walk(path.join(root, "src"));
     const findings = files.flatMap((f) => styleFindings(path.relative(root, f), fs.readFileSync(f, "utf8"), published));

@@ -6,9 +6,9 @@ import { Tabs } from "@scnx/system/components/tabs";
 import { TextField } from "@scnx/system/components/text-field";
 import { useState } from "react";
 import type { Lab } from "@/shared/lib/reference";
+import { SITE_THEME } from "@/shared/lib/themes";
 import styles from "./ThemeLab.module.scss";
 
-const THEME_NAMES: Record<string, string> = { "scnx-platform": "scnx-platform", "scnx-saas": "scnx-saas" };
 function Swatch({ token }: { token: string }) {
   return <span className={styles.swatch} title={token} data-swatch={token} />;
 }
@@ -16,7 +16,7 @@ function Swatch({ token }: { token: string }) {
 /** Real components in a real theme root; the checks are the gate's numbers for that root. */
 export function ThemeLab({ lab, swatches }: { lab: Lab; swatches: string[] }) {
   const themes = Object.keys(lab);
-  const [theme, setTheme] = useState(themes[0] ?? "scnx-platform");
+  const [theme, setTheme] = useState(themes[0] ?? SITE_THEME);
   const [mode, setMode] = useState<"light" | "dark">("light");
   const checks = lab[theme]?.[mode] ?? [];
   return (
@@ -25,7 +25,7 @@ export function ThemeLab({ lab, swatches }: { lab: Lab; swatches: string[] }) {
         <div role="group" aria-label="Theme" className={styles.segment}>
           {themes.map((id) => (
             <button key={id} type="button" aria-pressed={theme === id} onClick={() => setTheme(id)}>
-              {THEME_NAMES[id] ?? id}
+              {id}
             </button>
           ))}
         </div>
@@ -73,7 +73,7 @@ export function ThemeLab({ lab, swatches }: { lab: Lab; swatches: string[] }) {
             ))}
           </div>
         </ThemeProvider>
-        <ul className={styles.checks} aria-label={`Contrast in ${THEME_NAMES[theme] ?? theme}, ${mode} mode`}>
+        <ul className={styles.checks} aria-label={`Contrast in ${theme}, ${mode} mode`}>
           {checks.map((c) => (
             <li key={c.label} className={styles.check}>
               <span>{c.label}</span>

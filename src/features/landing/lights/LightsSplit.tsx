@@ -2,6 +2,7 @@
 
 import { ThemeProvider } from "@scnx/core-ui/providers/theme-provider-base";
 import { useCallback, useEffect, useRef, useState, type KeyboardEvent, type PointerEvent } from "react";
+import { SITE_THEME } from "@/shared/lib/themes";
 import { useStyleVars } from "@/shared/lib/useStyleVars";
 import { Split } from "@/shared/ui/icons";
 import { MiniDashboard } from "./MiniDashboard";
@@ -77,12 +78,12 @@ export function LightsSplit() {
   return (
     <div ref={frame} className={styles.frame} onPointerDown={down} data-edge={rounded === 0 || rounded === 100 || undefined}>
       <div className={styles.pane}>
-        <ThemeProvider themeId="scnx-platform" mode="light" storage={false}>
+        <ThemeProvider themeId={SITE_THEME} mode="light" storage={false}>
           <MiniDashboard />
         </ThemeProvider>
       </div>
       <div className={`${styles.pane} ${styles.dark}`}>
-        <ThemeProvider themeId="scnx-platform" mode="dark" storage={false}>
+        <ThemeProvider themeId={SITE_THEME} mode="dark" storage={false}>
           <MiniDashboard hidden />
         </ThemeProvider>
       </div>
