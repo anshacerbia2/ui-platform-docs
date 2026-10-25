@@ -15,13 +15,13 @@ const cookiePreference: ThemePreferenceAdapter = {
   },
 };
 
-/** The site's theme root: the industrial theme, in the mode the server resolved. */
+/** The site's theme root: the scnx-platform theme, in the mode the server resolved. */
 export function SiteTheme({ mode, resolvedMode, children }: { mode: ThemeMode; resolvedMode: ResolvedMode; children: ReactNode }) {
   const [store] = useState(() =>
-    createThemeStore({ themeId: "industrial", defaultMode: "system", serverHint: { mode, resolvedMode }, storage: cookiePreference }),
+    createThemeStore({ themeId: "scnx-platform", defaultMode: "system", serverHint: { mode, resolvedMode }, storage: cookiePreference }),
   );
   return (
-    <ThemeProvider themeId="industrial" store={store}>
+    <ThemeProvider themeId="scnx-platform" store={store}>
       {children}
     </ThemeProvider>
   );

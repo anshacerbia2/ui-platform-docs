@@ -51,8 +51,8 @@ function loadThemes() {
     const match = /^\.\/tokens\/json\/([a-z0-9-]+)\.json$/.exec(subpath);
     if (match) themes[match[1]] = readJson(path.join(dir, target));
   }
-  // The base theme (industrial) first, then the others by name.
-  return Object.fromEntries(Object.entries(themes).toSorted(([a], [b]) => (a === "industrial" ? -1 : b === "industrial" ? 1 : a.localeCompare(b))));
+  // The base theme (scnx-platform) first, then the others by name.
+  return Object.fromEntries(Object.entries(themes).toSorted(([a], [b]) => (a === "scnx-platform" ? -1 : b === "scnx-platform" ? 1 : a.localeCompare(b))));
 }
 
 // ---------------------------------------------------------------------------
@@ -292,7 +292,7 @@ function generate() {
   const pin = readJson(path.join(root, "vendor/ui-platform/pin.json"));
   const rows = loadSpecs();
   const themes = loadThemes();
-  const defaultTheme = themes.industrial;
+  const defaultTheme = themes["scnx-platform"];
   // WCAG 2.2 success criterion 1.4.3 (AA): text needs 4.5:1, as the token gate requires.
   const TEXT_MINIMUM = 4.5;
   const tokenNames = new Set(defaultTheme.tokens.map((t) => t.name));
@@ -412,7 +412,7 @@ ${styled.map((e, i) => `  ${JSON.stringify(e.slug)}: m${i},`).join("\n")}
 // tokens/figma exports, served as downloads exactly as published.
 
 const DOWNLOADS = path.join(root, "public/downloads/figma");
-const themeOrder = (t) => (t === "industrial" ? "" : t);
+const themeOrder = (t) => (t === "scnx-platform" ? "" : t);
 const modeOrder = (m) => ({ light: 0, dark: 1 })[m] ?? 2;
 
 export function figmaFiles() {
@@ -439,7 +439,7 @@ export function figmaFiles() {
       content,
     });
   }
-  // The base theme (industrial) first, colors before dimensions, light before dark.
+  // The base theme (scnx-platform) first, colors before dimensions, light before dark.
   return files.toSorted(
     (a, b) => themeOrder(a.theme).localeCompare(themeOrder(b.theme)) || a.kind.localeCompare(b.kind) || modeOrder(a.mode) - modeOrder(b.mode),
   );

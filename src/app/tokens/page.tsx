@@ -13,7 +13,7 @@ const idOf = (group: string) => group.replaceAll(".", "-");
 
 export default function Page() {
   const themes = Object.keys(tokenThemes);
-  const standard = tokenThemes[themes[0] ?? "industrial"]?.standard;
+  const standard = tokenThemes[themes[0] ?? "scnx-platform"]?.standard;
   return (
     <DocsLayout aside={<PageToc items={GROUPS.map((g) => ({ id: idOf(g), title: g }))} />}>
       <header className={styles.header}>

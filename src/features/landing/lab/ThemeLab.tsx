@@ -8,7 +8,7 @@ import { useState } from "react";
 import type { Lab } from "@/shared/lib/reference";
 import styles from "./ThemeLab.module.scss";
 
-const THEME_NAMES: Record<string, string> = { industrial: "Industrial", achromatic: "Achromatic" };
+const THEME_NAMES: Record<string, string> = { "scnx-platform": "scnx-platform", "scnx-saas": "scnx-saas" };
 function Swatch({ token }: { token: string }) {
   return <span className={styles.swatch} title={token} data-swatch={token} />;
 }
@@ -16,7 +16,7 @@ function Swatch({ token }: { token: string }) {
 /** Real components in a real theme root; the checks are the gate's numbers for that root. */
 export function ThemeLab({ lab, swatches }: { lab: Lab; swatches: string[] }) {
   const themes = Object.keys(lab);
-  const [theme, setTheme] = useState(themes[0] ?? "industrial");
+  const [theme, setTheme] = useState(themes[0] ?? "scnx-platform");
   const [mode, setMode] = useState<"light" | "dark">("light");
   const checks = lab[theme]?.[mode] ?? [];
   return (

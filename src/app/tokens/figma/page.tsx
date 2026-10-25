@@ -8,9 +8,10 @@ import { CodeBlock } from "@/shared/ui/CodeBlock";
 
 export const metadata: Metadata = { title: "Tokens in Figma" };
 
-// The mode names the plugin writes (ui-platform TDD tokens FG7).
+// The mode names the plugin writes (ui-platform TDD tokens FG7): the default theme's
+// color modes by mode alone, every other theme and every dimension mode by its id.
 const title = (s: string) => s.charAt(0).toUpperCase() + s.slice(1);
-const modeName = (theme: string, mode: string) => (theme === "industrial" ? title(mode) : `${title(theme)} ${mode}`);
+const modeName = (theme: string, mode: string) => (theme === "scnx-platform" ? title(mode) : `${theme} ${mode}`);
 
 export default function Page() {
   const colors = figmaFiles.filter((f) => f.kind === "color");
@@ -45,7 +46,7 @@ export default function Page() {
               {f.file}
             </a>,
             f.kind === "color" ? "Scnehaux / Color" : "Scnehaux / Dimension",
-            f.kind === "color" ? modeName(f.theme, f.mode ?? "") : title(f.theme),
+            f.kind === "color" ? modeName(f.theme, f.mode ?? "") : f.theme,
             String(f.tokens),
           ])}
         />
@@ -61,7 +62,8 @@ export default function Page() {
             In a design file, open the local variables and create a collection named <Code>Scnehaux / Color</Code>.
           </li>
           <li>
-            Drop the color files into it. Figma creates one mode per file; on a plan without modes, drop only <Code>industrial.light.color.tokens.json</Code>.
+            Drop the color files into it. Figma creates one mode per file; on a plan without modes, drop only <Code>scnx-platform.light.color.tokens.json</Code>
+            .
           </li>
           <li>
             Create <Code>Scnehaux / Dimension</Code> and drop the dimension file of each theme.
