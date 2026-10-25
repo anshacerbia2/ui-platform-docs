@@ -59,6 +59,14 @@
   color: $text-muted;
 }
 
+/// The Square chrome's HUD voice (TDD docs-site D13): mono, tracked, upper case.
+/// 11px is the reference's size; the system has no 11px typography token.
+@mixin hud($size: 11px, $weight: 500, $tracking: 0.15em) {
+  font: $weight #{$size}/ 1.4 $sq-mono;
+  letter-spacing: $tracking;
+  text-transform: uppercase;
+}
+
 @mixin card($radius: $radius-card) {
   background: $surface-card;
   border-radius: $radius;
