@@ -1,5 +1,5 @@
 import "@scnx/system/styles/components.css";
-import "@scnx/system/tokens/css/default.css";
+import "@scnx/system/tokens/css/industrial.css";
 import "@scnx/system/tokens/css/achromatic.css";
 import "@/styles/main.scss";
 import "@/generated/swatches.css";

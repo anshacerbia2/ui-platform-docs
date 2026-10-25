@@ -1,10 +1,10 @@
 // The hero's "12-step light tower" (WebGL 1): twelve glass rings, one per
-// lightness step of the default theme's scale, lightest on top. Each ring
+// lightness step of the industrial theme's scale, lightest on top. Each ring
 // sweeps the hue wheel at that step's OKLCH lightness; its width follows the
 // step's chroma, clipped to sRGB per hue. A bead on each ring marks the brand
 // hue. Ported from the Docs-Landing design (Platform Dashboard Concepts).
 
-/** The default theme's 12-step scale: OKLCH lightness and chroma per step (blue). */
+/** The industrial theme's 12-step scale: OKLCH lightness and chroma per step (blue). */
 export const STEP_L = [0.99, 0.968, 0.933, 0.889, 0.838, 0.783, 0.723, 0.658, 0.59, 0.565, 0.5, 0.392];
 export const STEP_C = [0.0003, 0.0023, 0.0091, 0.0238, 0.0486, 0.0842, 0.1288, 0.1818, 0.2373, 0.2343, 0.1447, 0.0784];
 

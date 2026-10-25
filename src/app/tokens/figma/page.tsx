@@ -10,7 +10,7 @@ export const metadata: Metadata = { title: "Tokens in Figma" };
 
 // The mode names the plugin writes (ui-platform TDD tokens FG7).
 const title = (s: string) => s.charAt(0).toUpperCase() + s.slice(1);
-const modeName = (theme: string, mode: string) => (theme === "default" ? title(mode) : `${title(theme)} ${mode}`);
+const modeName = (theme: string, mode: string) => (theme === "industrial" ? title(mode) : `${title(theme)} ${mode}`);
 
 export default function Page() {
   const colors = figmaFiles.filter((f) => f.kind === "color");
@@ -61,7 +61,7 @@ export default function Page() {
             In a design file, open the local variables and create a collection named <Code>Scnehaux / Color</Code>.
           </li>
           <li>
-            Drop the color files into it. Figma creates one mode per file; on a plan without modes, drop only <Code>default.light.color.tokens.json</Code>.
+            Drop the color files into it. Figma creates one mode per file; on a plan without modes, drop only <Code>industrial.light.color.tokens.json</Code>.
           </li>
           <li>
             Create <Code>Scnehaux / Dimension</Code> and drop the dimension file of each theme.
