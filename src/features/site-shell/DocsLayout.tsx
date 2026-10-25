@@ -2,6 +2,8 @@ import type { Route } from "next";
 import type { ReactNode } from "react";
 import { entries, titleOf } from "@/shared/lib/reference";
 import { DocsSidebar, type SidebarGroup } from "./DocsSidebar";
+import { HereProvider } from "./Here";
+import { RulerScrollbar } from "./RulerScrollbar";
 import { SiteFooter } from "./SiteFooter";
 import { SiteHeader } from "./SiteHeader";
 import styles from "./DocsLayout.module.scss";
@@ -27,14 +29,18 @@ function groups(): SidebarGroup[] {
   ];
 }
 
-/** Header, page navigation, the page, and its table of contents. */
+/**
+ * The nav strip, then the docs column (TDD docs-site D14): sidebar, the page,
+ * and its contents, drawn on the column's lines. The page's sheets feed the one
+ * "here", the reveal, and the ruler scrollbar.
+ */
 export function DocsLayout({ children, aside }: { children: ReactNode; aside?: ReactNode }) {
   return (
-    <>
-      <div className={`o-container ${styles.frame}`}>
-        <SiteHeader />
+    <HereProvider>
+      <SiteHeader />
+      <div className={styles.frame} data-sq-col="">
         <DocsSidebar groups={groups()} compact />
-        <div className={styles.columns}>
+        <div className={styles.columns} data-aside={aside ? "" : undefined}>
           <DocsSidebar groups={groups()} />
           <main id="main" className={styles.main}>
             {children}
@@ -43,6 +49,7 @@ export function DocsLayout({ children, aside }: { children: ReactNode; aside?: R
         </div>
       </div>
       <SiteFooter />
-    </>
+      <RulerScrollbar />
+    </HereProvider>
   );
 }
