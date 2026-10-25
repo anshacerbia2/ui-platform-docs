@@ -58,13 +58,13 @@ export function HueTower() {
 
   // The stage is a dark showroom in either site mode: its own theme root, in dark mode.
   return (
-    <ThemeProvider themeId="industrial" mode="dark" storage={false}>
+    <ThemeProvider themeId="scnx-platform" mode="dark" storage={false}>
       <div className={styles.stage}>
         <canvas
           ref={canvas}
           className={styles.canvas}
           role="img"
-          aria-label="Twelve rings, one per lightness step of the industrial theme's color scale, each sweeping the hue wheel; a bead on every ring marks your brand hue. Drag to orbit."
+          aria-label="Twelve rings, one per lightness step of the scnx-platform theme's color scale, each sweeping the hue wheel; a bead on every ring marks your brand hue. Drag to orbit."
         />
         {failed ? <div className={styles.fallback}>The 3D preview needs WebGL.</div> : null}
         <span className={styles.hint}>

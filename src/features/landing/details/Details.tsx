@@ -113,8 +113,8 @@ function Demo({ kind }: { kind: (typeof CARDS)[number]["demo"] }) {
       return (
         <div className={`${styles.demoInset} ${styles.brands}`}>
           {[
-            { theme: "industrial", mode: "light" as const, name: "Northwind" },
-            { theme: "achromatic", mode: "dark" as const, name: "Kirana" },
+            { theme: "scnx-platform", mode: "light" as const, name: "Northwind" },
+            { theme: "scnx-saas", mode: "dark" as const, name: "Kirana" },
           ].map((root) => (
             <ThemeProvider key={root.theme} themeId={root.theme} mode={root.mode} storage={false}>
               <div className={styles.brandRoot}>

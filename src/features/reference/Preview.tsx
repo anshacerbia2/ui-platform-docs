@@ -6,6 +6,7 @@ import { registry } from "@/generated/registry";
 import { defaultsOf, effective, tokensIn } from "@/shared/lib/bindings";
 import type { FixtureNode, StyledSpec } from "@/shared/lib/reference";
 import styles from "./Preview.module.scss";
+import { useThemeChoice } from "./ThemeChoice";
 
 // The specification's own fixture (TDD styled CS7), rendered the way the
 // conformance check renders it: a node type is an export ("Tabs"), a
@@ -31,8 +32,8 @@ export function Preview({ slug, spec, themes }: Props) {
   const mod = registry[slug] ?? {};
   const [option, setOption] = useState(() => defaultsOf(spec));
   const [state, setState] = useState("");
-  const [theme, setTheme] = useState(themes[0] ?? "industrial");
-  const [mode, setMode] = useState<"light" | "dark">("light");
+  // Shared with the hooks table, so it shows values for the theme and mode the preview shows.
+  const { theme, setTheme, mode, setMode } = useThemeChoice(themes);
   const stage = useRef<HTMLDivElement>(null);
   const propStates = spec.states.filter((s) => "props" in s.enter);
   const enter = (propStates.find((s) => s.name === state)?.enter.props ?? {}) as Record<string, unknown>;

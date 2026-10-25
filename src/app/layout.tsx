@@ -1,6 +1,6 @@
 import "@scnx/system/styles/components.css";
-import "@scnx/system/tokens/css/industrial.css";
-import "@scnx/system/tokens/css/achromatic.css";
+import "@scnx/system/tokens/css/scnx-platform.css";
+import "@scnx/system/tokens/css/scnx-saas.css";
 import "@/styles/main.scss";
 import "@/generated/swatches.css";
 import type { Metadata, Viewport } from "next";

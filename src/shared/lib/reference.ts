@@ -52,6 +52,25 @@ export type StyledSpec = {
   states: { name: string; selectors: string[]; enter: Record<string, unknown>; on?: string }[];
   fixture: { props?: Record<string, unknown>; tree?: FixtureNode; activate?: "showModal" };
   bindings: Binding[];
+  /** Where a product sets a hook, and how it reaches one option value (ui-platform TDD styled HK5). */
+  hookScope?: string;
+  hooks?: Hook[];
+};
+
+/**
+ * A Tier-3 hook the stylesheet reads (ui-platform TDD styled HK2, HK5):
+ * `var(--scnx-…, <fallback>)`, never declared, with its alias review record.
+ */
+export type Hook = {
+  hook: string;
+  parts: string[];
+  properties: string[];
+  /** Binding templates: `{token.path}` or a recorded literal, one per rule that reads the hook. */
+  fallbacks: string[];
+  floor: string | null;
+  purpose: string;
+  coverage: string;
+  migration: string;
 };
 
 export type FixtureNode = { type: string; props?: Record<string, unknown>; children?: (string | FixtureNode)[] };
