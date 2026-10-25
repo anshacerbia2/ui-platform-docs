@@ -73,7 +73,7 @@ if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) 
   if (process.argv.includes("--self-test")) selfTest();
   else {
     const require = createRequire(path.join(root, "package.json"));
-    const tokens = JSON.parse(fs.readFileSync(require.resolve("@scnx/system/tokens/json/default.json"), "utf8")).tokens;
+    const tokens = JSON.parse(fs.readFileSync(require.resolve("@scnx/system/tokens/json/industrial.json"), "utf8")).tokens;
     const published = new Set(tokens.map((t) => t.cssName));
     const files = walk(path.join(root, "src"));
     const findings = files.flatMap((f) => styleFindings(path.relative(root, f), fs.readFileSync(f, "utf8"), published));

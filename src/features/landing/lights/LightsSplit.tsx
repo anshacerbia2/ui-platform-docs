@@ -77,12 +77,12 @@ export function LightsSplit() {
   return (
     <div ref={frame} className={styles.frame} onPointerDown={down} data-edge={rounded === 0 || rounded === 100 || undefined}>
       <div className={styles.pane}>
-        <ThemeProvider themeId="default" mode="light" storage={false}>
+        <ThemeProvider themeId="industrial" mode="light" storage={false}>
           <MiniDashboard />
         </ThemeProvider>
       </div>
       <div className={`${styles.pane} ${styles.dark}`}>
-        <ThemeProvider themeId="default" mode="dark" storage={false}>
+        <ThemeProvider themeId="industrial" mode="dark" storage={false}>
           <MiniDashboard hidden />
         </ThemeProvider>
       </div>

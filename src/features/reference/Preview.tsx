@@ -31,7 +31,7 @@ export function Preview({ slug, spec, themes }: Props) {
   const mod = registry[slug] ?? {};
   const [option, setOption] = useState(() => defaultsOf(spec));
   const [state, setState] = useState("");
-  const [theme, setTheme] = useState(themes[0] ?? "default");
+  const [theme, setTheme] = useState(themes[0] ?? "industrial");
   const [mode, setMode] = useState<"light" | "dark">("light");
   const stage = useRef<HTMLDivElement>(null);
   const propStates = spec.states.filter((s) => "props" in s.enter);
