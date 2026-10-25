@@ -7,6 +7,7 @@ import type { Metadata, Viewport } from "next";
 import { cookies, headers } from "next/headers";
 import type { ReactNode } from "react";
 import { MODE_COOKIE } from "@/features/site-shell/modeCookie";
+import { Reveal } from "@/features/site-shell/Reveal";
 import { SiteTheme } from "@/features/site-shell/SiteTheme";
 
 export const metadata: Metadata = {
@@ -31,8 +32,10 @@ export default async function RootLayout({ children }: { children: ReactNode }) 
   const mode = isMode(stored) ? stored : "system";
   const system = headerStore.get("sec-ch-prefers-color-scheme") === "dark" ? "dark" : "light";
   const resolvedMode = mode === "system" ? system : mode;
+  // `sq-boot` holds the page hidden below the nav until Reveal has marked its
+  // blocks (TDD docs-site D14; SCROLL.md 1.1); a CSS failsafe shows it after 2.5s.
   return (
-    <html lang="en">
+    <html lang="en" className="sq-boot">
       <body>
         <SiteTheme mode={mode} resolvedMode={resolvedMode}>
           <div data-site-root="">
@@ -41,6 +44,7 @@ export default async function RootLayout({ children }: { children: ReactNode }) 
             </a>
             {children}
           </div>
+          <Reveal />
         </SiteTheme>
       </body>
     </html>

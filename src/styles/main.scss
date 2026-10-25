@@ -9,6 +9,7 @@
 @layer docs.generic, docs.elements, docs.objects, docs.components, docs.utilities;
 
 @layer docs.generic {
+  @include meta.load-css("generic/fonts");
   @include meta.load-css("generic/document");
   @include meta.load-css("generic/roles");
 }
@@ -23,4 +24,5 @@
 
 @layer docs.utilities {
   @include meta.load-css("utilities/a11y");
+  @include meta.load-css("utilities/reveal");
 }
