@@ -11,7 +11,7 @@ const ease = (k: number) => (k < 0.5 ? 4 * k ** 3 : 1 - (-2 * k + 2) ** 3 / 2);
 
 /**
  * One component, four contracts (scnx-platform Docs-Home.html, sheet 01): pick a
- * component and a signal runs down its primitive, component, tokens and release.
+ * component and a signal runs down its primitive, tokens, component and release.
  * The run is drawn through the CSSOM; under reduced motion the chain only changes.
  */
 export function Lineage({ lineages }: { lineages: LineageData[] }) {

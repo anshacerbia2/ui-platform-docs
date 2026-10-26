@@ -55,12 +55,7 @@ function lineageOf(slug: string): Lineage | null {
           ? `Focus: ${primitive.focus.movement}. Named by ${primitive.accessibleName}.`
           : "",
       },
-      {
-        title: "Component",
-        name: title,
-        code: [spec.entry, ...options].join("\n"),
-        note: `A visual recipe only: the behavior is ${primitive?.name ?? "the primitive"}'s, never re-implemented.`,
-      },
+      // in the order they build on each other: primitive, tokens, component, release
       {
         title: "Tokens",
         name: `${spec.hooks?.length ?? 0} hooks`,
@@ -70,6 +65,12 @@ function lineageOf(slug: string): Lineage | null {
         note: contrast.total
           ? `Every hook falls back to a token. ${contrast.pass} of ${contrast.total} contrast checks pass, in ${THEME_IDS.length} themes, light and dark.`
           : "Every hook falls back to a token the theme maps.",
+      },
+      {
+        title: "Component",
+        name: title,
+        code: [spec.entry, ...options].join("\n"),
+        note: `A visual recipe only: the behavior is ${primitive?.name ?? "the primitive"}'s, never re-implemented.`,
       },
       {
         title: "Release",

@@ -6,11 +6,21 @@ import { Button } from "@/components/system/Button";
 import styles from "./Assembly.module.scss";
 import { mountAssembly } from "./controller";
 
-/** The four contracts of a component, bottom plate first. */
+/**
+ * The four contracts of a component, bottom plate first, in the order they build on
+ * each other: native behaviour, the tokens it is bound to, the styled component with
+ * the behaviour it adds for the user, and the release that proves it (the owner,
+ * 2026-10-27). The plates' faces follow the same order (faces.ts).
+ */
 const PARTS = [
   { no: "01", step: "Primitive", claim: "Native behavior", note: "keyboard, focus, ARIA" },
-  { no: "02", step: "Component", claim: "Styled in static CSS", note: "square in scnx-platform" },
-  { no: "03", step: "Tokens", claim: "Bound to roles", note: "scheme · role · emphasis · state" },
+  { no: "02", step: "Tokens", claim: "Bound to roles", note: "scheme · role · emphasis · state" },
+  {
+    no: "03",
+    step: "Component",
+    claim: "Styled, plus behavior",
+    note: "static CSS · loading state",
+  },
   { no: "04", step: "Release", claim: "Proven by evidence", note: "provenance, SLSA L2" },
 ] as const;
 
@@ -34,7 +44,7 @@ export function Assembly({ swatches, version }: { swatches: string[]; version: s
           <i className={styles.meter} />
         </span>
         <span>
-          Iso <b data-view>045°</b> · drag to turn
+          Iso <b data-view>045°</b> · drag to turn 360°
         </span>
       </div>
       <div className={styles.body}>

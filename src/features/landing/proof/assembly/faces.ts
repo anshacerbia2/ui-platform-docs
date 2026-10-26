@@ -69,7 +69,8 @@ const primitive: Paint = (g, p) => {
   g.fillText("<button>", PLATE / 2, PLATE / 2);
 };
 
-// 02 · the component: the design system's Button, drawn as it renders on this page.
+// 03 · the component: the design system's Button, styled and with the behaviour it
+// adds, drawn as it renders on this page.
 const component: Paint = (g, p) => {
   ground(g, p);
   const b = p.button;
@@ -87,7 +88,7 @@ const component: Paint = (g, p) => {
   g.fillText(b.label, PLATE / 2, PLATE / 2 + 0.5);
 };
 
-// 03 · the tokens: the primary scheme's roles, four to a row.
+// 02 · the tokens: the primary scheme's roles, four to a row.
 const tokens: Paint = (g, p) => {
   ground(g, p);
   const n = p.swatches.length;
@@ -137,6 +138,6 @@ const release: Paint = (g, p) => {
   g.restore();
 };
 
-/** The four plates' top faces, bottom to top: primitive, component, tokens, release. */
+/** The four plates' top faces, bottom to top: primitive, tokens, component, release. */
 export const paintFaces = (p: Palette) =>
-  [primitive, component, tokens, release].map((paint) => face(paint, p));
+  [primitive, tokens, component, release].map((paint) => face(paint, p));

@@ -1,6 +1,7 @@
 // Drives the assembly (TDD docs-site D19): loads the scene on demand, closes the
-// stack as the reader scrolls the hero away, turns it under a drag and settles it
-// back, lights a plate and its callout together, follows the theme, and lays the
+// stack as the reader scrolls the hero away, turns it all the way round under a
+// horizontal drag (never tilts it), lights a plate and its callout together,
+// follows the theme, and lays the
 // callouts beside the stack or, where the figure is narrow, lists them under it.
 // Where WebGL is missing or lost, the figure keeps its text (data-state="flat").
 
@@ -14,10 +15,14 @@ const CALLOUTS_FROM = 480;
 /** The air between two callouts, and their margin from the stage's top and bottom. */
 const CALLOUT_GAP = 14;
 const CALLOUT_EDGE = 8;
-/** A drag turns the stack 0.4° a pixel, 55° either way; it settles back at 220ms. */
+/**
+ * A drag turns the stack about its vertical axis, 0.4° a pixel, all the way round;
+ * let go, it runs on at the drag's speed and slows with a 320ms time constant.
+ */
 const TURN = 0.4;
-const TURN_MAX = 55;
-const TAU_SETTLE = 220;
+const TAU_COAST = 320;
+/** The fastest coast, in degrees a millisecond: at most about a turn before it stops. */
+const SPIN_MAX = 1;
 const DROP_MS = 1100;
 /** Where in the viewport the stack starts to close, and over how much of it. */
 const OPENS_AT = 0.5;
@@ -89,8 +94,9 @@ export function mountAssembly(figure: HTMLElement): () => void {
   let visible = true;
   let progress = 0;
   let yaw = 45;
-  let rest = 45;
-  let dragging: { x: number; yaw: number } | null = null;
+  // degrees a millisecond: the drag's speed, then the coast's
+  let spin = 0;
+  let dragging: { x: number; yaw: number; lastX: number; lastT: number } | null = null;
   let dropStart = -1;
   let drop = reduce ? 1 : 0;
   let lit: number | null = null;
@@ -180,10 +186,11 @@ export function mountAssembly(figure: HTMLElement): () => void {
       drop = clamp((t - dropStart) / DROP_MS, 0, 1);
       moving = true;
     }
-    if (!dragging && yaw !== rest) {
-      yaw = reduce ? rest : yaw + (rest - yaw) * (1 - Math.exp(-dt / TAU_SETTLE));
-      if (Math.abs(rest - yaw) < 0.05) yaw = rest;
-      moving ||= yaw !== rest;
+    if (!dragging && spin) {
+      yaw += spin * dt;
+      spin *= Math.exp(-dt / TAU_COAST);
+      if (Math.abs(spin) < 0.002) spin = 0;
+      moving ||= spin !== 0;
     }
     if (view)
       view.textContent = `${String(Math.round(((yaw % 360) + 360) % 360)).padStart(3, "0")}°`;
@@ -259,26 +266,33 @@ export function mountAssembly(figure: HTMLElement): () => void {
     listen(canvas, "pointerdown", (event) => {
       const e = event as PointerEvent;
       if (e.button !== 0) return;
-      dragging = { x: e.clientX, yaw };
+      spin = 0;
+      dragging = { x: e.clientX, yaw, lastX: e.clientX, lastT: e.timeStamp };
       canvas.setPointerCapture(e.pointerId);
       figure.dataset.dragging = "";
     });
     listen(canvas, "pointermove", (event) => {
       const e = event as PointerEvent;
       if (dragging) {
-        yaw = clamp(
-          dragging.yaw + (e.clientX - dragging.x) * TURN,
-          rest - TURN_MAX,
-          rest + TURN_MAX,
-        );
+        // horizontal only: the camera's height above the floor never changes
+        yaw = dragging.yaw + (e.clientX - dragging.x) * TURN;
+        const dt = e.timeStamp - dragging.lastT;
+        if (dt > 0) {
+          const speed = ((e.clientX - dragging.lastX) * TURN) / dt;
+          spin = clamp(spin * 0.5 + speed * 0.5, -SPIN_MAX, SPIN_MAX);
+        }
+        dragging.lastX = e.clientX;
+        dragging.lastT = e.timeStamp;
         request();
         return;
       }
       const { x, y } = local(e);
       light(scene?.pick(x, y) ?? null);
     });
-    const release = () => {
+    const release = (event: Event) => {
       if (!dragging) return;
+      // a drag that stopped before it let go does not coast; reduced motion never does
+      if (reduce || event.timeStamp - dragging.lastT > 80) spin = 0;
       dragging = null;
       delete figure.dataset.dragging;
       request();
@@ -301,7 +315,7 @@ export function mountAssembly(figure: HTMLElement): () => void {
     if (disposed) return;
     scene = createAssemblyScene(canvas, readPalette(specimen));
     if (!scene) return flat();
-    rest = yaw = REST_YAW;
+    yaw = REST_YAW;
     figure.dataset.state = "live";
     measure();
     resize();
