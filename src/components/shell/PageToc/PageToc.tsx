@@ -1,10 +1,10 @@
 "use client";
 
-import { TableOfContents } from "@/components/system/TableOfContents";
 import { useSheets } from "@/components/shell/Here";
+import { TableOfContents } from "@/components/system/TableOfContents";
 import { NAV_LINE } from "@/shared/lib/chrome";
 import { useHere } from "@/shared/lib/useHere";
-import styles from "./reference.module.scss";
+import styles from "./PageToc.module.scss";
 
 /**
  * "On this page", with the system's own TableOfContents, controlled (ui-platform

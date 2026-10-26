@@ -1,0 +1,47 @@
+@use "settings" as *;
+@use "tools" as *;
+
+@layer docs.components {
+  .pager {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1px;
+    background: $sq-line;
+    box-shadow: inset 0 1px 0 $sq-line;
+    padding-block-start: 1px;
+
+    > * {
+      background: $sq-ground;
+    }
+
+    a {
+      display: grid;
+      gap: 4px;
+      padding: 24px $sq-pad;
+      color: $sq-text;
+      text-decoration: none;
+
+      &:hover {
+        background: color-mix(in oklch, $sq-text 6%, $sq-ground);
+      }
+
+      @media (max-width: 760px) {
+        padding-inline: $sq-pad-narrow;
+      }
+    }
+
+    a[data-next] {
+      justify-items: end;
+      text-align: end;
+    }
+
+    span {
+      color: $sq-muted;
+      @include hud(10px);
+    }
+
+    strong {
+      font-size: var(--ds-typography-heading-xsmall-font-size);
+    }
+  }
+}

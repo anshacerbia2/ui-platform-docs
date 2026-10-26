@@ -1,0 +1,60 @@
+@use "settings" as *;
+@use "tools" as *;
+
+@layer docs.components {
+  .head {
+    display: grid;
+    gap: 16px;
+    padding: 48px $sq-pad 40px;
+
+    @media (max-width: 760px) {
+      padding: 32px $sq-pad-narrow 28px;
+    }
+  }
+
+  .crumbs {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    color: $sq-muted;
+    font-size: var(--ds-typography-label-small-font-size);
+
+    li + li::before {
+      content: "/";
+      margin-inline-end: 6px;
+      color: $sq-faint;
+    }
+
+    a {
+      text-decoration: none;
+
+      &:hover {
+        color: $sq-text;
+      }
+    }
+
+    [aria-current] {
+      color: $sq-text;
+    }
+  }
+
+  .title {
+    margin: 0;
+    color: $sq-text;
+    font-size: clamp(2.25rem, 3.6vw, 3rem);
+    font-weight: var(--ds-typography-weight-medium);
+    letter-spacing: -0.04em;
+    line-height: 1;
+  }
+
+  .lead {
+    max-inline-size: 64ch;
+    margin: 0;
+    color: $sq-muted;
+    font-size: 1.0625rem;
+    line-height: 1.6;
+  }
+}

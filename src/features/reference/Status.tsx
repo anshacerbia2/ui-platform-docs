@@ -1,6 +1,8 @@
+import { FactGrid } from "@/components/docs/FactGrid";
+import { InlineCode } from "@/components/docs/InlineCode";
+import { StabilityBadge } from "@/components/docs/StabilityBadge";
 import { pin, type EntryRow } from "@/shared/lib/reference";
-import { Code } from "./Section";
-import styles from "./reference.module.scss";
+import styles from "./Reference.module.scss";
 
 const MEANING: Record<string, string> = {
   experimental: "May change or be removed in any release.",
@@ -11,42 +13,29 @@ const MEANING: Record<string, string> = {
   deprecated: "Kept for compatibility; a replacement is named in the release notes.",
 };
 
-export function StabilityBadge({ stability }: { stability: string }) {
-  return (
-    <span className={styles.stability} data-stability={stability}>
-      {stability}
-    </span>
-  );
-}
-
+/** An entry's lifecycle, its package, and the build it was documented from. */
 export function Status({ row }: { row: EntryRow }) {
   const pkg = pin.packages.find((p) => p.name === row.package);
-  return (
-    <dl className={styles.facts}>
-      <div>
-        <dt>Stability</dt>
-        <dd>
-          <StabilityBadge stability={row.stability} /> {MEANING[row.stability]}
-        </dd>
-      </div>
-      <div>
-        <dt>Entry</dt>
-        <dd>
-          <Code>{row.entry}</Code>
+  const facts = [
+    {
+      term: "Stability",
+      aside: <StabilityBadge stability={row.stability} />,
+      value: MEANING[row.stability],
+    },
+    {
+      term: "Entry",
+      value: (
+        <>
+          <InlineCode>{row.entry}</InlineCode>
           {row.entryKind ? ` · ${row.entryKind}` : ""}
-        </dd>
-      </div>
-      <div>
-        <dt>Package</dt>
-        <dd>
-          <Code>
-            {row.package}@{row.version}
-          </Code>
-        </dd>
-      </div>
-      <div>
-        <dt>Built from</dt>
-        <dd>
+        </>
+      ),
+    },
+    { term: "Package", value: <InlineCode>{`${row.package}@${row.version}`}</InlineCode> },
+    {
+      term: "Built from",
+      value: (
+        <>
           <a
             className={styles.link}
             href={`https://github.com/${pin.repository}/commit/${pin.commit}`}
@@ -57,16 +46,10 @@ export function Status({ row }: { row: EntryRow }) {
           <a className={styles.link} href={pin.run}>
             this CI run
           </a>
-        </dd>
-      </div>
-      {pkg ? (
-        <div>
-          <dt>Tarball sha256</dt>
-          <dd>
-            <Code>{pkg.sha256}</Code>
-          </dd>
-        </div>
-      ) : null}
-    </dl>
-  );
+        </>
+      ),
+    },
+    ...(pkg ? [{ term: "Tarball sha256", value: <InlineCode>{pkg.sha256}</InlineCode> }] : []),
+  ];
+  return <FactGrid label="Status" items={facts} />;
 }
