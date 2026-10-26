@@ -20,6 +20,9 @@
   --sq-edge: color-mix(in oklab, var(--sq-text) 50%, var(--sq-ground));
   // decoration only (a separator glyph, a mark not yet reached), never text
   --sq-faint: color-mix(in oklab, var(--sq-text) 42%, var(--sq-ground));
+  // a held section bar: the ground at 72%, blurred, so the page reads through it
+  // (the owner, 2026-10-27; the ruler's titles keep nothing behind them)
+  --sq-glass: color-mix(in oklab, var(--sq-ground) 72%, transparent);
   // where a rule meets a column line: an 11px plus at each end of an 11px strip
   --sq-plus:
     linear-gradient(var(--sq-cross), var(--sq-cross)) 5px 0 / 1px 11px no-repeat,

@@ -21,6 +21,12 @@ const CALLOUT_EDGE = 8;
  */
 const TURN = 0.4;
 const TAU_COAST = 320;
+/** The controls: a held state eases in at 160ms, a quarter turn at 200ms; the turntable runs 30° a second. */
+const TAU_HOLD = 160;
+const TAU_AIM = 200;
+const TURNTABLE = 0.03;
+/** The resting view, the scene's REST_YAW (not imported: the scene loads on demand). */
+const REST = 45;
 /** The fastest coast, in degrees a millisecond: at most about a turn before it stops. */
 const SPIN_MAX = 1;
 const DROP_MS = 1100;
@@ -69,15 +75,42 @@ const put = (node: HTMLElement | SVGElement, prop: string, value: string) => {
   node.style.setProperty(prop, value);
 };
 
-/** Mounts the assembly on its figure; returns the clean-up. */
-export function mountAssembly(figure: HTMLElement): () => void {
+/** What the controls show: closed or apart, held by the reader, and turning on its own. */
+export type AssemblyState = { assembled: boolean; held: boolean; spinning: boolean };
+
+/** The controls' hold on the assembly, and its clean-up. */
+export type AssemblyHandle = {
+  /** Holds the stack apart (0) or closed (1); the scroll no longer moves it until reset. */
+  hold(p: 0 | 1): void;
+  /** Turns the stack by `deg`, eased. */
+  turn(deg: number): void;
+  /** Starts or stops the turntable. */
+  spin(on: boolean): void;
+  /** Back to rest: the resting view, the scroll in charge, the turntable off. */
+  reset(): void;
+  dispose(): void;
+};
+
+const NO_HANDLE: AssemblyHandle = {
+  hold() {},
+  turn() {},
+  spin() {},
+  reset() {},
+  dispose() {},
+};
+
+/** Mounts the assembly on its figure; `onState` hears what the controls should show. */
+export function mountAssembly(
+  figure: HTMLElement,
+  onState: (state: AssemblyState) => void,
+): AssemblyHandle {
   const stage = figure.querySelector<HTMLElement>("[data-stage]");
   const canvas = figure.querySelector<HTMLCanvasElement>("canvas");
   const specimen = figure.querySelector<HTMLElement>("[data-specimen]");
   const readout = figure.querySelector<HTMLElement>("[data-readout]");
   const view = figure.querySelector<HTMLElement>("[data-view]");
   const svg = figure.querySelector<SVGSVGElement>("[data-leaders]");
-  if (!stage || !canvas || !specimen || !svg) return () => {};
+  if (!stage || !canvas || !specimen || !svg) return NO_HANDLE;
   const parts = [...figure.querySelectorAll<HTMLElement>("[data-part]")];
   const leaders = [...svg.querySelectorAll<SVGPathElement>("path")];
   const dots = [...svg.querySelectorAll<SVGCircleElement>("circle")];
@@ -92,8 +125,14 @@ export function mountAssembly(figure: HTMLElement): () => void {
   let height = 0;
   let callouts = false;
   let visible = true;
+  // how far the stack is closed: as drawn, as the scroll asks, and as the reader holds it
   let progress = 0;
-  let yaw = 45;
+  let scrolled = 0;
+  let hold: number | null = null;
+  let yaw = REST;
+  // a yaw to turn to (a quarter turn, or back to rest), and the turntable
+  let aim: number | null = null;
+  let turntable = false;
   // degrees a millisecond: the drag's speed, then the coast's
   let spin = 0;
   let dragging: { x: number; yaw: number; lastX: number; lastT: number } | null = null;
@@ -115,6 +154,19 @@ export function mountAssembly(figure: HTMLElement): () => void {
 
   figure.dataset.state = "loading";
 
+  let told = "";
+  const tell = () => {
+    const state: AssemblyState = {
+      assembled: (hold ?? scrolled) >= 0.5,
+      held: hold !== null,
+      spinning: turntable,
+    };
+    const key = JSON.stringify(state);
+    if (key === told) return;
+    told = key;
+    onState(state);
+  };
+
   const flat = () => {
     figure.dataset.state = "flat";
     scene?.dispose();
@@ -130,7 +182,11 @@ export function mountAssembly(figure: HTMLElement): () => void {
     const centre = rect.top + rect.height / 2 + window.scrollY;
     const from = Math.max(0, centre - OPENS_AT * vh);
     const p = clamp((window.scrollY - from) / (CLOSES_OVER * vh), 0, 1);
-    progress = reduce ? 0 : p;
+    scrolled = reduce ? 0 : p;
+    tell();
+  };
+
+  const show = () => {
     figure.style.setProperty("--p", progress.toFixed(3));
     if (readout) readout.textContent = `${String(Math.round(progress * 100)).padStart(2, "0")}%`;
     if (progress > 0.55) figure.dataset.closed = "";
@@ -186,11 +242,32 @@ export function mountAssembly(figure: HTMLElement): () => void {
       drop = clamp((t - dropStart) / DROP_MS, 0, 1);
       moving = true;
     }
+    // the scroll is followed at once; a held state is eased to (at once, reduced)
+    const target = hold ?? scrolled;
+    if (hold === null || reduce) progress = target;
+    else {
+      progress += (target - progress) * (1 - Math.exp(-dt / TAU_HOLD));
+      if (Math.abs(target - progress) < 0.001) progress = target;
+      moving ||= progress !== target;
+    }
+    show();
     if (!dragging && spin) {
       yaw += spin * dt;
       spin *= Math.exp(-dt / TAU_COAST);
       if (Math.abs(spin) < 0.002) spin = 0;
       moving ||= spin !== 0;
+    }
+    if (!dragging && aim !== null) {
+      yaw = reduce ? aim : yaw + (aim - yaw) * (1 - Math.exp(-dt / TAU_AIM));
+      if (Math.abs(aim - yaw) < 0.05) {
+        yaw = aim;
+        aim = null;
+      }
+      moving ||= aim !== null;
+    }
+    if (!dragging && turntable) {
+      yaw += TURNTABLE * dt;
+      moving = true;
     }
     if (view)
       view.textContent = `${String(Math.round(((yaw % 360) + 360) % 360)).padStart(3, "0")}°`;
@@ -266,7 +343,11 @@ export function mountAssembly(figure: HTMLElement): () => void {
     listen(canvas, "pointerdown", (event) => {
       const e = event as PointerEvent;
       if (e.button !== 0) return;
+      // the reader's hand takes over from a quarter turn and the turntable
       spin = 0;
+      aim = null;
+      turntable = false;
+      tell();
       dragging = { x: e.clientX, yaw, lastX: e.clientX, lastT: e.timeStamp };
       canvas.setPointerCapture(e.pointerId);
       figure.dataset.dragging = "";
@@ -310,12 +391,11 @@ export function mountAssembly(figure: HTMLElement): () => void {
   };
 
   void (async () => {
-    const { createAssemblyScene, REST_YAW } = await import("./scene");
+    const { createAssemblyScene } = await import("./scene");
     await document.fonts.ready;
     if (disposed) return;
     scene = createAssemblyScene(canvas, readPalette(specimen));
     if (!scene) return flat();
-    yaw = REST_YAW;
     figure.dataset.state = "live";
     measure();
     resize();
@@ -323,11 +403,42 @@ export function mountAssembly(figure: HTMLElement): () => void {
     request();
   })().catch(flat);
 
-  return () => {
-    disposed = true;
-    cancelAnimationFrame(raf);
-    for (const fn of off) fn();
-    scene?.dispose();
-    scene = null;
+  return {
+    hold(p) {
+      hold = p;
+      tell();
+      request();
+    },
+    turn(deg) {
+      spin = 0;
+      turntable = false;
+      // a quarter turn from where the last one was headed, so presses add up
+      aim = (aim ?? yaw) + deg;
+      tell();
+      request();
+    },
+    spin(on) {
+      turntable = on && !reduce;
+      spin = 0;
+      aim = null;
+      tell();
+      request();
+    },
+    reset() {
+      hold = null;
+      turntable = false;
+      spin = 0;
+      // the nearest resting view, so it never winds back through whole turns
+      aim = REST + Math.round((yaw - REST) / 360) * 360;
+      tell();
+      request();
+    },
+    dispose() {
+      disposed = true;
+      cancelAnimationFrame(raf);
+      for (const fn of off) fn();
+      scene?.dispose();
+      scene = null;
+    },
   };
 }

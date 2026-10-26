@@ -225,12 +225,37 @@
     justify-content: center;
 
     .hud,
-    .stage {
+    .stage,
+    .controls {
       display: none;
     }
 
     .parts {
       margin: 0;
+    }
+  }
+
+  // The controls: hold the stack apart or closed, turn it, set it spinning, reset.
+  .controls {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    margin-block-start: 12px;
+  }
+
+  .tools {
+    display: flex;
+    gap: 4px;
+  }
+
+  // the turntable is a motion the reader starts; under reduced motion it is not offered
+  .turntable {
+    display: contents;
+
+    @media (prefers-reduced-motion: reduce) {
+      display: none;
     }
   }
 

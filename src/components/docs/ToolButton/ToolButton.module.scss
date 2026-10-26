@@ -1,0 +1,42 @@
+@use "settings" as *;
+@use "tools" as *;
+
+// A tool: the same cell as a ToggleGroup's button, framed on its own line.
+@layer docs.components {
+  .tool {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    min-inline-size: 32px;
+    min-block-size: 32px;
+    padding-inline: 8px;
+    border: 0;
+    border-radius: 0;
+    background: transparent;
+    box-shadow: inset 0 0 0 1px $sq-line;
+    color: $sq-muted;
+    font: 500 12px/1 $sq-mono;
+    cursor: pointer;
+    @include focus-ring(-2px);
+
+    @include motion {
+      transition:
+        background-color $duration $ease,
+        color $duration $ease;
+    }
+
+    &:hover {
+      color: $sq-text;
+    }
+
+    &[aria-pressed="true"] {
+      background: color-mix(in oklab, $sq-text 10%, $sq-ground);
+      color: $sq-text;
+    }
+
+    svg {
+      flex: none;
+    }
+  }
+}

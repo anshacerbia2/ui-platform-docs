@@ -1,10 +1,18 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Dim } from "@/components/docs/Dim";
+import { ArrowLeft, ArrowRight, Orbit, Reset } from "@/components/docs/Icons";
+import { ToggleGroup } from "@/components/docs/ToggleGroup";
+import { ToolButton } from "@/components/docs/ToolButton";
 import { Button } from "@/components/system/Button";
 import styles from "./Assembly.module.scss";
-import { mountAssembly } from "./controller";
+import { type AssemblyHandle, type AssemblyState, mountAssembly } from "./controller";
+
+const SHAPES = [
+  { value: "apart", label: "Apart" },
+  { value: "assembled", label: "Assembled" },
+] as const;
 
 /**
  * The four contracts of a component, bottom plate first, in the order they build on
@@ -33,8 +41,22 @@ const PARTS = [
  */
 export function Assembly({ swatches, version }: { swatches: string[]; version: string }) {
   const figure = useRef<HTMLElement>(null);
+  const handle = useRef<AssemblyHandle | null>(null);
+  const [state, setState] = useState<AssemblyState>({
+    assembled: false,
+    held: false,
+    spinning: false,
+  });
 
-  useEffect(() => (figure.current ? mountAssembly(figure.current) : undefined), []);
+  useEffect(() => {
+    if (!figure.current) return;
+    const mounted = mountAssembly(figure.current, setState);
+    handle.current = mounted;
+    return () => {
+      mounted.dispose();
+      handle.current = null;
+    };
+  }, []);
 
   return (
     <figure ref={figure} className={styles.asm}>
@@ -59,6 +81,40 @@ export function Assembly({ swatches, version }: { swatches: string[]; version: s
               </g>
             ))}
           </svg>
+        </div>
+        {/* right under the stack: play with it without scrolling it out of view */}
+        <div className={styles.controls}>
+          <ToggleGroup
+            label="Assembly"
+            options={SHAPES}
+            value={state.assembled ? "assembled" : "apart"}
+            onChange={(shape) => handle.current?.hold(shape === "assembled" ? 1 : 0)}
+          />
+          <div role="group" aria-label="View" className={styles.tools}>
+            <ToolButton
+              label="Turn left a quarter"
+              icon={<ArrowLeft size={14} />}
+              onClick={() => handle.current?.turn(-90)}
+            />
+            <ToolButton
+              label="Turn right a quarter"
+              icon={<ArrowRight size={14} />}
+              onClick={() => handle.current?.turn(90)}
+            />
+            <span className={styles.turntable}>
+              <ToolButton
+                label="Turntable"
+                icon={<Orbit size={14} />}
+                pressed={state.spinning}
+                onClick={() => handle.current?.spin(!state.spinning)}
+              />
+            </span>
+            <ToolButton
+              label="Reset the view"
+              icon={<Reset size={14} />}
+              onClick={() => handle.current?.reset()}
+            />
+          </div>
         </div>
         <ol className={styles.parts}>
           {PARTS.map((part, i) => (
