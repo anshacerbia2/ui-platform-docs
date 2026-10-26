@@ -20,7 +20,7 @@ type SheetProps = {
 };
 
 /**
- * A section drawn as a sheet (TDD docs-site D14; scnx-platform SCROLL.md 2): a rule
+ * A section drawn as a sheet (TDD docs-site D14; scnx-platform annex A 2): a rule
  * across the page at its top, a cross where the rule meets each column line, and a
  * bar, `NN / Label ··· facts`, held under the nav while the sheet is read. The
  * section carries the id and the name, so "here", the contents and the ruler

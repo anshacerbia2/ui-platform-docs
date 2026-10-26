@@ -35,7 +35,7 @@ export default async function RootLayout({ children }: { children: ReactNode }) 
   const system = headerStore.get("sec-ch-prefers-color-scheme") === "dark" ? "dark" : "light";
   const resolvedMode = mode === "system" ? system : mode;
   // `sq-boot` holds the page hidden below the nav until Reveal has marked its
-  // blocks (TDD docs-site D14; SCROLL.md 1.1); a CSS failsafe shows it after 2.5s.
+  // blocks (TDD docs-site D14; annex A 1.1); a CSS failsafe shows it after 2.5s.
   return (
     <html lang="en" className="sq-boot">
       <body>

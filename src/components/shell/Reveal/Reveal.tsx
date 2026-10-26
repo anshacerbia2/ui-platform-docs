@@ -4,7 +4,7 @@ import { usePathname } from "next/navigation";
 import { useEffect, useLayoutEffect } from "react";
 import { installGlide } from "@/shared/lib/glide";
 
-// The finest blocks of a documentation page (SCROLL.md 3.2): the page head's
+// The finest blocks of a documentation page (annex A 3.2): the page head's
 // parts and every block of a sheet's body. Sticky elements never rise.
 const BLOCKS = "main > header > *, main [data-sheet-body] > *, main > nav, main > p";
 const SHEETS = "main [data-sheet]";
@@ -88,7 +88,7 @@ function PageReveal() {
 /**
  * The chrome's motion on every route (TDD docs-site D14): the wheel glide
  * (installed once), the page's blocks rising into place as they first enter the
- * view (SCROLL.md 3.1-3.4), and each sheet's rule drawing in once (2.2). It runs
+ * view (annex A 3.1-3.4), and each sheet's rule drawing in once (2.2). It runs
  * again after each App Router navigation. Under reduced motion nothing rises or
  * draws, and the page is never held hidden.
  */

@@ -97,14 +97,18 @@ export function createAssemblyScene(
   canvas: HTMLCanvasElement,
   palette: Palette,
 ): AssemblyScene | null {
+  // Ask for the context first: where there is none, the figure falls back to its text
+  // without three.js logging an error (a browser with WebGL turned off, a CI runner).
+  const attributes: WebGLContextAttributes = {
+    antialias: true,
+    alpha: true,
+    powerPreference: "low-power",
+  };
+  const context = canvas.getContext("webgl2", attributes);
+  if (!context) return null;
   let renderer: WebGLRenderer;
   try {
-    renderer = new WebGLRenderer({
-      canvas,
-      antialias: true,
-      alpha: true,
-      powerPreference: "low-power",
-    });
+    renderer = new WebGLRenderer({ canvas, context, ...attributes });
   } catch {
     return null;
   }

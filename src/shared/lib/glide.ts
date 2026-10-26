@@ -1,4 +1,4 @@
-// Wheel glide (TDD docs-site D14; docs/designs/SCROLL.md
+// Wheel glide (TDD docs-site D14; TDD docs-site annex A
 // 4): every wheel input, mouse or trackpad, moves a target and the page
 // eases toward it with a 120ms time constant, landing within 0.5px. Left to the
 // browser: ctrl or pinch zoom, a mostly horizontal swipe, an element under the

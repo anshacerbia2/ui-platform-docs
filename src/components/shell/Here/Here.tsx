@@ -21,7 +21,7 @@ function SheetScan({ onFound }: { onFound: (found: Found) => void }) {
 }
 
 /**
- * The page's one "here" (SCROLL.md 6.9; TDD docs-site D12, D14): it finds the
+ * The page's one "here" (annex A 6.9; TDD docs-site D12, D14): it finds the
  * page's sheets (`main [data-sheet]`) after each navigation, decides the
  * current one with useHere, and marks it `data-here` for its section bar. The
  * contents, the nav readout, and the section bars read this provider; the ruler

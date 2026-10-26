@@ -329,10 +329,17 @@ export function mountAssembly(
       },
       { passive: true },
     );
+    // handled on the next frame: laying the figure out again (callouts or a list) may
+    // change its size, and doing that inside the observer's own callback loops it
+    let resizing = 0;
     const resizes = new ResizeObserver(() => {
-      resize();
-      request();
+      cancelAnimationFrame(resizing);
+      resizing = requestAnimationFrame(() => {
+        resize();
+        request();
+      });
     });
+    off.push(() => cancelAnimationFrame(resizing));
     resizes.observe(stage);
     off.push(() => resizes.disconnect());
     const seen = new IntersectionObserver(([entry]) => {

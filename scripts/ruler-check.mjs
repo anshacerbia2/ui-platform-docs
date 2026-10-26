@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 // The ruler's titles and the page's "here" (TDD docs-site D15;
-// docs/designs/SCROLL.md 6, first checked in scnehaux-design #28). Starts `next start`, then, for every page that has sheets and at
+// TDD docs-site annex A 6, first checked in scnehaux-design #28). Starts `next start`, then, for every page that has sheets and at
 // several viewport sizes:
 // 1. scrolls the page in small steps, has the ruler draw each position, and fails
 //    if a letter of one title overlaps a letter of another title (their drawn
@@ -8,7 +8,7 @@
 //    a letter has no finite position (it would be left undrawn);
 // 2. scrolls each section's line to the nav line, and to 2px short of it, and fails
 //    unless the section bar's number, the nav readout, the ruler's readout, and the
-//    contents' current link name the same section, the one SCROLL.md 6.9 makes here.
+//    contents' current link name the same section, the one annex A 6.9 makes here.
 //
 //   node scripts/ruler-check.mjs [--step 8] [--sizes 1440x900,1920x1080,1280x720,1024x640] [--routes /a,/b]
 
@@ -137,7 +137,7 @@ const indicators = () => {
   );
   return { bar, nav, ruler, toc };
 };
-// SCROLL.md 6.9: the last section whose line has reached the nav, or, where the page ends
+// annex A 6.9: the last section whose line has reached the nav, or, where the page ends
 // first, the highest point its line can reach.
 const expected = (tops, y, max) => {
   let here = 0;

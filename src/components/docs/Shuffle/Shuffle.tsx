@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from "react";
 
 const HEX = "0123456789ABCDEF";
 // A label reads as hash characters for 120ms, then a letter resolves every 45ms
-// (docs/designs/SCROLL.md 6.11).
+// (TDD docs-site annex A 6.11).
 const LEAD = 120;
 const STEP = 45;
 

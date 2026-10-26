@@ -1,4 +1,4 @@
-// The Square chrome (TDD docs-site D13, docs/designs/SCROLL.md; first
+// The Square chrome (TDD docs-site D13, TDD docs-site annex A; first
 // drawn in scnehaux-design scnx-platform square.css). Roles are custom properties declared per mode in generic/_roles.scss;
 // the sizes below are the reference's expression-local values, guidance under
 // ADR-UIP-VIS-002, not tokens.
@@ -16,7 +16,7 @@ $sq-plus: var(--sq-plus);
 $sq-glass: var(--sq-glass);
 
 // The nav strip's height: the line a section's top reaches when it becomes here
-// (SCROLL.md 6.9). src/shared/lib/chrome.ts holds the same number for scripts.
+// (annex A 6.9). src/shared/lib/chrome.ts holds the same number for scripts.
 $sq-nav: 48px;
 // The column: centred, at most 1280px, between margins of 16px to 320px where the
 // ruler shows; below that width (chrome.ts RULER_MIN_WIDTH) it takes the full width,

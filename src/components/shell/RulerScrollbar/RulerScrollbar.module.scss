@@ -1,7 +1,7 @@
 @use "settings" as *;
 @use "tools" as *;
 
-// The ruler scrollbar (TDD docs-site D15; docs/designs/SCROLL.md
+// The ruler scrollbar (TDD docs-site D15; TDD docs-site annex A
 // 5-7). The sizes, layers (jumps 44,
 // ruler 45, titles 46, cursor 47, under the nav's 50) and opacities are the
 // reference's expression-local values (ADR-UIP-VIS-002). ruler.ts builds the

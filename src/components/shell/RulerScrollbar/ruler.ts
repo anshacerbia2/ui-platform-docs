@@ -1,5 +1,5 @@
 // The ruler scrollbar and its section titles (TDD docs-site D15), as
-// docs/designs/SCROLL.md describes them (first ported from scnehaux-design scnx-platform
+// TDD docs-site annex A describes them (first ported from scnehaux-design scnx-platform
 // square.js). A page-position ruler replaces the native scrollbar on
 // the right edge, kept as an evidence ledger; the page's section titles stand
 // beside it, letter by letter. The numbers below are the reference's
@@ -230,7 +230,7 @@ export function mountRuler(
       if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey || e.button !== 0) return;
       e.preventDefault();
       history.replaceState(history.state, "", `#${s.id}`);
-      // its section's line lands on the nav's line (SCROLL.md 6.12); glideTo jumps under reduced motion
+      // its section's line lands on the nav's line (annex A 6.12); glideTo jumps under reduced motion
       glideTo(L.jump);
     });
     listen(a, "pointerenter", verify);
@@ -248,7 +248,7 @@ export function mountRuler(
   let maxScroll = 1;
   let H = 1;
   let big = 34;
-  // a row of either stack: the small title size plus a quarter (SCROLL.md 6.1)
+  // a row of either stack: the small title size plus a quarter (annex A 6.1)
   let pitch = 20;
   let room = 0;
   // how far the capitals' centre sits from the line box's centre, at the base size
@@ -298,7 +298,7 @@ export function mountRuler(
       L.sBig = clamp(room / Math.max(1, L.W), 0.8, 1);
       L.curY = 66 + L.i * pitch + big * L.sBig;
       // the lowest a standing title's foot may go: 8px above the next title waiting in the
-      // stack (SCROLL.md 6.2), and the line at which it hangs clear of that limit. The first
+      // stack (annex A 6.2), and the line at which it hangs clear of that limit. The first
       // title is current from the start and never stands, but every title needs a finite
       // limit: a NaN in any one place leaves its letters undrawn.
       L.limit =
@@ -311,7 +311,7 @@ export function mountRuler(
       const P = labels[L.i - 1]!;
       const before = P.i === 0 ? Infinity : P.end + (L.top - P.top) - L.end - 24;
       L.span = Math.max(12, Math.min(L.curY + big * L.sBig + 140 - NAV, before));
-      // SCROLL.md 6.5, measured from the bottom stack: scrolling up, the standing title rides
+      // annex A 6.5, measured from the bottom stack: scrolling up, the standing title rides
       // down with its line until its foot meets the limit, waits there, and lies into its
       // place while its line runs on down its own standing length to the limit; scrolling
       // down, the reverse. If the line at which it hangs clear is below where 6.7 starts, the
@@ -338,7 +338,7 @@ export function mountRuler(
   let lastMode = -1;
   const hoverY = (v: number) => TOP + (v / 100) * H;
   const progress = () => clamp((window.scrollY / maxScroll) * 100, 0, 100);
-  // the page's one "here" (SCROLL.md 6.9), with the same rule and line as the HereProvider
+  // the page's one "here" (annex A 6.9), with the same rule and line as the HereProvider
   const currentIndex = () => currentSection(tops, window.scrollY, maxScroll, NAV);
 
   /* Where letter k of a title sits in each place it can be: [x, y, rotation, scale, tone]. */
@@ -427,7 +427,7 @@ export function mountRuler(
     put(cursor, "opacity", pointerY < 0 ? "0" : mode.toFixed(3));
     if (pointerY >= 0) put(cursor, "transform", ty(pointerY));
 
-    /* Titles: every letter is placed from its section's line on screen (SCROLL.md 6). */
+    /* Titles: every letter is placed from its section's line on screen (annex A 6). */
     const moveIn = labels.map((L) => ({
       sBig: L.sBig,
       curY: L.curY,
@@ -445,7 +445,7 @@ export function mountRuler(
       const line = L.top - y;
       // standing, the title hangs from its line (top at line + 8), its foot stays at least 8px
       // above the next title waiting (limit), and its top at least 8px under its own current
-      // place (SCROLL.md 6.2). The docs add one rule (TDD docs-site D15): a title also hangs
+      // place (annex A 6.2). The docs add one rule (TDD docs-site D15): a title also hangs
       // 8px under the previous title's lowest letter, and stands up only once that letter is
       // above its own hang line, so its whole standing place, foot on the limit, fits under
       // it. Where a section is shorter than the previous title standing (the docs' short

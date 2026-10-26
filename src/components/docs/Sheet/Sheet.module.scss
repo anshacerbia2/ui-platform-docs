@@ -1,7 +1,7 @@
 @use "settings" as *;
 @use "tools" as *;
 
-// A sheet (TDD docs-site D14; scnx-platform square.css "Sheets", SCROLL.md 2.2-2.7).
+// A sheet (TDD docs-site D14; scnx-platform square.css "Sheets", annex A 2.2-2.7).
 // The page counts the sheets (`counter-reset: sheet` on its main).
 @layer docs.components {
   .sheet {
@@ -114,7 +114,7 @@
       color: $sq-faint;
     }
 
-    // the number turns blue when its sheet is here (SCROLL.md 2.7)
+    // the number turns blue when its sheet is here (annex A 2.7)
     .sheet[data-here] & {
       color: $sq-signal-text;
     }

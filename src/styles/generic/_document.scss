@@ -1,7 +1,7 @@
 @use "../settings" as *;
 
 // The document outside the theme root: no margin, the page role behind overscroll.
-// A section jumped to lands with its line on the nav strip's line (SCROLL.md 6.9):
+// A section jumped to lands with its line on the nav strip's line (annex A 6.9):
 // one pixel up, on the nav's last row, so the two lines are one, never a double border
 // (shared/lib/chrome.ts JUMP_LINE).
 html {
@@ -21,7 +21,7 @@ body {
   margin: 0;
 }
 
-// The ruler scrollbar replaces the native one from 1024px up (SCROLL.md 1.4;
+// The ruler scrollbar replaces the native one from 1024px up (annex A 1.4;
 // RulerScrollbar sets the attribute only while it is shown).
 html[data-ruler="on"] {
   scrollbar-width: none;
@@ -34,7 +34,7 @@ html[data-ruler="on"] {
 }
 
 // The page is held hidden below the nav until Reveal has marked its blocks, in the
-// same task, before first paint (SCROLL.md 1.1). The server sends html.sq-boot;
+// same task, before first paint (annex A 1.1). The server sends html.sq-boot;
 // Reveal sets data-sq-booted. A 2.5s failsafe shows the page in any case, without
 // JavaScript too, and reduced motion never hides it.
 @keyframes sq-boot-failsafe {

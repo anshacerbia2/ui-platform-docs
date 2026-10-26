@@ -1,7 +1,7 @@
 @use "settings" as *;
 @use "tools" as *;
 
-// The nav strip (TDD docs-site D14; square.css "Navigation"; SCROLL.md 2.1): a
+// The nav strip (TDD docs-site D14; square.css "Navigation"; annex A 2.1): a
 // full-width strip of 48px cells, one line between any two, sticky above
 // everything, the ruler included (z 50 over the ruler's 45: the reference's
 // stacking order, expression-local).

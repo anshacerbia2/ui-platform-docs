@@ -1,8 +1,8 @@
 // The Square chrome's shared numbers (TDD docs-site D13;
-// docs/designs/SCROLL.md). styles/settings/_square.scss holds the
+// TDD docs-site annex A). styles/settings/_square.scss holds the
 // same values for the stylesheets.
 
-/** The nav strip's height, and the line a section's top reaches when it becomes here (SCROLL.md 6.9). */
+/** The nav strip's height, and the line a section's top reaches when it becomes here (annex A 6.9). */
 export const NAV_LINE = 48;
 
 /**
@@ -16,5 +16,5 @@ export const JUMP_LINE = NAV_LINE - 1;
 /** The selector of a page's sheets: every documentation section carries `data-sheet` with its name. */
 export const SHEET_SELECTOR = "main [data-sheet]";
 
-/** The ruler shows from this viewport width up; below it the native scrollbar stays (SCROLL.md 1.4). */
+/** The ruler shows from this viewport width up; below it the native scrollbar stays (annex A 1.4). */
 export const RULER_MIN_WIDTH = 1024;
