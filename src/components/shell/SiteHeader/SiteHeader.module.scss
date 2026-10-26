@@ -33,13 +33,27 @@
     letter-spacing: -0.01em;
     text-decoration: none;
     @include focus-ring(-2px);
+
+    // on a phone the mark alone; the name stays the link's accessible name
+    @media (max-width: 480px) {
+      padding-inline: 16px;
+
+      span {
+        @include visually-hidden;
+      }
+    }
   }
 
   // A tag cell beside the brand; the Badge it holds is the component, as it ships.
+  // It leaves at 640px and below (the hero and the footer carry the version).
   .tag {
     display: inline-flex;
     align-items: center;
     padding-inline: 16px;
+
+    @media (max-width: 640px) {
+      display: none;
+    }
   }
 
   // One line between two cells, never two: the brand draws the line after it, the

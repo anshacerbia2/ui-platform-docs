@@ -15,8 +15,9 @@ const system = pin.packages.find((p) => p.name === "@scnx/system");
  * The nav strip (TDD docs-site D14; SCROLL.md 2.1): a full-width row of 48px
  * cells with one line between any two, held at the top above everything.
  * The sheet readout leaves at 1320px and below, the GitHub cell at 1180px, the
- * Get started link (the call to action repeats it) at 1080px, and the links below
- * 980px (the docs column keeps its page list).
+ * Get started link (the call to action repeats it) at 1080px, the links below
+ * 980px (the docs column keeps its page list), the version tag at 640px, and the
+ * brand's name at 480px (the mark stays).
  */
 export function SiteHeader() {
   return (

@@ -5,10 +5,7 @@
   // the footer is the set's last sheet: the centre column, a rule across the page and a cross at each side
   .footer {
     position: relative;
-    box-sizing: border-box;
-    max-inline-size: $sq-col;
-    margin-inline: auto;
-    border-inline: 1px solid $sq-line;
+    @include column;
 
     &::before {
       content: "";
@@ -32,6 +29,11 @@
       block-size: 11px;
       background: $sq-plus;
       pointer-events: none;
+
+      // full width, the column has no lines for a cross to mark
+      @include full-width {
+        display: none;
+      }
     }
   }
 

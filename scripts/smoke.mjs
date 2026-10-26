@@ -1,8 +1,9 @@
 #!/usr/bin/env node
 // Browser smoke test of the built site (TDD docs-site D7). Starts `next start`
 // and loads every route in each engine; fails on a page error, a console
-// error, a Content-Security-Policy violation, a failed request, or a response
-// without the policy. With --shots <dir> it also saves full-page screenshots.
+// error, a Content-Security-Policy violation, a failed request, a response
+// without the policy, or a page wider than the viewport at 1440px or 390px. With
+// --shots <dir> it also saves full-page screenshots.
 //
 //   node scripts/smoke.mjs [--browsers chromium,firefox,webkit] [--shots <dir>]
 
@@ -169,6 +170,17 @@ try {
             fullPage: true,
           });
         }
+        // Nothing may push the page wider than the viewport, at a desktop's width or a phone's.
+        for (const width of [1440, 390]) {
+          if (width !== 1440) {
+            await page.setViewportSize({ width, height: 844 });
+            await page.waitForTimeout(300);
+          }
+          const over = await page.evaluate(
+            () => document.documentElement.scrollWidth - document.documentElement.clientWidth,
+          );
+          if (over > 0) problems.push(`${over}px wider than a ${width}px viewport`);
+        }
         for (const p of problems) failures.push(`${name} ${mode} ${route}: ${p}`);
         await page.close();
       }
@@ -194,5 +206,5 @@ if (failures.length) {
   process.exit(1);
 }
 console.log(
-  `Smoke test passed: ${ROUTES.length} routes in ${browsers.join(", ")}, light and dark, with zero errors and zero CSP violations`,
+  `Smoke test passed: ${ROUTES.length} routes in ${browsers.join(", ")}, light and dark, with zero errors, zero CSP violations, and nothing wider than a 1440px or 390px viewport`,
 );

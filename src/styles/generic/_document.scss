@@ -8,6 +8,13 @@ html {
   -webkit-text-size-adjust: 100%;
   text-size-adjust: 100%;
   scroll-padding-top: $sq-nav - 1px;
+  // the column (settings/_square.scss): framed between margins beside the ruler,
+  // the full width where the ruler is not shown
+  --sq-col: min(1280px, calc(100vw - 2 * #{$sq-margin}));
+
+  @media (max-width: $sq-ruler-min - 0.02px) {
+    --sq-col: 100%;
+  }
 }
 
 body {

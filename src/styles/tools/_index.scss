@@ -23,6 +23,27 @@
   text-transform: uppercase;
 }
 
+/// The Square chrome's centre column (TDD docs-site D14): framed by two lines between
+/// margins where the ruler shows; below that width it takes the full width and its
+/// lines, now the screen's edges, go (the owner, 2026-10-27).
+@mixin column {
+  box-sizing: border-box;
+  max-inline-size: $sq-col;
+  margin-inline: auto;
+  border-inline: 1px solid $sq-line;
+
+  @media (max-width: $sq-ruler-min - 0.02px) {
+    border-inline: 0;
+  }
+}
+
+/// Below the ruler's width, where the column is the full width.
+@mixin full-width {
+  @media (max-width: $sq-ruler-min - 0.02px) {
+    @content;
+  }
+}
+
 @mixin motion {
   @media (prefers-reduced-motion: no-preference) {
     @content;

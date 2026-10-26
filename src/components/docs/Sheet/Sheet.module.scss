@@ -38,6 +38,12 @@
       block-size: 11px;
       background: $sq-plus;
       pointer-events: none;
+
+      // where the column takes the full width it has no lines for a cross to mark,
+      // and the crosses would stick out past the viewport
+      @include full-width {
+        display: none;
+      }
     }
 
     :global(html[data-sq-draw]) &:not([data-drawn])::before {
@@ -47,10 +53,7 @@
     // A page of sheets (SheetLayout): the rule crosses the whole viewport, and the
     // first sheet starts under the nav, whose line is its top line.
     :where([data-layout="sheets"]) > & {
-      box-sizing: border-box;
-      max-inline-size: $sq-col;
-      margin-inline: auto;
-      border-inline: 1px solid $sq-line;
+      @include column;
 
       &::before {
         inset-inline: auto;

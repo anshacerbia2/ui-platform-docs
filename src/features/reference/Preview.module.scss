@@ -57,14 +57,20 @@
     font: 500 11px/1.4 $sq-mono;
   }
 
+  // A specimen wider than the stage (a Navbar on a phone) scrolls inside it, from its
+  // start edge, and never widens the page; it is never restyled to fit. No specimen
+  // pops out of its box today (Dialog uses the top layer); one that does needs its
+  // own room before this clips it.
   .stageContent {
     position: relative;
     display: flex;
     flex: 1;
     flex-direction: column;
-    align-items: center;
+    align-items: safe center;
     justify-content: center;
+    min-inline-size: 0;
     padding: 24px 16px;
+    overflow-x: auto;
 
     .stage[data-dialog] & dialog {
       position: static;

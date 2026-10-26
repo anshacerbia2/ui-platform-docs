@@ -6,10 +6,7 @@
 // sidebar, the page, and its contents. The page draws the two dividers.
 @layer docs.components {
   .frame {
-    box-sizing: border-box;
-    max-inline-size: $sq-col;
-    margin-inline: auto;
-    border-inline: 1px solid $sq-line;
+    @include column;
   }
 
   .columns {
