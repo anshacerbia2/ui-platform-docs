@@ -5,9 +5,10 @@
 // The page counts the sheets (`counter-reset: sheet` on its main).
 @layer docs.components {
   .sheet {
+    // A jump lands the section's line on the nav's: the document's scroll-padding
+    // (generic/_document.scss) is the one offset. A scroll-margin here too doubled it.
     position: relative;
     counter-increment: sheet;
-    scroll-margin-block-start: $sq-nav;
 
     // the rule: across the page column, drawn in from the left once (Reveal sets data-drawn)
     &::before {
@@ -64,8 +65,9 @@
     }
   }
 
-  // The bar: "02 / Label ··· facts", held under the nav. Its -1px bottom margin lands
-  // its line on the next sheet's rule when that sheet pushes it up.
+  // The bar: "02 / Label ··· facts", held under the nav, on the solid ground: no glass,
+  // so nothing scrolling under it shows through. Its -1px bottom margin lands its line
+  // on the next sheet's rule when that sheet pushes it up.
   .bar {
     position: sticky;
     inset-block-start: $sq-nav;
@@ -74,8 +76,7 @@
     align-items: center;
     margin: 0 0 -1px;
     padding: 14px $sq-pad;
-    background: $sq-glass;
-    backdrop-filter: blur(12px);
+    background: $sq-ground;
     box-shadow: inset 0 -1px 0 $sq-line;
     color: $sq-muted;
     @include hud;

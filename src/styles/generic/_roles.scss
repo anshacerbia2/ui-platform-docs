@@ -20,7 +20,6 @@
   --sq-edge: color-mix(in oklab, var(--sq-text) 50%, var(--sq-ground));
   // decoration only (a separator glyph, a mark not yet reached), never text
   --sq-faint: color-mix(in oklab, var(--sq-text) 42%, var(--sq-ground));
-  --sq-glass: color-mix(in oklab, var(--sq-ground) 72%, transparent);
   // where a rule meets a column line: an 11px plus at each end of an 11px strip
   --sq-plus:
     linear-gradient(var(--sq-cross), var(--sq-cross)) 5px 0 / 1px 11px no-repeat,

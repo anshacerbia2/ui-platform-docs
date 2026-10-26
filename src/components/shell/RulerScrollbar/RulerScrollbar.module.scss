@@ -2,7 +2,7 @@
 @use "tools" as *;
 
 // The ruler scrollbar (TDD docs-site D15; scnehaux-design scnx-platform
-// square.css "The ruler scrollbar"). The sizes, layers (glass 43, jumps 44,
+// square.css "The ruler scrollbar"). The sizes, layers (jumps 44,
 // ruler 45, titles 46, cursor 47, under the nav's 50) and opacities are the
 // reference's expression-local values (ADR-UIP-VIS-002). ruler.ts builds the
 // parts and places them through the CSSOM.
@@ -29,14 +29,6 @@
     &:focus-visible {
       box-shadow: inset 2px 0 0 $focus;
     }
-  }
-
-  .glass {
-    position: absolute;
-    inset: 0;
-    background: color-mix(in oklab, $sq-ground 55%, transparent);
-    backdrop-filter: blur(9px);
-    mask-image: linear-gradient(to left, #000 40%, transparent);
   }
 
   // the scale: at rest one transform moves it all; ticks and marks are placed once per mode
@@ -233,7 +225,7 @@
   }
 
   // Section titles beside the ruler: one span per letter, placed by ruler.ts, above
-  // the ruler's glass so a title standing on the ruler stays crisp.
+  // the ruler. Nothing is drawn behind them: no glass, no plate (the owner, 2026-10-26).
   .labels {
     position: fixed;
     inset: 0;
@@ -248,9 +240,6 @@
       will-change: transform;
       font: var(--ds-typography-weight-semibold) var(--sq-label-size, 34px) / 1 $font-sans;
       letter-spacing: -0.01em;
-      text-shadow:
-        0 0 4px $sq-ground,
-        0 0 10px $sq-ground;
     }
   }
 
@@ -269,31 +258,6 @@
       &:focus-visible {
         outline: var(--ds-dimension-border-width-strong) solid $focus;
         outline-offset: 2px;
-      }
-    }
-  }
-
-  // A plate behind each title lying across (the docs' replacement for the reference's
-  // corner glass, which spread over the page): the ground, sized by ruler.ts to its
-  // letters, with no frame of its own, so the plates of a stack join into one stepped
-  // block. It leaves while its title moves.
-  .plates {
-    position: fixed;
-    inset: 0;
-    z-index: 43;
-    pointer-events: none;
-
-    span {
-      position: absolute;
-      left: 0;
-      top: 0;
-      inline-size: 0;
-      block-size: 0;
-      background: $sq-ground;
-      opacity: 0;
-
-      @include motion {
-        transition: opacity $duration $ease;
       }
     }
   }

@@ -24,9 +24,6 @@ const TAU_WHEEL = 120;
 const TAU_DRAG = 80; // a drag glides too, closer behind the pointer
 const SPREAD = 0.55; // share of a title's move spent staggering its letters
 const DIM = 0.68; // a title not current: text at 68% still reads 4.5:1 or more in both modes
-// a plate reaches this far past its title's letters: across, then up and down
-const PLATE_X = 8;
-const PLATE_Y = 4;
 const DECODE_LEAD = 120;
 const DECODE_STEP = 45; // a hovered title: hash for 120ms, then a letter resolves every 45ms
 const HEX = "0123456789ABCDEF";
@@ -36,7 +33,6 @@ const CHECK =
 /** The CSS Module class names the ruler's parts take. */
 export type RulerClasses = Record<
   | "ruler"
-  | "glass"
   | "scale"
   | "tick"
   | "mark"
@@ -45,8 +41,7 @@ export type RulerClasses = Record<
   | "cursor"
   | "labels"
   | "verified"
-  | "jumps"
-  | "plates",
+  | "jumps",
   string
 >;
 
@@ -57,7 +52,6 @@ type Label = {
   name: string;
   letters: Letter[];
   link: HTMLAnchorElement;
-  plate: HTMLSpanElement;
   mark: HTMLSpanElement;
   W: number;
   v: number;
@@ -164,7 +158,6 @@ export function mountRuler(
     "aria-valuenow": "0",
     "aria-label": "Page position",
   });
-  rail.append(el("div", cls.glass, { "aria-hidden": "true" }));
   const scale = el("div", cls.scale, { "aria-hidden": "true" });
   const items: { n: HTMLElement; v: () => number }[] = [];
   for (let v = 0; v <= 100; v++) {
@@ -184,8 +177,6 @@ export function mountRuler(
   now.append(pct);
   rail.append(scale, win, now);
   const cursor = el("div", cls.cursor, { "aria-hidden": "true" });
-  // a plate behind each title lying across: a label on the drawing, never a glass over the page
-  const plates = el("div", cls.plates, { "aria-hidden": "true" });
   const layer = el("div", cls.labels, { "aria-hidden": "true" });
   const verified = el("div", cls.verified, { "aria-hidden": "true" });
   verified.innerHTML = CHECK;
@@ -201,8 +192,6 @@ export function mountRuler(
       layer.append(span);
       return { span, real: ch, shown: ch, w: 0, c: 0 };
     });
-    const plate = el("span");
-    plates.append(plate);
     const a = el("a", "", { href: `#${s.id}`, "aria-label": `Jump to ${s.dataset.sheet || s.id}` });
     jumps.append(a);
     const mark = el("span", cls.mark, { "data-state": "ahead" });
@@ -214,7 +203,6 @@ export function mountRuler(
       name,
       letters,
       link: a,
-      plate,
       mark,
       W: 0,
       v: 0,
@@ -236,13 +224,21 @@ export function mountRuler(
       L.decode = performance.now();
       request();
     };
+    listen(a, "click", (event) => {
+      const e = event as MouseEvent;
+      if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey || e.button !== 0) return;
+      e.preventDefault();
+      history.replaceState(history.state, "", `#${s.id}`);
+      // its section's line lands exactly on the nav line (SCROLL.md 6.9); glideTo jumps under reduced motion
+      glideTo(lineAtNav(L));
+    });
     listen(a, "pointerenter", verify);
     listen(a, "focus", verify);
     items.push({ n: mark, v: () => L.v });
     return L;
   });
   const last = labels.length - 1;
-  host.append(plates, layer, verified, jumps, rail, cursor);
+  host.append(layer, verified, jumps, rail, cursor);
 
   /* ---------- measure: on resize only, never while scrolling ---------- */
   let vw = 0;
@@ -293,7 +289,7 @@ export function mountRuler(
     room = vw - RAIL - (column ? column.getBoundingClientRect().right : vw - RAIL) - 16;
     for (const L of labels) {
       // the large title shrinks toward the free margin, never below 80%; where the margin
-      // is narrower it overlaps the page over the corner glass
+      // is narrower it overlaps the page
       L.sBig = clamp(room / Math.max(1, L.W), 0.8, 1);
       L.curY = 66 + L.i * pitch + big * L.sBig;
       // the lowest a standing title's foot may go: 8px above the next title waiting in the
@@ -455,9 +451,6 @@ export function mountRuler(
         ? Math.min(clamp((L.limit - line) / L.stand, 0, 1), clamp((L.hang - tail) / L.stand, 0, 1))
         : 0;
       let lowest = -Infinity;
-      // the letters' extent this frame, and whether any letter is between two places
-      let [left, right, high, low] = [Infinity, -Infinity, Infinity, -Infinity];
-      let moving = false;
       // the current title leaves within the first 1 − SPREAD of the next title's move (6.8)
       const Q = labels[L.i + 1] ? clamp(moveIn[L.i + 1]!.C / (1 - SPREAD), 0, 1) : 0;
       const opening = modeTarget === 1;
@@ -476,9 +469,7 @@ export function mountRuler(
         // folded: every title lies at the point its section begins
         const mk = ease(clamp(mode * 1.4 - (0.4 * k) / Math.max(1, n - 1), 0, 1));
         if (mk > 0) at = blend(at, across(L, k, hoverY(L.v), SMALL, L.i === cur ? 1 : 0.86), mk);
-        const between = (u > 0 && u < 1) || (c > 0 && c < 1) || (q > 0 && q < 1);
-        if (between || (mk > 0 && mk < 1)) moving = true;
-        if (!opening && between) settled = false;
+        if (!opening && ((u > 0 && u < 1) || (c > 0 && c < 1) || (q > 0 && q < 1))) settled = false;
         let ch = l.real;
         if (L.decode && l.real !== " " && t < L.decode + DECODE_LEAD + k * DECODE_STEP)
           ch = HEX[hash(L.i, k, Math.floor((t - L.decode) / 50))]!;
@@ -497,12 +488,6 @@ export function mountRuler(
         );
         // how far the letter reaches below its centre: its width when turned upright
         lowest = Math.max(lowest, top + ((Math.abs(turn) > 45 ? l.w : big) * size) / 2);
-        if (l.real !== " ") {
-          left = Math.min(left, x - (l.w * size) / 2);
-          right = Math.max(right, x + (l.w * size) / 2);
-          high = Math.min(high, top - (big * size) / 2);
-          low = Math.max(low, top + (big * size) / 2);
-        }
       }
       tail = lowest;
       L.settled = settled;
@@ -525,24 +510,14 @@ export function mountRuler(
             ? [vw - 32 - (big * UPRIGHT) / 2, standY - half, big * UPRIGHT, half * 2]
             : place === "current"
               ? [vw - RAIL - L.W * sBig, curY - (big * sBig) / 2, L.W * sBig, big * sBig]
-              : [
+              : // in a stack the link is one row tall, so neighbouring links never overlap and
+                // a click always reaches the title under the pointer
+                [
                   vw - RAIL - L.W * SMALL,
-                  (place === "past" ? pastY : stackY) - (big * SMALL) / 2,
+                  (place === "past" ? pastY : stackY) - pitch / 2,
                   L.W * SMALL,
-                  big * SMALL,
+                  pitch,
                 ];
-      // the plate: under a title lying across and at rest; it leaves while the title moves
-      // or stands on the ruler, so it never stretches over the letters' path
-      const shown = !moving && place !== "upright" && Number.isFinite(left);
-      put(L.plate, "opacity", shown ? "1" : "0");
-      if (shown)
-        put(
-          L.plate,
-          "transform",
-          `translate3d(${(left - PLATE_X).toFixed(1)}px, ${(high - PLATE_Y).toFixed(1)}px, 0)`,
-        );
-      if (shown) put(L.plate, "width", `${(right - left + 2 * PLATE_X).toFixed(1)}px`);
-      if (shown) put(L.plate, "height", `${(low - high + 2 * PLATE_Y).toFixed(1)}px`);
       const key = box.map((v) => v.toFixed(0)).join(",");
       if (key !== L.box) {
         L.box = key;
@@ -672,7 +647,7 @@ export function mountRuler(
   const on = () => {
     const active = wide.matches;
     doc.dataset.ruler = active ? "on" : "off";
-    for (const n of [rail, cursor, layer, verified, jumps, plates]) n.hidden = !active;
+    for (const n of [rail, cursor, layer, verified, jumps]) n.hidden = !active;
     if (!active) return;
     measure();
     invalidate();
