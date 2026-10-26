@@ -442,6 +442,13 @@ function generate() {
       ),
     }));
   // The landing page's theme lab: what its sample form renders (TextField and Button bindings).
+  // The form sits on the site's ground, as a page on the theme would: surface.default in
+  // light, surface.sunken in dark (src/styles/generic/_roles.scss, --sq-ground). A pair
+  // whose background is "ground" is measured there, and every pair is composited over it.
+  const GROUND = {
+    light: "color.neutral.surface.default.default",
+    dark: "color.neutral.surface.sunken.default",
+  };
   const LAB_PAIRS = [
     {
       label: "Label on brand fill",
@@ -458,7 +465,7 @@ function generate() {
     {
       label: "Description",
       fg: "color.neutral.text.subtle.default",
-      bg: "color.neutral.surface.raised.default",
+      bg: "ground",
       minimum: 4.5,
     },
     {
@@ -476,11 +483,12 @@ function generate() {
         Object.fromEntries(
           theme.modes.map((mode) => {
             const value = (name) => parseColor(byName.get(name).resolved[themeId][mode]);
-            const canvas = value("color.neutral.surface.canvas.default");
+            const ground = value(GROUND[mode] ?? GROUND.light);
             return [
               mode,
               LAB_PAIRS.map((pair) => {
-                const { ratio } = contrastRatio(value(pair.fg), value(pair.bg), canvas);
+                const bg = pair.bg === "ground" ? ground : value(pair.bg);
+                const { ratio } = contrastRatio(value(pair.fg), bg, ground);
                 return { ...pair, ratio: Math.floor(ratio * 10) / 10, pass: ratio >= pair.minimum };
               }),
             ];

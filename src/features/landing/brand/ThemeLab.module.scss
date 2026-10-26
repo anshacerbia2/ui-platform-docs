@@ -40,7 +40,8 @@
     grid-template-columns: repeat(8, minmax(0, 1fr));
     gap: 3px;
     padding: 14px;
-    background: var(--ds-color-neutral-surface-canvas-default);
+    // the theme's own ground, as a page on it would have (the site's, in this root's mode)
+    background: $sq-ground;
 
     i {
       display: block;
@@ -60,7 +61,9 @@
     display: grid;
     gap: 16px;
     padding: 32px $sq-pad;
-    background: var(--ds-color-neutral-surface-canvas-default);
+    // the theme's own ground, as a page on it would have; the contrast pairs are
+    // measured on it (scripts/reference.mjs, GROUND)
+    background: $sq-ground;
     color: var(--ds-color-neutral-text-default-default);
 
     @media (max-width: 760px) {
