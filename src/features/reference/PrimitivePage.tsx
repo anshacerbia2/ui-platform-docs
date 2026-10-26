@@ -16,7 +16,13 @@ const SECTIONS = [
 ];
 
 /** A Primitives page (ADR-UIP-CMP-001 item 9), generated from the primitive specification. */
-export function PrimitivePage({ row, reference }: { row: EntryRow; reference: PrimitiveReference }) {
+export function PrimitivePage({
+  row,
+  reference,
+}: {
+  row: EntryRow;
+  reference: PrimitiveReference;
+}) {
   const main = reference.api.find((a) => a.kind === "component");
   return (
     <DocsLayout aside={<PageToc items={SECTIONS} />}>
@@ -28,7 +34,9 @@ export function PrimitivePage({ row, reference }: { row: EntryRow; reference: Pr
           <li aria-current="page">{titleOf(row.slug)}</li>
         </ol>
         <h1 className={styles.title}>{reference.spec.name}</h1>
-        {main?.description ? <p className={styles.lead}>{main.description.split("\n\n")[0]?.replace(/\n/g, " ")}</p> : null}
+        {main?.description ? (
+          <p className={styles.lead}>{main.description.split("\n\n")[0]?.replace(/\n/g, " ")}</p>
+        ) : null}
         <ul className={styles.chips} aria-label="Facts">
           <li>
             <StabilityBadge stability={row.stability} />

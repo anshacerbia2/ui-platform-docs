@@ -50,7 +50,13 @@ export function TokenStates() {
             </div>
             <div role="group" aria-label="Surface state" className={styles.listbox}>
               {STATES.map((s) => (
-                <button key={s} type="button" aria-pressed={state === s} className={styles.option} onClick={() => setState(s)}>
+                <button
+                  key={s}
+                  type="button"
+                  aria-pressed={state === s}
+                  className={styles.option}
+                  onClick={() => setState(s)}
+                >
                   {s}
                   <span className={styles.optionNote}>{state === s ? "selected" : ""}</span>
                 </button>

@@ -1,6 +1,12 @@
 import type { Route } from "next";
 
-export const SECTIONS: { href: Route; label: string; mark: "primitive" | "component" | "token" | "release"; description: string; package: string }[] = [
+export const SECTIONS: {
+  href: Route;
+  label: string;
+  mark: "primitive" | "component" | "token" | "release";
+  description: string;
+  package: string;
+}[] = [
   {
     href: "/primitives",
     label: "Primitives",

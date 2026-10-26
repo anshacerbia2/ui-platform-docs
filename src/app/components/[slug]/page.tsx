@@ -7,7 +7,9 @@ import { componentSlugs, entries, getComponent, titleOf } from "@/shared/lib/ref
 export const dynamicParams = false;
 export const generateStaticParams = () => componentSlugs.map((slug) => ({ slug }));
 
-export async function generateMetadata({ params }: PageProps<"/components/[slug]">): Promise<Metadata> {
+export async function generateMetadata({
+  params,
+}: PageProps<"/components/[slug]">): Promise<Metadata> {
   const { slug } = await params;
   const description = getComponent(slug)
     ?.api.find((a) => a.kind === "component")

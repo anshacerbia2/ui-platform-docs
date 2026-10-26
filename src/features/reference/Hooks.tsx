@@ -24,7 +24,15 @@ const plain = (template: string) => template.replace(/\{([a-z0-9.-]+)\}/g, "$1")
  * fallback's value in the theme and mode the preview shows, and the floor that
  * bounds it whatever the hook says.
  */
-export function Hooks({ rows, hookScope, themes }: { rows: HookRow[]; hookScope?: string; themes: string[] }) {
+export function Hooks({
+  rows,
+  hookScope,
+  themes,
+}: {
+  rows: HookRow[];
+  hookScope?: string;
+  themes: string[];
+}) {
   const { theme, mode } = useThemeChoice(themes);
   return (
     <>

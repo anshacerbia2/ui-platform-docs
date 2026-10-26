@@ -40,7 +40,12 @@ export type ApiExport = {
   signature?: string;
 };
 
-export type Binding = { part: string; option?: Record<string, string>; state?: string; declarations: Record<string, string> };
+export type Binding = {
+  part: string;
+  option?: Record<string, string>;
+  state?: string;
+  declarations: Record<string, string>;
+};
 
 export type StyledSpec = {
   entry: string;
@@ -73,7 +78,11 @@ export type Hook = {
   migration: string;
 };
 
-export type FixtureNode = { type: string; props?: Record<string, unknown>; children?: (string | FixtureNode)[] };
+export type FixtureNode = {
+  type: string;
+  props?: Record<string, unknown>;
+  children?: (string | FixtureNode)[];
+};
 
 export type PrimitiveSpec = {
   name: string;
@@ -118,7 +127,14 @@ export type Pin = {
   packages: { name: string; version: string; tarball: string; sha256: string }[];
 };
 
-export type LabCheck = { label: string; fg: string; bg: string; minimum: number; ratio: number; pass: boolean };
+export type LabCheck = {
+  label: string;
+  fg: string;
+  bg: string;
+  minimum: number;
+  ratio: number;
+  pass: boolean;
+};
 export type Lab = Record<string, Record<string, LabCheck[]>>;
 
 type Reference = {
@@ -126,16 +142,33 @@ type Reference = {
   entries: EntryRow[];
   components: Record<string, ComponentReference>;
   primitives: Record<string, PrimitiveReference>;
-  tokens: Record<string, { standard: { id: string; version: string; commit: string }; modes: string[]; count: number }>;
+  tokens: Record<
+    string,
+    { standard: { id: string; version: string; commit: string }; modes: string[]; count: number }
+  >;
   landing: { lab: Lab; swatches: string[] };
   tokenList: TokenRow[];
   figma: FigmaFile[];
 };
 
 /** A Figma profile file of the pinned @scnx/system (ui-platform TDD tokens FG1-FG6). */
-export type FigmaFile = { file: string; subpath: string; theme: string; mode: string | null; kind: "color" | "dimension"; tokens: number };
+export type FigmaFile = {
+  file: string;
+  subpath: string;
+  theme: string;
+  mode: string | null;
+  kind: "color" | "dimension";
+  tokens: number;
+};
 
-export type TokenRow = { name: string; cssName: string; type: string; tier: number; lifecycle: string; values: Record<string, Record<string, string> | null> };
+export type TokenRow = {
+  name: string;
+  cssName: string;
+  type: string;
+  tier: number;
+  lifecycle: string;
+  values: Record<string, Record<string, string> | null>;
+};
 
 const reference = data as unknown as Reference;
 
@@ -147,8 +180,10 @@ export const tokenList = reference.tokenList;
 export const figmaFiles = reference.figma;
 export const componentSlugs = Object.keys(reference.components);
 export const primitiveSlugs = Object.keys(reference.primitives);
-export const getComponent = (slug: string): ComponentReference | undefined => reference.components[slug];
-export const getPrimitive = (slug: string): PrimitiveReference | undefined => reference.primitives[slug];
+export const getComponent = (slug: string): ComponentReference | undefined =>
+  reference.components[slug];
+export const getPrimitive = (slug: string): PrimitiveReference | undefined =>
+  reference.primitives[slug];
 
 /** A token's CSS custom property: `color.primary.text` -> `--ds-color-primary-text`. */
 export const cssVar = (token: string) => `--ds-${token.replaceAll(".", "-")}`;
@@ -160,4 +195,5 @@ export const titleOf = (slug: string) => {
 };
 
 /** The source of a file in ui-platform at the pinned commit. */
-export const sourceUrl = (file: string) => `https://github.com/${pin.repository}/blob/${pin.commit}/${file}`;
+export const sourceUrl = (file: string) =>
+  `https://github.com/${pin.repository}/blob/${pin.commit}/${file}`;

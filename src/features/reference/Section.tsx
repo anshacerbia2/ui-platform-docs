@@ -9,7 +9,17 @@ import styles from "./reference.module.scss";
  * and the sheet's name, so "here", the contents, and the ruler measure the
  * section's line, never the held bar.
  */
-export function Section({ id, title, source, children }: { id: string; title: string; source?: ReactNode; children: ReactNode }) {
+export function Section({
+  id,
+  title,
+  source,
+  children,
+}: {
+  id: string;
+  title: string;
+  source?: ReactNode;
+  children: ReactNode;
+}) {
   return (
     <section id={id} data-sheet={title} className={styles.section} aria-labelledby={`${id}-title`}>
       <div className={styles.sectionHead}>
@@ -32,7 +42,15 @@ export function SubHeading({ children }: { children: ReactNode }) {
   return <h3 className={styles.subHeading}>{children}</h3>;
 }
 
-export function Table({ head, rows, caption }: { head: string[]; rows: ReactNode[][]; caption: string }) {
+export function Table({
+  head,
+  rows,
+  caption,
+}: {
+  head: string[];
+  rows: ReactNode[][];
+  caption: string;
+}) {
   return (
     <div className={styles.tableWrap}>
       <table className={styles.table}>
@@ -63,4 +81,6 @@ export function Table({ head, rows, caption }: { head: string[]; rows: ReactNode
   );
 }
 
-export const Code = ({ children }: { children: ReactNode }) => <code className={styles.code}>{children}</code>;
+export const Code = ({ children }: { children: ReactNode }) => (
+  <code className={styles.code}>{children}</code>
+);

@@ -13,7 +13,10 @@ export const metadata: Metadata = { title: "Releases" };
 
 export default function Page() {
   const rows = entries.toSorted((a, b) => a.entry.localeCompare(b.entry));
-  const counts = rows.reduce<Record<string, number>>((acc, r) => ({ ...acc, [r.stability]: (acc[r.stability] ?? 0) + 1 }), {});
+  const counts = rows.reduce<Record<string, number>>(
+    (acc, r) => ({ ...acc, [r.stability]: (acc[r.stability] ?? 0) + 1 }),
+    {},
+  );
   const verify = pin.packages
     .map(
       (p) =>
@@ -35,8 +38,9 @@ export default function Page() {
       <header className={styles.header}>
         <h1 className={styles.title}>Releases</h1>
         <p className={styles.lead}>
-          The build this site documents, how to verify it, and the stability of every public entry. Version 2.0 is in beta: its tarballs are attested on every
-          CI run of main, and the npm release is staged for a maintainer&apos;s approval.
+          The build this site documents, how to verify it, and the stability of every public entry.
+          Version 2.0 is in beta: its tarballs are attested on every CI run of main, and the npm
+          release is staged for a maintainer&apos;s approval.
         </p>
       </header>
       <Section id="build" title="Pinned build" source="vendor/ui-platform/pin.json">
@@ -53,7 +57,10 @@ export default function Page() {
         />
         <p className={styles.lead}>
           Built from{" "}
-          <a className={styles.link} href={`https://github.com/${pin.repository}/commit/${pin.commit}`}>
+          <a
+            className={styles.link}
+            href={`https://github.com/${pin.repository}/commit/${pin.commit}`}
+          >
             {pin.repository}@{pin.commit.slice(0, 7)}
           </a>{" "}
           on main by{" "}
@@ -65,8 +72,9 @@ export default function Page() {
       </Section>
       <Section id="verify" title="Verify" source="SLSA v1 provenance · Sigstore">
         <p className={styles.lead}>
-          Each tarball carries a SLSA build provenance attestation and an SBOM, signed by ui-platform&apos;s CI workflow. This site&apos;s CI runs the same
-          commands before every build.
+          Each tarball carries a SLSA build provenance attestation and an SBOM, signed by
+          ui-platform&apos;s CI workflow. This site&apos;s CI runs the same commands before every
+          build.
         </p>
         <CodeBlock code={verify} title="terminal" numbered={false} />
       </Section>

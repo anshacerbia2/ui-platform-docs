@@ -12,7 +12,12 @@ function PageRuler() {
   useEffect(() => {
     if (!host.current) return;
     const sheets = [...document.querySelectorAll<HTMLElement>(SHEET_SELECTOR)].filter((s) => s.id);
-    return mountRuler(host.current, sheets, document.querySelector<HTMLElement>("[data-sq-col]"), styles as unknown as RulerClasses);
+    return mountRuler(
+      host.current,
+      sheets,
+      document.querySelector<HTMLElement>("[data-sq-col]"),
+      styles as unknown as RulerClasses,
+    );
   }, []);
   return <div ref={host} className={styles.host} />;
 }

@@ -2,7 +2,16 @@ import type { Route } from "next";
 import Link from "next/link";
 import type { ComponentType } from "react";
 import { DocsLayout } from "@/features/site-shell/DocsLayout";
-import { entries, pin, tokenList, tokenThemes, titleOf, type ComponentReference, type EntryRow, type StyledSpec } from "@/shared/lib/reference";
+import {
+  entries,
+  pin,
+  tokenList,
+  tokenThemes,
+  titleOf,
+  type ComponentReference,
+  type EntryRow,
+  type StyledSpec,
+} from "@/shared/lib/reference";
 import { Accessibility } from "./Accessibility";
 import { Api } from "./Api";
 import { Hooks, type HookRow } from "./Hooks";
@@ -34,11 +43,24 @@ function hookRows(spec: StyledSpec): HookRow[] {
       values[theme] = Object.fromEntries(
         modes.map((mode) => [
           mode,
-          h.fallbacks.map((f) => f.replace(/\{([a-z0-9.-]+)\}/g, (_, name: string) => tokenValues.get(name)?.[theme]?.[mode] ?? name)),
+          h.fallbacks.map((f) =>
+            f.replace(
+              /\{([a-z0-9.-]+)\}/g,
+              (_, name: string) => tokenValues.get(name)?.[theme]?.[mode] ?? name,
+            ),
+          ),
         ]),
       );
     }
-    return { hook: h.hook, parts: h.parts, properties: h.properties, fallbacks: h.fallbacks, floor: h.floor, purpose: h.purpose, values };
+    return {
+      hook: h.hook,
+      parts: h.parts,
+      properties: h.properties,
+      fallbacks: h.fallbacks,
+      floor: h.floor,
+      purpose: h.purpose,
+      values,
+    };
   });
 }
 
@@ -49,13 +71,25 @@ const DOCS_SOURCE = "https://github.com/anshacerbia2/ui-platform-docs/blob/main"
  * generated from the styled specification, its primitive, and the published
  * declarations; Usage is informative MDX and never restates a generated fact.
  */
-export function ComponentPage({ row, reference, Usage }: { row: EntryRow; reference: ComponentReference; Usage: ComponentType | null }) {
+export function ComponentPage({
+  row,
+  reference,
+  Usage,
+}: {
+  row: EntryRow;
+  reference: ComponentReference;
+  Usage: ComponentType | null;
+}) {
   const { spec, primitive } = reference;
   const main = reference.api.find((a) => a.kind === "component");
-  const styled = entries.filter((e) => e.kind === "styled").toSorted((a, b) => a.slug.localeCompare(b.slug));
+  const styled = entries
+    .filter((e) => e.kind === "styled")
+    .toSorted((a, b) => a.slug.localeCompare(b.slug));
   const index = styled.findIndex((e) => e.slug === row.slug);
   const [previous, next] = [styled[index - 1], styled[index + 1]];
-  const allPass = reference.contrast.length > 0 && reference.contrast.every((r) => r.results.every((x) => x.pass));
+  const allPass =
+    reference.contrast.length > 0 &&
+    reference.contrast.every((r) => r.results.every((x) => x.pass));
   const hooks = hookRows(spec);
   const sections = SECTIONS.filter((s) => s.id !== "hooks" || hooks.length > 0);
   const themes = Object.keys(tokenThemes);
@@ -70,7 +104,9 @@ export function ComponentPage({ row, reference, Usage }: { row: EntryRow; refere
             <li aria-current="page">{titleOf(row.slug)}</li>
           </ol>
           <h1 className={styles.title}>{main?.name ?? titleOf(row.slug)}</h1>
-          {main?.description ? <p className={styles.lead}>{main.description.split("\n\n")[0]?.replace(/\n/g, " ")}</p> : null}
+          {main?.description ? (
+            <p className={styles.lead}>{main.description.split("\n\n")[0]?.replace(/\n/g, " ")}</p>
+          ) : null}
           <ul className={styles.chips} aria-label="Facts">
             <li>
               <StabilityBadge stability={row.stability} />
@@ -81,10 +117,17 @@ export function ComponentPage({ row, reference, Usage }: { row: EntryRow; refere
             </li>
             {primitive ? (
               <li className={styles.chip}>
-                styles <Link href={`/primitives/${primitive.entry.split("/").pop()}` as Route}>{primitive.name}</Link>
+                styles{" "}
+                <Link href={`/primitives/${primitive.entry.split("/").pop()}` as Route}>
+                  {primitive.name}
+                </Link>
               </li>
             ) : null}
-            {allPass ? <li className={styles.chip}>WCAG 2.2 AA contrast · {Object.keys(tokenThemes).length} themes × 2 modes</li> : null}
+            {allPass ? (
+              <li className={styles.chip}>
+                WCAG 2.2 AA contrast · {Object.keys(tokenThemes).length} themes × 2 modes
+              </li>
+            ) : null}
           </ul>
         </header>
 
@@ -97,7 +140,8 @@ export function ComponentPage({ row, reference, Usage }: { row: EntryRow; refere
             <Usage />
           ) : (
             <p className={styles.lead}>
-              Usage guidance for {titleOf(row.slug).toLowerCase()} is not written yet. Everything else on this page is generated from the published package.{" "}
+              Usage guidance for {titleOf(row.slug).toLowerCase()} is not written yet. Everything
+              else on this page is generated from the published package.{" "}
               <a className={styles.link} href={`${DOCS_SOURCE}/src/content/components`}>
                 Contribute it
               </a>
@@ -118,8 +162,10 @@ export function ComponentPage({ row, reference, Usage }: { row: EntryRow; refere
           <Specification reference={reference} />
           <h3 className={styles.subHeading}>Contrast</h3>
           <p className={styles.lead}>
-            Each pair a part renders, per option and state, in every published theme and mode: the lowest WCAG 2.2 ratio over sRGB and Display P3, clipped and
-            gamut-mapped, computed from the published token values with the token gate&apos;s method. Disabled states are exempt (WCAG 2.2, 1.4.3).
+            Each pair a part renders, per option and state, in every published theme and mode: the
+            lowest WCAG 2.2 ratio over sRGB and Display P3, clipped and gamut-mapped, computed from
+            the published token values with the token gate&apos;s method. Disabled states are exempt
+            (WCAG 2.2, 1.4.3).
           </p>
           <ContrastTable rows={reference.contrast} />
         </Section>
@@ -130,14 +176,16 @@ export function ComponentPage({ row, reference, Usage }: { row: EntryRow; refere
             title="Hooks"
             source={
               <>
-                Generated from the <Code>hooks</Code> of <Code>{`${row.package}/specs/${row.slug}.json`}</Code>
+                Generated from the <Code>hooks</Code> of{" "}
+                <Code>{`${row.package}/specs/${row.slug}.json`}</Code>
               </>
             }
           >
             <p className={styles.lead}>
-              Each value reads a <Code>--scnx-*</Code> hook that falls back to a Tier-2 token. Set a hook on a scope your product owns to change one value
-              there; a theme changes the token behind it everywhere. A floor holds whatever the hook says. The value column follows the theme and mode chosen in
-              the preview above.
+              Each value reads a <Code>--scnx-*</Code> hook that falls back to a Tier-2 token. Set a
+              hook on a scope your product owns to change one value there; a theme changes the token
+              behind it everywhere. A floor holds whatever the hook says. The value column follows
+              the theme and mode chosen in the preview above.
             </p>
             <Hooks rows={hooks} hookScope={spec.hookScope} themes={themes} />
           </Section>
@@ -153,7 +201,8 @@ export function ComponentPage({ row, reference, Usage }: { row: EntryRow; refere
           source={
             primitive ? (
               <>
-                Generated from <Code>{`@scnx/core-ui/specs/${primitive.entry.split("/").pop()}.json`}</Code>
+                Generated from{" "}
+                <Code>{`@scnx/core-ui/specs/${primitive.entry.split("/").pop()}.json`}</Code>
               </>
             ) : undefined
           }
@@ -162,7 +211,8 @@ export function ComponentPage({ row, reference, Usage }: { row: EntryRow; refere
             <Accessibility spec={primitive} inherited />
           ) : (
             <p className={styles.lead}>
-              This component styles no primitive: it renders its element with the platform&apos;s semantics and no behavior of its own.
+              This component styles no primitive: it renders its element with the platform&apos;s
+              semantics and no behavior of its own.
             </p>
           )}
         </Section>
@@ -189,7 +239,8 @@ export function ComponentPage({ row, reference, Usage }: { row: EntryRow; refere
         </nav>
         <p className={styles.generated}>
           <span>
-            Generated from {pin.packages.map((p) => `${p.name}@${p.version}`).join(" · ")} at ui-platform {pin.commit.slice(0, 7)}
+            Generated from {pin.packages.map((p) => `${p.name}@${p.version}`).join(" · ")} at
+            ui-platform {pin.commit.slice(0, 7)}
           </span>
           <a href={`${DOCS_SOURCE}/src/content/components`}>Edit usage guidance</a>
         </p>

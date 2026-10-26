@@ -7,7 +7,13 @@ import styles from "./DocsLayout.module.scss";
 
 export type SidebarGroup = { title: string; items: { href: Route; label: string; tag?: string }[] };
 
-export function DocsSidebar({ groups, compact = false }: { groups: SidebarGroup[]; compact?: boolean }) {
+export function DocsSidebar({
+  groups,
+  compact = false,
+}: {
+  groups: SidebarGroup[];
+  compact?: boolean;
+}) {
   const pathname = usePathname();
   const nav = (
     <nav aria-label="Pages" className={compact ? styles.compactNav : styles.sidebar}>
@@ -17,7 +23,11 @@ export function DocsSidebar({ groups, compact = false }: { groups: SidebarGroup[
           <ul className={styles.groupList}>
             {group.items.map((item) => (
               <li key={item.href}>
-                <Link href={item.href} className={styles.sideLink} aria-current={pathname === item.href ? "page" : undefined}>
+                <Link
+                  href={item.href}
+                  className={styles.sideLink}
+                  aria-current={pathname === item.href ? "page" : undefined}
+                >
                   {item.label}
                   {item.tag ? <span className={styles.sideTag}>{item.tag}</span> : null}
                 </Link>

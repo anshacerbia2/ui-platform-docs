@@ -10,7 +10,8 @@ import styles from "./DocsLayout.module.scss";
 
 const tag = (stability: string) => (stability === "stable" ? undefined : stability);
 
-const byKind = (kind: string) => entries.filter((e) => e.kind === kind && e.page).toSorted((a, b) => a.slug.localeCompare(b.slug));
+const byKind = (kind: string) =>
+  entries.filter((e) => e.kind === kind && e.page).toSorted((a, b) => a.slug.localeCompare(b.slug));
 
 function groups(): SidebarGroup[] {
   return [
@@ -24,8 +25,22 @@ function groups(): SidebarGroup[] {
         { href: "/releases", label: "Releases" },
       ],
     },
-    { title: "Components", items: byKind("styled").map((e) => ({ href: e.page as Route, label: titleOf(e.slug), tag: tag(e.stability) })) },
-    { title: "Primitives", items: byKind("primitive").map((e) => ({ href: e.page as Route, label: titleOf(e.slug), tag: tag(e.stability) })) },
+    {
+      title: "Components",
+      items: byKind("styled").map((e) => ({
+        href: e.page as Route,
+        label: titleOf(e.slug),
+        tag: tag(e.stability),
+      })),
+    },
+    {
+      title: "Primitives",
+      items: byKind("primitive").map((e) => ({
+        href: e.page as Route,
+        label: titleOf(e.slug),
+        tag: tag(e.stability),
+      })),
+    },
   ];
 }
 

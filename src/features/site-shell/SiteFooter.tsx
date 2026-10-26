@@ -42,7 +42,9 @@ export function SiteFooter() {
           <div className={styles.columns}>
             <div className={styles.about}>
               <span className={styles.name}>Scnehaux UI</span>
-              <p className={styles.blurb}>The design system you can verify. Built in public CI, released with evidence.</p>
+              <p className={styles.blurb}>
+                The design system you can verify. Built in public CI, released with evidence.
+              </p>
             </div>
             {COLUMNS.map((column) => (
               <div key={column.title} className={styles.column}>
@@ -70,8 +72,12 @@ export function SiteFooter() {
           <div className={styles.legal}>
             <span>© 2026 Scnehaux · proprietary</span>
             <span>
-              Documents {pin.packages.map((p) => `${p.name}@${p.version}`).join(" · ")} · ui-platform{" "}
-              <a href={`https://github.com/${pin.repository}/commit/${pin.commit}`} className={styles.link}>
+              Documents {pin.packages.map((p) => `${p.name}@${p.version}`).join(" · ")} ·
+              ui-platform{" "}
+              <a
+                href={`https://github.com/${pin.repository}/commit/${pin.commit}`}
+                className={styles.link}
+              >
                 {pin.commit.slice(0, 7)}
               </a>
             </span>

@@ -40,7 +40,11 @@ export function ThemeLab({ lab, swatches }: { lab: Lab; swatches: string[] }) {
       <div className={styles.body}>
         <ThemeProvider themeId={theme} mode={mode} storage={false}>
           <div className={styles.canvas}>
-            <form className={styles.form} onSubmit={(e) => e.preventDefault()} aria-label="Sample form">
+            <form
+              className={styles.form}
+              onSubmit={(e) => e.preventDefault()}
+              aria-label="Sample form"
+            >
               <div className={styles.formHead}>
                 <span className={styles.formTitle}>Invite teammate</span>
                 <span className={styles.badge}>Admin seat</span>
@@ -52,9 +56,16 @@ export function ThemeLab({ lab, swatches }: { lab: Lab; swatches: string[] }) {
                   <Tabs.Tab value="audit">Audit</Tabs.Tab>
                 </Tabs.List>
                 <Tabs.Panel value="members">
-                  <TextField label="Work email" type="email" defaultValue="ayu@northwind.co" description="They will get access to 3 workspaces." />
+                  <TextField
+                    label="Work email"
+                    type="email"
+                    defaultValue="ayu@northwind.co"
+                    description="They will get access to 3 workspaces."
+                  />
                 </Tabs.Panel>
-                <Tabs.Panel value="roles">Roles are granted after the invite is accepted.</Tabs.Panel>
+                <Tabs.Panel value="roles">
+                  Roles are granted after the invite is accepted.
+                </Tabs.Panel>
                 <Tabs.Panel value="audit">Every invite is recorded in the audit log.</Tabs.Panel>
               </Tabs>
               <div className={styles.formActions}>
@@ -85,7 +96,10 @@ export function ThemeLab({ lab, swatches }: { lab: Lab; swatches: string[] }) {
               </span>
             </li>
           ))}
-          <li className={styles.checkNote}>WCAG 2.2, lowest ratio over sRGB and Display P3 · computed by the token gate&apos;s method</li>
+          <li className={styles.checkNote}>
+            WCAG 2.2, lowest ratio over sRGB and Display P3 · computed by the token gate&apos;s
+            method
+          </li>
         </ul>
       </div>
     </div>

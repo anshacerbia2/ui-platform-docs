@@ -17,7 +17,9 @@ const COPY = {
 } as const;
 
 export function IndexPage({ kind }: { kind: "styled" | "primitive" }) {
-  const rows = entries.filter((e) => e.kind === kind).toSorted((a, b) => a.slug.localeCompare(b.slug));
+  const rows = entries
+    .filter((e) => e.kind === kind)
+    .toSorted((a, b) => a.slug.localeCompare(b.slug));
   const copy = COPY[kind];
   return (
     <DocsLayout>

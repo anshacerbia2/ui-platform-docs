@@ -14,7 +14,9 @@ export function Hero() {
     <section className={styles.hero} aria-labelledby="hero-title">
       <div className={styles.copy}>
         <span className={styles.badge}>
-          <span className={styles.badgeTag}>{version.replace(/^(\d+\.\d+).*-(beta|alpha|rc).*$/, "$1 $2").toUpperCase()}</span>
+          <span className={styles.badgeTag}>
+            {version.replace(/^(\d+\.\d+).*-(beta|alpha|rc).*$/, "$1 $2").toUpperCase()}
+          </span>
           Attested builds · npm release staged
         </span>
         <h1 id="hero-title" className={styles.title}>
@@ -23,8 +25,8 @@ export function Hero() {
           you can <span className={styles.accent}>prove.</span>
         </h1>
         <p className={styles.lead}>
-          An accessible React design system with perceptual color, scoped multi-brand theming, and zero runtime CSS. Every release ships with the evidence that
-          it works.
+          An accessible React design system with perceptual color, scoped multi-brand theming, and
+          zero runtime CSS. Every release ships with the evidence that it works.
         </p>
         <div className={styles.actions}>
           <Link href="/components/button" className={styles.start}>

@@ -36,7 +36,9 @@ function PageReveal() {
         const shown = entries
           .filter((e) => e.isIntersecting)
           .map((e) => e.target as HTMLElement)
-          .toSorted((a, b) => (a.compareDocumentPosition(b) & Node.DOCUMENT_POSITION_FOLLOWING ? -1 : 1));
+          .toSorted((a, b) =>
+            a.compareDocumentPosition(b) & Node.DOCUMENT_POSITION_FOLLOWING ? -1 : 1,
+          );
         shown.forEach((n, i) => {
           rise.unobserve(n);
           const delay = Math.min(i, MAX_STEPS) * STAGGER;

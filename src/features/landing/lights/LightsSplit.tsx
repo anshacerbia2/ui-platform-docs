@@ -1,7 +1,14 @@
 "use client";
 
 import { ThemeProvider } from "@scnx/core-ui/providers/theme-provider-base";
-import { useCallback, useEffect, useRef, useState, type KeyboardEvent, type PointerEvent } from "react";
+import {
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+  type KeyboardEvent,
+  type PointerEvent,
+} from "react";
 import { SITE_THEME } from "@/shared/lib/themes";
 import { useStyleVars } from "@/shared/lib/useStyleVars";
 import { Split } from "@/shared/ui/icons";
@@ -63,7 +70,14 @@ export function LightsSplit() {
     setFromX(event.clientX);
   };
   const key = (event: KeyboardEvent<HTMLButtonElement>) => {
-    const steps: Record<string, number> = { ArrowLeft: -5, ArrowDown: -5, ArrowRight: 5, ArrowUp: 5, PageDown: -25, PageUp: 25 };
+    const steps: Record<string, number> = {
+      ArrowLeft: -5,
+      ArrowDown: -5,
+      ArrowRight: 5,
+      ArrowUp: 5,
+      PageDown: -25,
+      PageUp: 25,
+    };
     const step = steps[event.key];
     if (step !== undefined) {
       event.preventDefault();
@@ -76,7 +90,12 @@ export function LightsSplit() {
 
   const rounded = Math.round(split);
   return (
-    <div ref={frame} className={styles.frame} onPointerDown={down} data-edge={rounded === 0 || rounded === 100 || undefined}>
+    <div
+      ref={frame}
+      className={styles.frame}
+      onPointerDown={down}
+      data-edge={rounded === 0 || rounded === 100 || undefined}
+    >
       <div className={styles.pane}>
         <ThemeProvider themeId={SITE_THEME} mode="light" storage={false}>
           <MiniDashboard />

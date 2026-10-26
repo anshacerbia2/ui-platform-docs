@@ -4,8 +4,10 @@ import styles from "./reference.module.scss";
 
 const MEANING: Record<string, string> = {
   experimental: "May change or be removed in any release.",
-  candidate: "Feature-complete and covered by the release gates; its API may still change before it is promoted to stable.",
-  stable: "Covered by semantic versioning: no breaking change outside a major release. Stable requires browser conformance of its specification.",
+  candidate:
+    "Feature-complete and covered by the release gates; its API may still change before it is promoted to stable.",
+  stable:
+    "Covered by semantic versioning: no breaking change outside a major release. Stable requires browser conformance of its specification.",
   deprecated: "Kept for compatibility; a replacement is named in the release notes.",
 };
 
@@ -45,7 +47,10 @@ export function Status({ row }: { row: EntryRow }) {
       <div>
         <dt>Built from</dt>
         <dd>
-          <a className={styles.link} href={`https://github.com/${pin.repository}/commit/${pin.commit}`}>
+          <a
+            className={styles.link}
+            href={`https://github.com/${pin.repository}/commit/${pin.commit}`}
+          >
             ui-platform {pin.commit.slice(0, 7)}
           </a>{" "}
           on main, by{" "}

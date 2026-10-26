@@ -21,7 +21,12 @@ export function RtlDemo() {
       </div>
       <div className={styles.demoRow}>
         <span className={styles.demoMeta}>{rtl ? "← next tab" : "→ next tab"}</span>
-        <button type="button" className={styles.demoButton} aria-pressed={rtl} onClick={() => setRtl(!rtl)}>
+        <button
+          type="button"
+          className={styles.demoButton}
+          aria-pressed={rtl}
+          onClick={() => setRtl(!rtl)}
+        >
           dir=&quot;{rtl ? "rtl" : "ltr"}&quot;
         </button>
       </div>
@@ -38,8 +43,17 @@ export function MotionDemo() {
         <span className={styles.motionDot} />
       </div>
       <div className={styles.demoRow}>
-        <span className={styles.demoMeta}>prefers-reduced-motion: {reduce ? "reduce" : "no-preference"}</span>
-        <button type="button" role="switch" aria-checked={reduce} aria-label="Reduce motion" className={styles.switch} onClick={() => setReduce(!reduce)}>
+        <span className={styles.demoMeta}>
+          prefers-reduced-motion: {reduce ? "reduce" : "no-preference"}
+        </span>
+        <button
+          type="button"
+          role="switch"
+          aria-checked={reduce}
+          aria-label="Reduce motion"
+          className={styles.switch}
+          onClick={() => setReduce(!reduce)}
+        >
           <span />
         </button>
       </div>

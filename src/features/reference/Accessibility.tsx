@@ -82,7 +82,12 @@ export function Accessibility({ spec, inherited }: { spec: PrimitiveSpec; inheri
           <Table
             caption="Keyboard contract"
             head={["Key", "On", "When", "Result"]}
-            rows={spec.keys.map((k) => [<Keys key="k" value={k.key} />, <Code key="p">{k.part}</Code>, k.condition, k.effect])}
+            rows={spec.keys.map((k) => [
+              <Keys key="k" value={k.key} />,
+              <Code key="p">{k.part}</Code>,
+              k.condition,
+              k.effect,
+            ])}
           />
         </>
       ) : null}
@@ -90,7 +95,10 @@ export function Accessibility({ spec, inherited }: { spec: PrimitiveSpec; inheri
       <Table
         caption="Primitive parts"
         head={["Part", "Element"]}
-        rows={spec.parts.map((p) => [<Code key="n">{p.name}</Code>, <Code key="e">&lt;{p.element}&gt;</Code>])}
+        rows={spec.parts.map((p) => [
+          <Code key="n">{p.name}</Code>,
+          <Code key="e">&lt;{p.element}&gt;</Code>,
+        ])}
       />
     </>
   );

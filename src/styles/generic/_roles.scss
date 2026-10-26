@@ -42,7 +42,8 @@
   --sq-glass: color-mix(in oklch, var(--sq-ground) 72%, transparent);
   // where a rule meets a column line: an 11px plus at each end of an 11px strip
   --sq-plus:
-    linear-gradient(var(--sq-cross), var(--sq-cross)) 5px 0 / 1px 11px no-repeat, linear-gradient(var(--sq-cross), var(--sq-cross)) 0 5px / 11px 1px no-repeat,
+    linear-gradient(var(--sq-cross), var(--sq-cross)) 5px 0 / 1px 11px no-repeat,
+    linear-gradient(var(--sq-cross), var(--sq-cross)) 0 5px / 11px 1px no-repeat,
     linear-gradient(var(--sq-cross), var(--sq-cross)) right 5px top 0 / 1px 11px no-repeat,
     linear-gradient(var(--sq-cross), var(--sq-cross)) right 0 top 5px / 11px 1px no-repeat;
 }

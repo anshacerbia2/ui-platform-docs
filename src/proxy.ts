@@ -27,7 +27,11 @@ const directives = (nonce: string, development: boolean, https: boolean) =>
 
 export function proxy(request: NextRequest) {
   const nonce = btoa(String.fromCharCode(...crypto.getRandomValues(new Uint8Array(16))));
-  const policy = directives(nonce, process.env.NODE_ENV === "development", request.nextUrl.protocol === "https:");
+  const policy = directives(
+    nonce,
+    process.env.NODE_ENV === "development",
+    request.nextUrl.protocol === "https:",
+  );
   const headers = new Headers(request.headers);
   headers.set("x-nonce", nonce);
   headers.set("Content-Security-Policy", policy);

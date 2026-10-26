@@ -4,7 +4,10 @@ import { Code, SubHeading, Table } from "./Section";
 import styles from "./reference.module.scss";
 
 const conditions = (option?: Record<string, string>, state?: string) => {
-  const parts = [...Object.entries(option ?? {}).map(([k, v]) => `${k}=${v}`), ...(state ? [state] : [])];
+  const parts = [
+    ...Object.entries(option ?? {}).map(([k, v]) => `${k}=${v}`),
+    ...(state ? [state] : []),
+  ];
   return parts.length ? parts.join(" · ") : "always";
 };
 
@@ -78,8 +81,8 @@ export function Specification({ reference }: { reference: ComponentReference }) 
       ) : null}
       <SubHeading>Bindings</SubHeading>
       <p className={styles.lead}>
-        Every token-bearing declaration of the published stylesheet, by part, option, and state. A literal value overrides a property the part binds to a token
-        elsewhere.
+        Every token-bearing declaration of the published stylesheet, by part, option, and state. A
+        literal value overrides a property the part binds to a token elsewhere.
       </p>
       <Table
         caption="Bindings"
@@ -99,7 +102,12 @@ export function Specification({ reference }: { reference: ComponentReference }) 
 
 export function ContrastTable({ rows }: { rows: ContrastRow[] }) {
   if (rows.length === 0)
-    return <p className={styles.lead}>No part of this component binds both a text color and a background, so it renders no contrast pair of its own.</p>;
+    return (
+      <p className={styles.lead}>
+        No part of this component binds both a text color and a background, so it renders no
+        contrast pair of its own.
+      </p>
+    );
   const columns = rows[0]!.results.map((r) => `${r.theme} ${r.mode}`);
   return (
     <Table
@@ -111,10 +119,16 @@ export function ContrastTable({ rows }: { rows: ContrastRow[] }) {
         <span key="t" className={styles.pair}>
           <span className={styles.dot} data-swatch={row.fg} />
           <span className={styles.dot} data-swatch={row.bg} />
-          <Code>{row.fg.replace(/^color\./, "")}</Code> on <Code>{row.bg.replace(/^color\./, "")}</Code>
+          <Code>{row.fg.replace(/^color\./, "")}</Code> on{" "}
+          <Code>{row.bg.replace(/^color\./, "")}</Code>
         </span>,
         ...row.results.map((r) => (
-          <span key={`${r.theme}${r.mode}`} className={styles.ratio} data-pass={r.pass || undefined} title={`lowest on ${r.path}`}>
+          <span
+            key={`${r.theme}${r.mode}`}
+            className={styles.ratio}
+            data-pass={r.pass || undefined}
+            title={`lowest on ${r.path}`}
+          >
             {r.ratio.toFixed(2)}
             <span className={styles.verdict}>{r.pass ? "AA" : "fail"}</span>
           </span>

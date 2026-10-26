@@ -20,7 +20,10 @@ const luminance = (c: [number, number, number]) => {
 };
 const ROWS = [
   { name: "HSL", cells: [0, 45, 90, 135, 180, 225, 270, 315].map((h) => hsl(h, 0.85, 0.55)) },
-  { name: "OKLCH", cells: [25, 70, 110, 150, 195, 240, 285, 330].map((h) => oklchToSrgb(0.72, 0.12, h)) },
+  {
+    name: "OKLCH",
+    cells: [25, 70, 110, 150, 195, 240, 285, 330].map((h) => oklchToSrgb(0.72, 0.12, h)),
+  },
 ];
 
 /** Equal HSL lightness vs equal OKLCH lightness; the bar under each swatch is its measured luminance. */
@@ -40,7 +43,13 @@ function PerceptDemo() {
           {row.cells.map((c, i) => (
             <g key={i} transform={`translate(${52 + i * 31} 0)`}>
               <rect width="28" height="26" rx="5" fill={hex(c)} />
-              <rect y="30" width={Math.max(1, luminance(c) * 28)} height="3" rx="1.5" className={styles.perceptBar} />
+              <rect
+                y="30"
+                width={Math.max(1, luminance(c) * 28)}
+                height="3"
+                rx="1.5"
+                className={styles.perceptBar}
+              />
             </g>
           ))}
         </g>
@@ -55,8 +64,16 @@ const CARDS = [
     text: "A visible focus ring on every interactive part, APG keyboard maps per widget, and focus returned when a dialog closes.",
     demo: "keyboard",
   },
-  { title: "Perceptual color", text: "Same HSL lightness, very different brightness. OKLCH keeps every hue on the same visual step.", demo: "percept" },
-  { title: "Right-to-left, verified", text: "Layout and arrow keys mirror together. Tested as its own keyboard scenario, not assumed.", demo: "rtl" },
+  {
+    title: "Perceptual color",
+    text: "Same HSL lightness, very different brightness. OKLCH keeps every hue on the same visual step.",
+    demo: "percept",
+  },
+  {
+    title: "Right-to-left, verified",
+    text: "Layout and arrow keys mirror together. Tested as its own keyboard scenario, not assumed.",
+    demo: "rtl",
+  },
   {
     title: "Strict CSP, no exceptions",
     text: "Static CSS and no style or script injected at run time, so a security team never loosens its policy. This page runs under the policy shown.",
@@ -81,7 +98,12 @@ function Demo({ kind }: { kind: (typeof CARDS)[number]["demo"] }) {
         <div className={styles.demoInset} aria-hidden="true">
           <div className={styles.keys}>
             {["Save", "Preview", "Cancel"].map((label, i) => (
-              <span key={label} className={styles.keyTarget} data-index={i} data-variant={i === 0 ? "solid" : i === 1 ? "tonal" : "ghost"}>
+              <span
+                key={label}
+                className={styles.keyTarget}
+                data-index={i}
+                data-variant={i === 0 ? "solid" : i === 1 ? "tonal" : "ghost"}
+              >
                 {label}
               </span>
             ))}
@@ -102,7 +124,9 @@ function Demo({ kind }: { kind: (typeof CARDS)[number]["demo"] }) {
         <DarkRoot>
           <div className={`${styles.demoInset} ${styles.terminal}`}>
             <span className={styles.termMuted}>Content-Security-Policy:</span>
-            <span className={styles.termGood}>script-src &apos;nonce-…&apos; &apos;strict-dynamic&apos;</span>
+            <span className={styles.termGood}>
+              script-src &apos;nonce-…&apos; &apos;strict-dynamic&apos;
+            </span>
             <span className={styles.termGood}>style-src &apos;self&apos; &apos;nonce-…&apos;</span>
             <span>✓ no unsafe-inline ✓ no unsafe-eval</span>
           </div>

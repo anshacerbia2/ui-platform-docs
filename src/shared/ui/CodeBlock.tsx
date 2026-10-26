@@ -3,7 +3,17 @@ import { DarkRoot } from "./DarkRoot";
 import styles from "./CodeBlock.module.scss";
 
 /** A block of code or a terminal session, with line numbers and a copy button. */
-export function CodeBlock({ code, title, language, numbered = true }: { code: string; title?: string; language?: string; numbered?: boolean }) {
+export function CodeBlock({
+  code,
+  title,
+  language,
+  numbered = true,
+}: {
+  code: string;
+  title?: string;
+  language?: string;
+  numbered?: boolean;
+}) {
   const lines = code.replace(/\n$/, "").split("\n");
   return (
     <DarkRoot>

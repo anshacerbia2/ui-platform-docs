@@ -12,8 +12,9 @@ export function ThemeLabSection() {
           <br />A verified theme.
         </h2>
         <p className={styles.splitText}>
-          Switch the theme and the mode. The form is the real Tabs, TextField, and Button, inside a real theme root, and every foreground and background pair it
-          renders is checked against WCAG 2.2 in each theme and mode before a release.
+          Switch the theme and the mode. The form is the real Tabs, TextField, and Button, inside a
+          real theme root, and every foreground and background pair it renders is checked against
+          WCAG 2.2 in each theme and mode before a release.
         </p>
       </div>
       <ThemeLab lab={landing.lab} swatches={landing.swatches} />

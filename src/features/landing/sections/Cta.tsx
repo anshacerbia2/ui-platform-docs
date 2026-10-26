@@ -10,7 +10,9 @@ export function Cta() {
         <br />
         Keep the receipts.
       </h2>
-      <p className={styles.ctaText}>Bring your brand, keep your stack, and verify every release you install.</p>
+      <p className={styles.ctaText}>
+        Bring your brand, keep your stack, and verify every release you install.
+      </p>
       <div className={styles.ctaActions}>
         <Link href="/components/button" className={styles.ctaPrimary}>
           Get started

@@ -10,7 +10,12 @@ import { useEffect, useState } from "react";
  *
  * Half a pixel is a threshold, not rounding: section tops are often fractional.
  */
-export function currentSection(tops: number[], scrollY: number, maxScroll: number, line: number): number {
+export function currentSection(
+  tops: number[],
+  scrollY: number,
+  maxScroll: number,
+  line: number,
+): number {
   let here = 0;
   tops.forEach((top, index) => {
     // The highest point this section's line reaches on screen: the header line, or
@@ -32,7 +37,9 @@ export function useHere(ids: string[], line: number): string | null {
       frame = 0;
       const elements = list.map((id) => document.getElementById(id));
       if (elements.some((e) => !e)) return;
-      const tops = elements.map((e) => (e as HTMLElement).getBoundingClientRect().top + window.scrollY);
+      const tops = elements.map(
+        (e) => (e as HTMLElement).getBoundingClientRect().top + window.scrollY,
+      );
       const maxScroll = Math.max(0, document.documentElement.scrollHeight - window.innerHeight);
       setHere(list[currentSection(tops, window.scrollY, maxScroll, line)] ?? null);
     };

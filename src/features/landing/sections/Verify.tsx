@@ -19,8 +19,9 @@ export function Verify() {
                 Verify it yourself, in ten seconds.
               </h2>
               <p className={styles.verifyText}>
-                Every tarball is built in public CI and carries SLSA provenance, signed through Sigstore and recorded in its public transparency log. This
-                site&apos;s own CI runs this check on the tarballs it documents.
+                Every tarball is built in public CI and carries SLSA provenance, signed through
+                Sigstore and recorded in its public transparency log. This site&apos;s own CI runs
+                this check on the tarballs it documents.
               </p>
             </div>
             <CodeBlock code={command} title="terminal" numbered={false} />
@@ -35,7 +36,10 @@ export function Verify() {
       <div className={styles.verifySide}>
         <Link href="/components/button#accessibility" className={styles.sideCard}>
           <span className={styles.eyebrow}>Accessibility, per component</span>
-          <span className={styles.sideTitle}>A keyboard, focus, and contrast contract on every page, generated from the specification.</span>
+          <span className={styles.sideTitle}>
+            A keyboard, focus, and contrast contract on every page, generated from the
+            specification.
+          </span>
           <span className={styles.sideLink}>
             Read the Button contract <ArrowRight size={14} />
           </span>
@@ -44,7 +48,9 @@ export function Verify() {
         {/* oxlint-disable-next-line nextjs/no-html-link-for-pages */}
         <a href="/llms.txt" className={styles.sideCard}>
           <span className={styles.eyebrow}>Agent-ready</span>
-          <span className={styles.sideTitle}>Your coding agent reads the same specifications and API, as plain text.</span>
+          <span className={styles.sideTitle}>
+            Your coding agent reads the same specifications and API, as plain text.
+          </span>
           <span className={styles.sideChip}>/llms.txt</span>
         </a>
       </div>

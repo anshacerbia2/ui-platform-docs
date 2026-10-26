@@ -10,7 +10,9 @@ function Props({ item }: { item: ApiExport }) {
       <SubHeading>
         <Code>{item.name}</Code>
       </SubHeading>
-      {item.description ? <p className={styles.lead}>{item.description.split("\n\n")[0]?.replace(/\n/g, " ")}</p> : null}
+      {item.description ? (
+        <p className={styles.lead}>{item.description.split("\n\n")[0]?.replace(/\n/g, " ")}</p>
+      ) : null}
       {props.length ? (
         <Table
           caption={`Props of ${item.name}`}
@@ -36,7 +38,11 @@ function Props({ item }: { item: ApiExport }) {
       ) : (
         <p className={styles.lead}>No props of its own.</p>
       )}
-      {item.extendsNative ? <p className={styles.note}>Also accepts the attributes of the element it renders, typed by React for that element.</p> : null}
+      {item.extendsNative ? (
+        <p className={styles.note}>
+          Also accepts the attributes of the element it renders, typed by React for that element.
+        </p>
+      ) : null}
       {item.parts?.length ? (
         <div className={styles.parts}>
           {item.parts.map((part) => (
@@ -68,7 +74,11 @@ export function Api({ entry, api }: { entry: string; api: ApiExport[] }) {
           <Table
             caption="Other exports"
             head={["Export", "Kind", "Definition"]}
-            rows={others.map((o) => [<Code key="n">{o.name}</Code>, o.kind, <Code key="d">{o.type ?? o.signature ?? "—"}</Code>])}
+            rows={others.map((o) => [
+              <Code key="n">{o.name}</Code>,
+              o.kind,
+              <Code key="d">{o.type ?? o.signature ?? "—"}</Code>,
+            ])}
           />
         </>
       ) : null}

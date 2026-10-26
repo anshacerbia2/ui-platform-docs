@@ -20,9 +20,10 @@ export default function Page() {
       <header className={styles.header}>
         <h1 className={styles.title}>Tokens</h1>
         <p className={styles.lead}>
-          {tokenList.length} canonical tokens in {themes.length} themes, each in light and dark, generated from the published JSON. Names follow {standard?.id}{" "}
-          {standard?.version}: scheme, role, emphasis, and state. Use the CSS custom property; a value may change in a minor release, a name may not. Designers
-          get the same tokens in Figma from the build: see{" "}
+          {tokenList.length} canonical tokens in {themes.length} themes, each in light and dark,
+          generated from the published JSON. Names follow {standard?.id} {standard?.version}:
+          scheme, role, emphasis, and state. Use the CSS custom property; a value may change in a
+          minor release, a name may not. Designers get the same tokens in Figma from the build: see{" "}
           <Link className={styles.link} href="/tokens/figma">
             Tokens in Figma
           </Link>
@@ -41,7 +42,10 @@ export default function Page() {
                   {t.type === "color" ? <span className={styles.dot} data-swatch={t.name} /> : null}
                   <Code>{t.cssName}</Code>
                 </span>,
-                ...themes.flatMap((id) => [<Code key={`${id}l`}>{t.values[id]?.light ?? "—"}</Code>, <Code key={`${id}d`}>{t.values[id]?.dark ?? "—"}</Code>]),
+                ...themes.flatMap((id) => [
+                  <Code key={`${id}l`}>{t.values[id]?.light ?? "—"}</Code>,
+                  <Code key={`${id}d`}>{t.values[id]?.dark ?? "—"}</Code>,
+                ]),
               ])}
             />
           </Section>

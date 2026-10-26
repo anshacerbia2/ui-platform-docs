@@ -5,7 +5,12 @@ import { SectionHead } from "./SectionHead";
 import styles from "./closing.module.scss";
 import sectionStyles from "./sections.module.scss";
 
-const MARKS = { primitive: PrimitiveMark, component: ComponentMark, token: TokenMark, release: ReleaseMark };
+const MARKS = {
+  primitive: PrimitiveMark,
+  component: ComponentMark,
+  token: TokenMark,
+  release: ReleaseMark,
+};
 
 export function Pillars() {
   return (

@@ -32,7 +32,18 @@ const CHECK =
 
 /** The CSS Module class names the ruler's parts take. */
 export type RulerClasses = Record<
-  "ruler" | "glass" | "scale" | "tick" | "mark" | "window" | "now" | "cursor" | "labels" | "verified" | "jumps" | "corner",
+  | "ruler"
+  | "glass"
+  | "scale"
+  | "tick"
+  | "mark"
+  | "window"
+  | "now"
+  | "cursor"
+  | "labels"
+  | "verified"
+  | "jumps"
+  | "corner",
   string
 >;
 
@@ -74,7 +85,11 @@ const put = (node: HTMLElement, prop: string, value: string) => {
   written.set(node, seen);
   node.style.setProperty(prop, value);
 };
-const el = <K extends keyof HTMLElementTagNameMap>(tag: K, cls?: string, attrs: Record<string, string> = {}) => {
+const el = <K extends keyof HTMLElementTagNameMap>(
+  tag: K,
+  cls?: string,
+  attrs: Record<string, string> = {},
+) => {
   const n = document.createElement(tag);
   if (cls) n.className = cls;
   for (const [k, v] of Object.entries(attrs)) n.setAttribute(k, v);
@@ -93,13 +108,23 @@ const hash = (a: number, b: number, c: number) => {
  * returned function is called. `column` is the page column, whose right edge
  * bounds the free margin the titles may use.
  */
-export function mountRuler(host: HTMLElement, sheets: HTMLElement[], column: HTMLElement | null, cls: RulerClasses): () => void {
+export function mountRuler(
+  host: HTMLElement,
+  sheets: HTMLElement[],
+  column: HTMLElement | null,
+  cls: RulerClasses,
+): () => void {
   if (!sheets.length) return noop;
   const doc = document.documentElement;
   const reduce = window.matchMedia("(prefers-reduced-motion: reduce)");
   const wide = window.matchMedia(`(min-width: ${RULER_MIN_WIDTH}px)`);
   const cleanups: (() => void)[] = [];
-  const listen = <T extends EventTarget>(target: T, type: string, fn: EventListenerOrEventListenerObject, options?: AddEventListenerOptions) => {
+  const listen = <T extends EventTarget>(
+    target: T,
+    type: string,
+    fn: EventListenerOrEventListenerObject,
+    options?: AddEventListenerOptions,
+  ) => {
     target.addEventListener(type, fn, options);
     cleanups.push(() => target.removeEventListener(type, fn, options));
   };
@@ -245,7 +270,8 @@ export function mountRuler(host: HTMLElement, sheets: HTMLElement[], column: HTM
       // stack (SCROLL.md 6.2), and the line at which it hangs clear of that limit. The first
       // title is current from the start and never stands, but every title needs a finite
       // limit: a NaN in any one place leaves its letters undrawn.
-      L.limit = (L.i < last ? vh - 37 - (last - L.i - 1) * pitch - (big * SMALL) / 2 : vh - BOTTOM) - 8;
+      L.limit =
+        (L.i < last ? vh - 37 - (last - L.i - 1) * pitch - (big * SMALL) / 2 : vh - BOTTOM) - 8;
       L.hang = L.limit - L.W * UPRIGHT - 8;
       L.stand = 0;
       if (L.i === 0) continue;
@@ -285,7 +311,13 @@ export function mountRuler(host: HTMLElement, sheets: HTMLElement[], column: HTM
   const currentIndex = () => currentSection(tops, window.scrollY, maxScroll, NAV);
 
   /* Where letter k of a title sits in each place it can be: [x, y, rotation, scale, tone]. */
-  const across = (L: Label, k: number, y: number, s: number, t: number) => [vw - RAIL - L.W * s + (L.letters[k]!.c + L.letters[k]!.w / 2) * s, y, 0, s, t];
+  const across = (L: Label, k: number, y: number, s: number, t: number) => [
+    vw - RAIL - L.W * s + (L.letters[k]!.c + L.letters[k]!.w / 2) * s,
+    y,
+    0,
+    s,
+    t,
+  ];
   const upright = (L: Label, k: number, y: number, t: number) => [
     vw - 32,
     y + (L.W * UPRIGHT) / 2 - (L.letters[k]!.c + L.letters[k]!.w / 2) * UPRIGHT,
@@ -333,12 +365,17 @@ export function mountRuler(host: HTMLElement, sheets: HTMLElement[], column: HTM
     } else {
       scaleState = "mix";
       put(scale, "transform", "none");
-      for (const it of items) it.n.style.setProperty("transform", ty(mix((it.v() / 100) * docH + offset, hoverY(it.v()), mode)));
+      for (const it of items)
+        it.n.style.setProperty(
+          "transform",
+          ty(mix((it.v() / 100) * docH + offset, hoverY(it.v()), mode)),
+        );
     }
     // the ledger: read sections are verified, the one being read is ink
     if (cur !== shownCur || p >= 99.5) {
       const end = p >= 99.5;
-      for (const L of labels) L.mark.dataset.state = L.i < cur || end ? "read" : L.i === cur ? "here" : "ahead";
+      for (const L of labels)
+        L.mark.dataset.state = L.i < cur || end ? "read" : L.i === cur ? "here" : "ahead";
       shownCur = cur;
     }
     const a = hoverY((y / docH) * 100);
@@ -351,13 +388,20 @@ export function mountRuler(host: HTMLElement, sheets: HTMLElement[], column: HTM
     if (pct.textContent !== readout) {
       pct.textContent = readout;
       rail.setAttribute("aria-valuenow", String(Math.round(p)));
-      rail.setAttribute("aria-valuetext", `${Math.round(p)}%, ${labels[cur]!.sheet.dataset.sheet || labels[cur]!.sheet.id}`);
+      rail.setAttribute(
+        "aria-valuetext",
+        `${Math.round(p)}%, ${labels[cur]!.sheet.dataset.sheet || labels[cur]!.sheet.id}`,
+      );
     }
     put(cursor, "opacity", pointerY < 0 ? "0" : mode.toFixed(3));
     if (pointerY >= 0) put(cursor, "transform", ty(pointerY));
 
     /* Titles: every letter is placed from its section's line on screen (SCROLL.md 6). */
-    const moveIn = labels.map((L) => ({ sBig: L.sBig, curY: L.curY, C: L.i === 0 ? 1 : clamp((L.end + L.span - (L.top - y) + 0.5) / L.span, 0, 1) }));
+    const moveIn = labels.map((L) => ({
+      sBig: L.sBig,
+      curY: L.curY,
+      C: L.i === 0 ? 1 : clamp((L.end + L.span - (L.top - y) + 0.5) / L.span, 0, 1),
+    }));
     let check: { L: Label; y: number; s: number } | null = null;
     // the lowest point the previous title reaches on screen, letter by letter, this frame
     let tail = -Infinity;
@@ -377,7 +421,9 @@ export function mountRuler(host: HTMLElement, sheets: HTMLElement[], column: HTM
       // Status sheets, the Tokens page's many groups), the two would otherwise cross.
       const hangLine = Math.max(line, tail);
       const standY = clamp(hangLine + 8, curY + (big * sBig) / 2 + 8, L.limit - 2 * half) + half;
-      const U = L.stand ? Math.min(clamp((L.limit - line) / L.stand, 0, 1), clamp((L.hang - tail) / L.stand, 0, 1)) : 0;
+      const U = L.stand
+        ? Math.min(clamp((L.limit - line) / L.stand, 0, 1), clamp((L.hang - tail) / L.stand, 0, 1))
+        : 0;
       let lowest = -Infinity;
       // the current title leaves within the first 1 − SPREAD of the next title's move (6.8)
       const Q = labels[L.i + 1] ? clamp(moveIn[L.i + 1]!.C / (1 - SPREAD), 0, 1) : 0;
@@ -399,7 +445,8 @@ export function mountRuler(host: HTMLElement, sheets: HTMLElement[], column: HTM
         if (mk > 0) at = blend(at, across(L, k, hoverY(L.v), SMALL, L.i === cur ? 1 : 0.86), mk);
         if (!opening && ((u > 0 && u < 1) || (c > 0 && c < 1) || (q > 0 && q < 1))) settled = false;
         let ch = l.real;
-        if (L.decode && l.real !== " " && t < L.decode + DECODE_LEAD + k * DECODE_STEP) ch = HEX[hash(L.i, k, Math.floor((t - L.decode) / 50))]!;
+        if (L.decode && l.real !== " " && t < L.decode + DECODE_LEAD + k * DECODE_STEP)
+          ch = HEX[hash(L.i, k, Math.floor((t - L.decode) / 50))]!;
         if (ch !== l.shown) l.span.textContent = l.shown = ch;
         if (c < 1 || q > 0 || L.decode) whole = false;
         const [x = 0, top = 0, turn = 0, size = 1, tone = 1] = at;
@@ -408,7 +455,11 @@ export function mountRuler(host: HTMLElement, sheets: HTMLElement[], column: HTM
           "transform",
           `translate3d(${x.toFixed(1)}px, ${top.toFixed(1)}px, 0) translate(-50%, -50%) rotate(${turn.toFixed(1)}deg) scale(${size.toFixed(3)})`,
         );
-        put(l.span, "color", `color-mix(in oklch, var(--sq-text) ${(tone * 100).toFixed(0)}%, var(--sq-ground))`);
+        put(
+          l.span,
+          "color",
+          `color-mix(in oklch, var(--sq-text) ${(tone * 100).toFixed(0)}%, var(--sq-ground))`,
+        );
         // how far the letter reaches below its centre: its width when turned upright
         lowest = Math.max(lowest, top + ((Math.abs(turn) > 45 ? l.w : big) * size) / 2);
       }
@@ -416,7 +467,16 @@ export function mountRuler(host: HTMLElement, sheets: HTMLElement[], column: HTM
       L.settled = settled;
       if (whole && mode < 0.05) check = { L, y: curY, s: sBig };
       // the jump link covers the title where it mostly is
-      const place = mode > 0.5 ? "hover" : Q > 0.5 ? "past" : C > 0.5 ? "current" : U > 0.5 ? "upright" : "stack";
+      const place =
+        mode > 0.5
+          ? "hover"
+          : Q > 0.5
+            ? "past"
+            : C > 0.5
+              ? "current"
+              : U > 0.5
+                ? "upright"
+                : "stack";
       const box =
         place === "hover"
           ? [vw - RAIL - L.W * SMALL, hoverY(L.v) - (big * SMALL) / 2, L.W * SMALL, big * SMALL]
@@ -424,7 +484,12 @@ export function mountRuler(host: HTMLElement, sheets: HTMLElement[], column: HTM
             ? [vw - 32 - (big * UPRIGHT) / 2, standY - half, big * UPRIGHT, half * 2]
             : place === "current"
               ? [vw - RAIL - L.W * sBig, curY - (big * sBig) / 2, L.W * sBig, big * sBig]
-              : [vw - RAIL - L.W * SMALL, (place === "past" ? pastY : stackY) - (big * SMALL) / 2, L.W * SMALL, big * SMALL];
+              : [
+                  vw - RAIL - L.W * SMALL,
+                  (place === "past" ? pastY : stackY) - (big * SMALL) / 2,
+                  L.W * SMALL,
+                  big * SMALL,
+                ];
       const key = box.map((v) => v.toFixed(0)).join(",");
       if (key !== L.box) {
         L.box = key;
@@ -437,7 +502,11 @@ export function mountRuler(host: HTMLElement, sheets: HTMLElement[], column: HTM
     if (check) {
       const size = big * check.s * 0.62;
       const x = vw - RAIL - check.L.W * check.s - size * 1.25;
-      put(verified, "transform", `translate3d(${x.toFixed(1)}px, ${(check.y - size / 2).toFixed(1)}px, 0)`);
+      put(
+        verified,
+        "transform",
+        `translate3d(${x.toFixed(1)}px, ${(check.y - size / 2).toFixed(1)}px, 0)`,
+      );
       put(verified, "width", `${size.toFixed(1)}px`);
       put(verified, "height", `${size.toFixed(1)}px`);
     }
@@ -465,7 +534,8 @@ export function mountRuler(host: HTMLElement, sheets: HTMLElement[], column: HTM
   };
 
   /* ---------- pointer ---------- */
-  const toScroll = (yy: number, tau: number) => glideTo(clamp((yy - TOP) / H, 0, 1) * maxScroll, tau);
+  const toScroll = (yy: number, tau: number) =>
+    glideTo(clamp((yy - TOP) / H, 0, 1) * maxScroll, tau);
   const enter = () => {
     modeTarget = 1;
     request();
@@ -488,7 +558,8 @@ export function mountRuler(host: HTMLElement, sheets: HTMLElement[], column: HTM
     if ((e.target as Element).closest("a") && modeTarget > 0.5) enter();
   }) as EventListener);
   listen(jumps, "pointerout", ((e: PointerEvent) => {
-    if (!rail.contains(e.relatedTarget as Node) && !jumps.contains(e.relatedTarget as Node)) leave();
+    if (!rail.contains(e.relatedTarget as Node) && !jumps.contains(e.relatedTarget as Node))
+      leave();
   }) as EventListener);
   listen(rail, "pointermove", ((e: PointerEvent) => {
     pointerY = e.clientY;
@@ -524,11 +595,18 @@ export function mountRuler(host: HTMLElement, sheets: HTMLElement[], column: HTM
     const p = progress();
     const cur = currentIndex();
     let top: number | null = null;
-    if (e.key === "ArrowDown" || e.key === "ArrowRight") top = ((p + (e.shiftKey ? 5 : 1)) / 100) * maxScroll;
-    else if (e.key === "ArrowUp" || e.key === "ArrowLeft") top = ((p - (e.shiftKey ? 5 : 1)) / 100) * maxScroll;
+    if (e.key === "ArrowDown" || e.key === "ArrowRight")
+      top = ((p + (e.shiftKey ? 5 : 1)) / 100) * maxScroll;
+    else if (e.key === "ArrowUp" || e.key === "ArrowLeft")
+      top = ((p - (e.shiftKey ? 5 : 1)) / 100) * maxScroll;
     else if (e.key === "PageDown") top = labels[cur + 1] ? lineAtNav(labels[cur + 1]!) : maxScroll;
     else if (e.key === "PageUp")
-      top = window.scrollY > lineAtNav(labels[cur]!) + 4 ? lineAtNav(labels[cur]!) : labels[cur - 1] ? lineAtNav(labels[cur - 1]!) : 0;
+      top =
+        window.scrollY > lineAtNav(labels[cur]!) + 4
+          ? lineAtNav(labels[cur]!)
+          : labels[cur - 1]
+            ? lineAtNav(labels[cur - 1]!)
+            : 0;
     else if (e.key === "Home") top = 0;
     else if (e.key === "End") top = maxScroll;
     if (top === null) return;
@@ -540,7 +618,8 @@ export function mountRuler(host: HTMLElement, sheets: HTMLElement[], column: HTM
   const on = () => {
     const active = wide.matches;
     doc.dataset.ruler = active ? "on" : "off";
-    for (const n of [rail, cursor, layer, verified, jumps, glassTop, glassBottom]) n.hidden = !active;
+    for (const n of [rail, cursor, layer, verified, jumps, glassTop, glassBottom])
+      n.hidden = !active;
     if (!active) return;
     measure();
     invalidate();

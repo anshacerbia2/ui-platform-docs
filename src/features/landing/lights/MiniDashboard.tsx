@@ -57,7 +57,12 @@ export function MiniDashboard({ hidden }: { hidden?: boolean }) {
             <span className={styles.cardTitle}>Monthly recurring revenue</span>
             <div className={styles.bars}>
               {BARS.map((h, i) => (
-                <span key={i} className={styles.bar} data-h={h} data-recent={i >= 12 || undefined} />
+                <span
+                  key={i}
+                  className={styles.bar}
+                  data-h={h}
+                  data-recent={i >= 12 || undefined}
+                />
               ))}
             </div>
           </div>

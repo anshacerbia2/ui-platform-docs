@@ -14,7 +14,12 @@ export function SiteNav() {
       {SECTIONS.map(({ href, label }) => {
         const current = pathname === href || pathname.startsWith(`${href}/`);
         return (
-          <Link key={href} href={href} className={styles.navLink} aria-current={current ? "page" : undefined}>
+          <Link
+            key={href}
+            href={href}
+            className={styles.navLink}
+            aria-current={current ? "page" : undefined}
+          >
             <Shuffle>{label}</Shuffle>
           </Link>
         );

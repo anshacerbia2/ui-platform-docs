@@ -5,8 +5,12 @@
 // hue. Ported from the Docs-Landing design (Platform Dashboard Concepts).
 
 /** The scnx-platform theme's 12-step scale: OKLCH lightness and chroma per step (blue). */
-export const STEP_L = [0.99, 0.968, 0.933, 0.889, 0.838, 0.783, 0.723, 0.658, 0.59, 0.565, 0.5, 0.392];
-export const STEP_C = [0.0003, 0.0023, 0.0091, 0.0238, 0.0486, 0.0842, 0.1288, 0.1818, 0.2373, 0.2343, 0.1447, 0.0784];
+export const STEP_L = [
+  0.99, 0.968, 0.933, 0.889, 0.838, 0.783, 0.723, 0.658, 0.59, 0.565, 0.5, 0.392,
+];
+export const STEP_C = [
+  0.0003, 0.0023, 0.0091, 0.0238, 0.0486, 0.0842, 0.1288, 0.1818, 0.2373, 0.2343, 0.1447, 0.0784,
+];
 
 type Vec3 = [number, number, number];
 
@@ -31,8 +35,10 @@ const encode = (x: number) => {
   const v = Math.max(0, Math.min(1, x));
   return v <= 0.0031308 ? 12.92 * v : 1.055 * v ** (1 / 2.4) - 0.055;
 };
-export const oklchToSrgb = (L: number, C: number, h: number): Vec3 => oklchToLinear(L, C, h).map(encode) as Vec3;
-const inGamut = (L: number, C: number, h: number) => oklchToLinear(L, C, h).every((x) => x >= -0.0005 && x <= 1.0005);
+export const oklchToSrgb = (L: number, C: number, h: number): Vec3 =>
+  oklchToLinear(L, C, h).map(encode) as Vec3;
+const inGamut = (L: number, C: number, h: number) =>
+  oklchToLinear(L, C, h).every((x) => x >= -0.0005 && x <= 1.0005);
 /** The largest chroma at lightness L and hue h inside sRGB (bisection). */
 export function maxChroma(L: number, h: number) {
   let lo = 0;
@@ -84,13 +90,86 @@ const mul = (a: Mat4, b: Mat4): Mat4 => {
 };
 const perspective = (f: number, aspect: number, n: number, far: number): Mat4 => {
   const t = 1 / Math.tan(f / 2);
-  return [t / aspect, 0, 0, 0, 0, t, 0, 0, 0, 0, (far + n) / (n - far), -1, 0, 0, (2 * far * n) / (n - far), 0];
+  return [
+    t / aspect,
+    0,
+    0,
+    0,
+    0,
+    t,
+    0,
+    0,
+    0,
+    0,
+    (far + n) / (n - far),
+    -1,
+    0,
+    0,
+    (2 * far * n) / (n - far),
+    0,
+  ];
 };
-const rotateY = (a: number): Mat4 => [Math.cos(a), 0, -Math.sin(a), 0, 0, 1, 0, 0, Math.sin(a), 0, Math.cos(a), 0, 0, 0, 0, 1];
-const rotateX = (a: number): Mat4 => [1, 0, 0, 0, 0, Math.cos(a), Math.sin(a), 0, 0, -Math.sin(a), Math.cos(a), 0, 0, 0, 0, 1];
-const translate = (x: number, y: number, z: number): Mat4 => [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, x, y, z, 1];
+const rotateY = (a: number): Mat4 => [
+  Math.cos(a),
+  0,
+  -Math.sin(a),
+  0,
+  0,
+  1,
+  0,
+  0,
+  Math.sin(a),
+  0,
+  Math.cos(a),
+  0,
+  0,
+  0,
+  0,
+  1,
+];
+const rotateX = (a: number): Mat4 => [
+  1,
+  0,
+  0,
+  0,
+  0,
+  Math.cos(a),
+  Math.sin(a),
+  0,
+  0,
+  -Math.sin(a),
+  Math.cos(a),
+  0,
+  0,
+  0,
+  0,
+  1,
+];
+const translate = (x: number, y: number, z: number): Mat4 => [
+  1,
+  0,
+  0,
+  0,
+  0,
+  1,
+  0,
+  0,
+  0,
+  0,
+  1,
+  0,
+  x,
+  y,
+  z,
+  1,
+];
 const transform = (m: Mat4, v: Vec3) =>
-  [0, 1, 2, 3].map((r) => m[r]! * v[0] + m[4 + r]! * v[1] + m[8 + r]! * v[2] + m[12 + r]!) as [number, number, number, number];
+  [0, 1, 2, 3].map((r) => m[r]! * v[0] + m[4 + r]! * v[1] + m[8 + r]! * v[2] + m[12 + r]!) as [
+    number,
+    number,
+    number,
+    number,
+  ];
 
 const MESH_VS = `attribute vec3 aP; attribute vec3 aN; attribute vec3 aC; attribute float aA; uniform mat4 uPr; uniform mat4 uV; uniform float uY; uniform float uMir; uniform float uFloor;
 varying vec3 vN; varying vec3 vC; varying vec3 vW; varying float vA; varying float vF;
@@ -115,8 +194,10 @@ void main(){ vec2 q = glcPointCoord * 2.0 - 1.0; float r = length(q); if (r > 1.
   float core = 1.0 - smoothstep(0.3, 0.42, r); float ring = smoothstep(0.42, 0.5, r) * (1.0 - smoothstep(0.56, 0.64, r));
   float glow = pow(1.0 - r, 2.0) * 0.8 + ring * 0.6; vec3 c = mix(vC * glow, vec3(1.0), core); float a = max(core, glow);
   glcFragColor = vec4(c, a); }`;
-const LINE_VS = "attribute vec3 aP; uniform mat4 uPr; uniform mat4 uV; void main(){ glcPosition = uPr * uV * vec4(aP, 1.0); }";
-const LINE_FS = "precision mediump float; uniform vec4 uCol; void main(){ glcFragColor = vec4(uCol.rgb * uCol.a, uCol.a); }";
+const LINE_VS =
+  "attribute vec3 aP; uniform mat4 uPr; uniform mat4 uV; void main(){ glcPosition = uPr * uV * vec4(aP, 1.0); }";
+const LINE_FS =
+  "precision mediump float; uniform vec4 uCol; void main(){ glcFragColor = vec4(uCol.rgb * uCol.a, uCol.a); }";
 
 const SEGMENTS = 180;
 const INNER = 0.7;
@@ -126,7 +207,8 @@ const HALO = 0.5;
 const ringRadius = (i: number) => INNER + 0.5 + STEP_C[i]! * 9;
 
 const yawFor = (h: number) => -Math.PI / 2 - (h * Math.PI) / 180 + 0.55;
-const wrap = (a: number, a0: number) => a0 + ((((a - a0) % (Math.PI * 2)) + Math.PI * 3) % (Math.PI * 2)) - Math.PI;
+const wrap = (a: number, a0: number) =>
+  a0 + ((((a - a0) % (Math.PI * 2)) + Math.PI * 3) % (Math.PI * 2)) - Math.PI;
 
 /** Starts the tower on `canvas`; returns null when WebGL is unavailable. */
 export function startTower(canvas: HTMLCanvasElement, options: TowerOptions): Tower | null {
@@ -164,8 +246,17 @@ export function startTower(canvas: HTMLCanvasElement, options: TowerOptions): To
     }
     const v: number[] = [];
     const hv: number[] = [];
-    const P = (arr: number[], x: number, y: number, z: number, nx: number, ny: number, nz: number, c: Vec3, a: number) =>
-      arr.push(x, y, z, nx, ny, nz, c[0], c[1], c[2], a);
+    const P = (
+      arr: number[],
+      x: number,
+      y: number,
+      z: number,
+      nx: number,
+      ny: number,
+      nz: number,
+      c: Vec3,
+      a: number,
+    ) => arr.push(x, y, z, nx, ny, nz, c[0], c[1], c[2], a);
     for (let j = 0; j < SEGMENTS; j++) {
       const a0 = (j / SEGMENTS) * Math.PI * 2;
       const a1 = ((j + 1) / SEGMENTS) * Math.PI * 2;
@@ -235,15 +326,32 @@ export function startTower(canvas: HTMLCanvasElement, options: TowerOptions): To
         C,
         h: hue,
         hex: hex(color),
-        best: onWhite >= onInk ? `white text ${onWhite.toFixed(1)}:1` : `ink text ${onInk.toFixed(1)}:1`,
+        best:
+          onWhite >= onInk
+            ? `white text ${onWhite.toFixed(1)}:1`
+            : `ink text ${onInk.toFixed(1)}:1`,
       };
     });
   };
   rebuild();
 
   const uniform = (program: WebGLProgram, names: string[]) =>
-    Object.fromEntries(names.map((n) => [n, gl.getUniformLocation(program, n)])) as Record<string, WebGLUniformLocation | null>;
-  const MU = uniform(meshProgram, ["uPr", "uV", "uY", "uMir", "uFloor", "uE", "uDim", "uMode", "uScan", "uAlpha"]);
+    Object.fromEntries(names.map((n) => [n, gl.getUniformLocation(program, n)])) as Record<
+      string,
+      WebGLUniformLocation | null
+    >;
+  const MU = uniform(meshProgram, [
+    "uPr",
+    "uV",
+    "uY",
+    "uMir",
+    "uFloor",
+    "uE",
+    "uDim",
+    "uMode",
+    "uScan",
+    "uAlpha",
+  ]);
   const MA = {
     aP: gl.getAttribLocation(meshProgram, "aP"),
     aN: gl.getAttribLocation(meshProgram, "aN"),
@@ -251,7 +359,11 @@ export function startTower(canvas: HTMLCanvasElement, options: TowerOptions): To
     aA: gl.getAttribLocation(meshProgram, "aA"),
   };
   const PU = uniform(pointProgram, ["uPr", "uV", "uPx"]);
-  const PA = { aP: gl.getAttribLocation(pointProgram, "aP"), aC: gl.getAttribLocation(pointProgram, "aC"), aS: gl.getAttribLocation(pointProgram, "aS") };
+  const PA = {
+    aP: gl.getAttribLocation(pointProgram, "aP"),
+    aC: gl.getAttribLocation(pointProgram, "aC"),
+    aS: gl.getAttribLocation(pointProgram, "aS"),
+  };
   const LU = uniform(lineProgram, ["uPr", "uV", "uCol"]);
   const LA = gl.getAttribLocation(lineProgram, "aP");
   const dynamic = gl.createBuffer();
@@ -371,7 +483,9 @@ export function startTower(canvas: HTMLCanvasElement, options: TowerOptions): To
     const sp = SPACING * g;
     const ys = (i: number) => (5.5 - i) * sp + 0.25;
     const floorY = ys(11) - 0.55;
-    const scanY = reduce ? -99 : ys(11) + ((Math.sin(time * 0.55) + 1) / 2) * (ys(0) - ys(11) + THICKNESS);
+    const scanY = reduce
+      ? -99
+      : ys(11) + ((Math.sin(time * 0.55) + 1) / 2) * (ys(0) - ys(11) + THICKNESS);
 
     const dist = 29;
     const inverse = mul(rotateY(-S.yaw), rotateX(-S.pitch));
@@ -499,7 +613,9 @@ export function startTower(canvas: HTMLCanvasElement, options: TowerOptions): To
     if (best !== S.hover) {
       S.hover = best;
       const q = pillar[best];
-      options.onHover(q ? { step: q.step, L: q.L, C: q.C, h: q.h, hex: q.hex, best: q.best } : null);
+      options.onHover(
+        q ? { step: q.step, L: q.L, C: q.C, h: q.h, hex: q.hex, best: q.best } : null,
+      );
     }
     if (best >= 0) options.onTrack(bx, by);
     S.raf = requestAnimationFrame(frame);

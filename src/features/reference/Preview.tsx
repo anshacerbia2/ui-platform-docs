@@ -1,7 +1,14 @@
 "use client";
 
 import { ThemeProvider } from "@scnx/core-ui/providers/theme-provider-base";
-import { createElement, useEffect, useRef, useState, type ElementType, type ReactNode } from "react";
+import {
+  createElement,
+  useEffect,
+  useRef,
+  useState,
+  type ElementType,
+  type ReactNode,
+} from "react";
 import { registry } from "@/generated/registry";
 import { defaultsOf, effective, tokensIn } from "@/shared/lib/bindings";
 import type { FixtureNode, StyledSpec } from "@/shared/lib/reference";
@@ -15,17 +22,32 @@ import { useThemeChoice } from "./ThemeChoice";
 function resolve(mod: Record<string, unknown>, type: string | null): ElementType {
   if (type === null) return Object.values(mod).find((v) => typeof v === "function") as ElementType;
   if (/^[a-z]/.test(type)) return type as ElementType;
-  const found = type.split(".").reduce<unknown>((value, key) => (value as Record<string, unknown> | undefined)?.[key], mod);
+  const found = type
+    .split(".")
+    .reduce<unknown>((value, key) => (value as Record<string, unknown> | undefined)?.[key], mod);
   if (!found) throw new Error(`no export ${type}`);
   return found as ElementType;
 }
 
-function build(mod: Record<string, unknown>, node: FixtureNode | string, extra?: Record<string, unknown>, key?: number): ReactNode {
+function build(
+  mod: Record<string, unknown>,
+  node: FixtureNode | string,
+  extra?: Record<string, unknown>,
+  key?: number,
+): ReactNode {
   if (typeof node === "string") return node;
-  return createElement(resolve(mod, node.type), { key, ...node.props, ...extra }, ...(node.children ?? []).map((child, i) => build(mod, child, undefined, i)));
+  return createElement(
+    resolve(mod, node.type),
+    { key, ...node.props, ...extra },
+    ...(node.children ?? []).map((child, i) => build(mod, child, undefined, i)),
+  );
 }
 
-type Props = { slug: string; spec: Pick<StyledSpec, "anatomy" | "options" | "states" | "fixture" | "bindings">; themes: string[] };
+type Props = {
+  slug: string;
+  spec: Pick<StyledSpec, "anatomy" | "options" | "states" | "fixture" | "bindings">;
+  themes: string[];
+};
 
 /** The live preview: options, prop-entered states, theme, and mode; the root's bindings beside it. */
 export function Preview({ slug, spec, themes }: Props) {
@@ -36,9 +58,17 @@ export function Preview({ slug, spec, themes }: Props) {
   const { theme, setTheme, mode, setMode } = useThemeChoice(themes);
   const stage = useRef<HTMLDivElement>(null);
   const propStates = spec.states.filter((s) => "props" in s.enter);
-  const enter = (propStates.find((s) => s.name === state)?.enter.props ?? {}) as Record<string, unknown>;
+  const enter = (propStates.find((s) => s.name === state)?.enter.props ?? {}) as Record<
+    string,
+    unknown
+  >;
   const rootProps = {
-    ...Object.fromEntries(Object.entries(option).map(([k, v]) => [k, spec.options[k]?.values.join() === "false,true" ? v === "true" : v])),
+    ...Object.fromEntries(
+      Object.entries(option).map(([k, v]) => [
+        k,
+        spec.options[k]?.values.join() === "false,true" ? v === "true" : v,
+      ]),
+    ),
     ...enter,
   };
 
@@ -74,12 +104,18 @@ export function Preview({ slug, spec, themes }: Props) {
       </div>
       <div className={styles.body}>
         <ThemeProvider themeId={theme} mode={mode} storage={false}>
-          <div ref={stage} className={styles.stage} data-dialog={spec.fixture.activate ? "" : undefined}>
+          <div
+            ref={stage}
+            className={styles.stage}
+            data-dialog={spec.fixture.activate ? "" : undefined}
+          >
             <span className={styles.stageLabel}>
               live · the specification&apos;s fixture · {theme} {mode}
             </span>
             <div className={styles.stageContent}>
-              {spec.fixture.tree ? build(mod, spec.fixture.tree, rootProps) : createElement(resolve(mod, null), { ...spec.fixture.props, ...rootProps })}
+              {spec.fixture.tree
+                ? build(mod, spec.fixture.tree, rootProps)
+                : createElement(resolve(mod, null), { ...spec.fixture.props, ...rootProps })}
             </div>
           </div>
         </ThemeProvider>
@@ -89,7 +125,12 @@ export function Preview({ slug, spec, themes }: Props) {
               <legend className={styles.controlName}>{name}</legend>
               <div className={styles.choices}>
                 {o.values.map((value) => (
-                  <button key={value} type="button" aria-pressed={option[name] === value} onClick={() => setOption({ ...option, [name]: value })}>
+                  <button
+                    key={value}
+                    type="button"
+                    aria-pressed={option[name] === value}
+                    onClick={() => setOption({ ...option, [name]: value })}
+                  >
                     {value}
                   </button>
                 ))}
@@ -101,7 +142,12 @@ export function Preview({ slug, spec, themes }: Props) {
               <legend className={styles.controlName}>state</legend>
               <div className={styles.choices}>
                 {["", ...propStates.map((s) => s.name)].map((name) => (
-                  <button key={name || "rest"} type="button" aria-pressed={state === name} onClick={() => setState(name)}>
+                  <button
+                    key={name || "rest"}
+                    type="button"
+                    aria-pressed={state === name}
+                    onClick={() => setState(name)}
+                  >
                     {name || "rest"}
                   </button>
                 ))}

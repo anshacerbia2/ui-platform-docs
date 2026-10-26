@@ -65,7 +65,11 @@ export function onGlideWrite(fn: Listener): () => void {
 
 // An element that can still scroll this way keeps the wheel.
 function scrollsItself(node: EventTarget | null, dy: number) {
-  for (let n = node instanceof Element ? node : null; n && n !== document.body && n !== document.documentElement; n = n.parentElement) {
+  for (
+    let n = node instanceof Element ? node : null;
+    n && n !== document.body && n !== document.documentElement;
+    n = n.parentElement
+  ) {
     const oy = getComputedStyle(n).overflowY;
     if ((oy === "auto" || oy === "scroll") && n.scrollHeight > n.clientHeight + 1) {
       if (dy > 0 ? n.scrollTop + n.clientHeight < n.scrollHeight - 1 : n.scrollTop > 0) return true;

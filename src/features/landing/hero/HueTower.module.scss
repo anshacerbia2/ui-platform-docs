@@ -8,7 +8,11 @@
     overflow: hidden;
     border-radius: $radius-panel;
     background:
-      radial-gradient(color-mix(in oklch, var(--ds-color-neutral-text-default-default) 6%, transparent) 1px, transparent 1px) 0 0 / 22px 22px,
+      radial-gradient(
+          color-mix(in oklch, var(--ds-color-neutral-text-default-default) 6%, transparent) 1px,
+          transparent 1px
+        )
+        0 0 / 22px 22px,
       radial-gradient(
         120% 90% at 50% 32%,
         var(--ds-color-neutral-surface-default-default) 0%,
@@ -250,7 +254,11 @@
     gap: 0.625rem;
     padding: 0.625rem 0.75rem;
     border-radius: 0.75rem;
-    background: color-mix(in oklch, var(--ds-color-neutral-surface-sunken-default) 92%, transparent);
+    background: color-mix(
+      in oklch,
+      var(--ds-color-neutral-surface-sunken-default) 92%,
+      transparent
+    );
     box-shadow:
       0 0 0 1px var(--ds-color-neutral-border-subtle-default),
       var(--ds-effect-shadow-overlay);

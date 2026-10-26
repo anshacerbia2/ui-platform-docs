@@ -11,7 +11,11 @@ import { Reveal } from "@/features/site-shell/Reveal";
 import { SiteTheme } from "@/features/site-shell/SiteTheme";
 
 export const metadata: Metadata = {
-  metadataBase: new URL(process.env.VERCEL_PROJECT_PRODUCTION_URL ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}` : "http://localhost:3000"),
+  metadataBase: new URL(
+    process.env.VERCEL_PROJECT_PRODUCTION_URL
+      ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`
+      : "http://localhost:3000",
+  ),
   title: { default: "Scnehaux UI — Build interfaces you can prove", template: "%s · Scnehaux UI" },
   description:
     "An accessible React design system with perceptual color, scoped multi-brand theming, and zero runtime CSS. Every release ships with the evidence that it works.",
@@ -22,7 +26,8 @@ export const viewport: Viewport = {
   colorScheme: "light dark",
 };
 
-const isMode = (value: string | undefined): value is "light" | "dark" | "system" => value === "light" || value === "dark" || value === "system";
+const isMode = (value: string | undefined): value is "light" | "dark" | "system" =>
+  value === "light" || value === "dark" || value === "system";
 
 export default async function RootLayout({ children }: { children: ReactNode }) {
   // TDD docs-site D6: the stored preference, else the system preference Chromium

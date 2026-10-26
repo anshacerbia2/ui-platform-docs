@@ -2,7 +2,17 @@ import type { ReactNode } from "react";
 import styles from "./sections.module.scss";
 
 /** A landing section's heading row: eyebrow and title on one side, a note on the other. */
-export function SectionHead({ id, eyebrow, title, note }: { id: string; eyebrow?: string; title: ReactNode; note?: ReactNode }) {
+export function SectionHead({
+  id,
+  eyebrow,
+  title,
+  note,
+}: {
+  id: string;
+  eyebrow?: string;
+  title: ReactNode;
+  note?: ReactNode;
+}) {
   return (
     <div className={styles.head}>
       <div className={styles.headTitle}>

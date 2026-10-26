@@ -32,12 +32,16 @@ function composite(foreground, background, path) {
   const fg = onDisplay(foreground, path);
   const bg = onDisplay(background, path);
   const alpha = Number(fg.alpha ?? 1);
-  const coords = fg.coords.map((channel, i) => (channel ?? 0) * alpha + (bg.coords[i] ?? 0) * (1 - alpha));
+  const coords = fg.coords.map(
+    (channel, i) => (channel ?? 0) * alpha + (bg.coords[i] ?? 0) * (1 - alpha),
+  );
   return new Color(path.space, coords, 1);
 }
 
 function opaqueOn(background, canvas, path) {
-  return Number(background.alpha ?? 1) < 1 ? composite(background, canvas, path) : onDisplay(background, path);
+  return Number(background.alpha ?? 1) < 1
+    ? composite(background, canvas, path)
+    : onDisplay(background, path);
 }
 
 /** The lowest WCAG 2.x ratio over every display path, and the path it occurs on. */

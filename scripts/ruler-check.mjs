@@ -29,10 +29,17 @@ const STEP = Number(arg("--step", "8"));
 const SIZES = arg("--sizes", "1440x900,1920x1080,1280x720,1024x640")
   .split(",")
   .map((s) => s.split("x").map(Number));
-const reference = JSON.parse(fs.readFileSync(path.join(root, "src/generated/reference.json"), "utf8"));
+const reference = JSON.parse(
+  fs.readFileSync(path.join(root, "src/generated/reference.json"), "utf8"),
+);
 const ROUTES = arg("--routes", "")
   ? arg("--routes").split(",")
-  : ["/tokens", "/tokens/figma", "/releases", ...reference.entries.filter((e) => e.page).map((e) => e.page)];
+  : [
+      "/tokens",
+      "/tokens/figma",
+      "/releases",
+      ...reference.entries.filter((e) => e.page).map((e) => e.page),
+    ];
 const NAV = 48;
 
 const port = await new Promise((resolve) => {
@@ -41,11 +48,15 @@ const port = await new Promise((resolve) => {
     server.close(() => resolve(free));
   });
 });
-const server = spawn(process.execPath, [path.join(root, "node_modules/next/dist/bin/next"), "start", "-p", String(port)], {
-  cwd: root,
-  stdio: ["ignore", "pipe", "pipe"],
-  env: { ...process.env, NEXT_TELEMETRY_DISABLED: "1" },
-});
+const server = spawn(
+  process.execPath,
+  [path.join(root, "node_modules/next/dist/bin/next"), "start", "-p", String(port)],
+  {
+    cwd: root,
+    stdio: ["ignore", "pipe", "pipe"],
+    env: { ...process.env, NEXT_TELEMETRY_DISABLED: "1" },
+  },
+);
 const origin = `http://127.0.0.1:${port}`;
 for (let i = 0; i < 100; i++) {
   try {
@@ -67,11 +78,17 @@ const sweep = (step) => {
     window.scrollTo({ top: y, behavior: "instant" });
     window.dispatchEvent(new Event("sq:draw"));
     positions++;
-    const letters = [...document.querySelectorAll("[data-title]")].filter((s) => s.textContent.trim() && !s.closest("[hidden]"));
+    const letters = [...document.querySelectorAll("[data-title]")].filter(
+      (s) => s.textContent.trim() && !s.closest("[hidden]"),
+    );
     const boxes = [];
     for (const s of letters) {
       const r = s.getBoundingClientRect();
-      if (!s.style.transform || /NaN|Infinity/.test(s.style.transform) || ![r.left, r.top, r.right, r.bottom].every(Number.isFinite)) {
+      if (
+        !s.style.transform ||
+        /NaN|Infinity/.test(s.style.transform) ||
+        ![r.left, r.top, r.right, r.bottom].every(Number.isFinite)
+      ) {
         findings.push({ y, kind: "undrawn", a: `${s.dataset.title}:${s.textContent}` });
         continue;
       }
@@ -98,7 +115,11 @@ const sweep = (step) => {
 // 2. The page's sheets, their lines, and the page's scroll range.
 const layout = () => ({
   max: Math.max(0, document.documentElement.scrollHeight - innerHeight),
-  sheets: [...document.querySelectorAll("main [data-sheet]")].map((s) => ({ id: s.id, name: s.dataset.sheet, top: s.getBoundingClientRect().top + scrollY })),
+  sheets: [...document.querySelectorAll("main [data-sheet]")].map((s) => ({
+    id: s.id,
+    name: s.dataset.sheet,
+    top: s.getBoundingClientRect().top + scrollY,
+  })),
 });
 // What each indicator says is here, as a section index (-1 when it says nothing).
 const indicators = () => {
@@ -107,10 +128,14 @@ const indicators = () => {
   const bar = sheets.findIndex((s) => s.hasAttribute("data-here"));
   const nav = Number(document.querySelector("header [aria-hidden='true'] b")?.textContent ?? 0) - 1;
   // the ruler's readout under its now line: "05 · 042%" (the scale's tick numbers are spans too)
-  const readout = [...document.querySelectorAll("[role='scrollbar'] span")].find((s) => / · /.test(s.textContent ?? ""));
+  const readout = [...document.querySelectorAll("[role='scrollbar'] span")].find((s) =>
+    / · /.test(s.textContent ?? ""),
+  );
   const ruler = Number((readout?.textContent ?? "").slice(0, 2)) - 1;
   // the page's own contents, in the aside (a TableOfContents specimen in a preview is not it)
-  const toc = names.indexOf(document.querySelector("aside a[aria-current='location']")?.textContent?.trim() ?? "");
+  const toc = names.indexOf(
+    document.querySelector("aside a[aria-current='location']")?.textContent?.trim() ?? "",
+  );
   return { bar, nav, ruler, toc };
 };
 // SCROLL.md 6.9: the last section whose line has reached the nav, or, where the page ends
@@ -130,7 +155,10 @@ const browser = await chromium.launch();
 try {
   await Promise.all(
     SIZES.map(async ([width, height]) => {
-      const context = await browser.newContext({ viewport: { width, height }, reducedMotion: "no-preference" });
+      const context = await browser.newContext({
+        viewport: { width, height },
+        reducedMotion: "no-preference",
+      });
       const page = await context.newPage();
       for (const route of ROUTES) {
         await page.goto(origin + route, { waitUntil: "networkidle" });
@@ -144,7 +172,9 @@ try {
         if (swept.ruler !== "on") failures.push(`${at}: the ruler is not shown`);
         for (const f of swept.findings)
           failures.push(
-            f.kind === "undrawn" ? `${at}, scrollY ${f.y}: letter ${f.a} has no finite position` : `${at}, scrollY ${f.y}: title ${f.a} overlaps title ${f.b}`,
+            f.kind === "undrawn"
+              ? `${at}, scrollY ${f.y}: letter ${f.a} has no finite position`
+              : `${at}, scrollY ${f.y}: title ${f.a} overlaps title ${f.b}`,
           );
 
         const { max, sheets } = await page.evaluate(layout);
@@ -154,7 +184,12 @@ try {
             if (y < 0 || y > max) continue;
             await page.evaluate((top) => window.scrollTo({ top, behavior: "instant" }), y);
             // the provider measures in the frame after a scroll, and React commits after it
-            await page.evaluate(() => new Promise((r) => requestAnimationFrame(() => requestAnimationFrame(() => setTimeout(r, 30)))));
+            await page.evaluate(
+              () =>
+                new Promise((r) =>
+                  requestAnimationFrame(() => requestAnimationFrame(() => setTimeout(r, 30))),
+                ),
+            );
             await page.evaluate(() => window.dispatchEvent(new Event("sq:draw")));
             const want = expected(tops, y, max);
             const got = await page.evaluate(indicators);
@@ -181,4 +216,6 @@ if (failures.length) {
   console.error(`Ruler check failed: ${failures.length} finding(s) over ${summary}`);
   process.exit(1);
 }
-console.log(`Ruler check passed: no title crosses another, every letter drawn, and here agrees, over ${summary}`);
+console.log(
+  `Ruler check passed: no title crosses another, every letter drawn, and here agrees, over ${summary}`,
+);

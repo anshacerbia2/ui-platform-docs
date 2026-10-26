@@ -18,7 +18,12 @@ const spec = {
   bindings: [
     { part: "root", declarations: { color: "{c.fg}", background: "{c.bg}" } },
     { part: "root", option: { tone: "b" }, declarations: { color: "{c.fg-b}" } },
-    { part: "root", option: { tone: "b" }, state: "hover", declarations: { background: "{c.bg-hover}" } },
+    {
+      part: "root",
+      option: { tone: "b" },
+      state: "hover",
+      declarations: { background: "{c.bg-hover}" },
+    },
     { part: "root", state: "disabled", declarations: { color: "{c.off}" } },
   ],
 };
@@ -32,7 +37,13 @@ test("options vary one at a time from the defaults", () => {
 });
 
 test("options named together by one binding vary jointly", () => {
-  const joint = { ...spec, bindings: [...spec.bindings, { part: "root", option: { tone: "b", size: "m" }, declarations: { gap: "{d.g}" } }] };
+  const joint = {
+    ...spec,
+    bindings: [
+      ...spec.bindings,
+      { part: "root", option: { tone: "b", size: "m" }, declarations: { gap: "{d.g}" } },
+    ],
+  };
   assert.equal(combinations(joint).length, 4);
 });
 
@@ -45,5 +56,10 @@ test("a more specific binding wins, and a part takes the bindings of the part it
 test("contrast cases skip disabled states and name both tokens", () => {
   const cases = contrastCases(spec);
   assert.ok(cases.every((c) => c.state !== "disabled"));
-  assert.ok(cases.some((c) => c.option.tone === "b" && c.state === "hover" && c.fg === "c.fg-b" && c.bg === "c.bg-hover"));
+  assert.ok(
+    cases.some(
+      (c) =>
+        c.option.tone === "b" && c.state === "hover" && c.fg === "c.fg-b" && c.bg === "c.bg-hover",
+    ),
+  );
 });

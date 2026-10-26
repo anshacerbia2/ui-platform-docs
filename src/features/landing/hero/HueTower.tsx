@@ -14,12 +14,36 @@ const PRESETS = [
   { name: "Jade", hue: 165 },
   { name: "Ember", hue: 42 },
 ];
-const swatch = (h: number, L = 0.6, C = 0.2) => hex(oklchToSrgb(L, Math.min(C, maxChroma(L, h)), h));
+const swatch = (h: number, L = 0.6, C = 0.2) =>
+  hex(oklchToSrgb(L, Math.min(C, maxChroma(L, h)), h));
 const track = `linear-gradient(90deg, ${[0, 30, 60, 90, 120, 150, 180, 210, 240, 270, 300, 330, 359].map((h) => `${swatch(h, 0.68, 0.15)} ${Math.round(h / 3.59)}%`).join(", ")})`;
 
-function Preset({ name, hue, current, onPick }: { name: string; hue: number; current: boolean; onPick: () => void }) {
-  const ref = useStyleVars<HTMLButtonElement>({ "--swatch": swatch(hue), "--ring": swatch(hue, 0.8, 0.09) });
-  return <button ref={ref} type="button" role="radio" aria-checked={current} aria-label={name} className={styles.preset} onClick={onPick} />;
+function Preset({
+  name,
+  hue,
+  current,
+  onPick,
+}: {
+  name: string;
+  hue: number;
+  current: boolean;
+  onPick: () => void;
+}) {
+  const ref = useStyleVars<HTMLButtonElement>({
+    "--swatch": swatch(hue),
+    "--ring": swatch(hue, 0.8, 0.09),
+  });
+  return (
+    <button
+      ref={ref}
+      type="button"
+      role="radio"
+      aria-checked={current}
+      aria-label={name}
+      className={styles.preset}
+      onClick={onPick}
+    />
+  );
 }
 
 /** The hero stage: the 12-step tower, a brand hue dial, and a tooltip per step. */
@@ -42,7 +66,11 @@ export function HueTower() {
       hue: 257,
       reducedMotion,
       onHover: setStep,
-      onTrack: (x, y) => tip.current?.style.setProperty("transform", `translate(${Math.round(x + 18)}px, ${Math.round(y - 22)}px)`),
+      onTrack: (x, y) =>
+        tip.current?.style.setProperty(
+          "transform",
+          `translate(${Math.round(x + 18)}px, ${Math.round(y - 22)}px)`,
+        ),
     });
     if (!started) setFailed(true);
     tower.current = started;
@@ -112,7 +140,12 @@ export function HueTower() {
                 ))}
               </div>
             </div>
-            <button type="button" className={styles.reset} aria-label="Reset view" onClick={() => tower.current?.reset()}>
+            <button
+              type="button"
+              className={styles.reset}
+              aria-label="Reset view"
+              onClick={() => tower.current?.reset()}
+            >
               <Reset size={15} />
             </button>
           </div>
