@@ -1,0 +1,64 @@
+@use "settings" as *;
+@use "tools" as *;
+
+@layer docs.components {
+  .display {
+    margin: 0;
+    color: $sq-text;
+    font-size: clamp(3rem, 6.2vw, 5.5rem);
+    font-weight: var(--ds-typography-weight-medium);
+    letter-spacing: -0.04em;
+    line-height: 0.98;
+    text-wrap: balance;
+
+    &[data-size="medium"] {
+      font-size: clamp(2.5rem, 6vw, 5rem);
+    }
+  }
+
+  .title {
+    margin: 0;
+    color: $sq-text;
+    font-size: clamp(2rem, 4.2vw, 3.25rem);
+    font-weight: var(--ds-typography-weight-medium);
+    letter-spacing: -0.035em;
+    line-height: 1.04;
+    text-wrap: balance;
+  }
+
+  .subtitle {
+    margin: 0;
+    color: $sq-text;
+    font-size: var(--ds-typography-heading-xsmall-font-size);
+    font-weight: var(--ds-typography-weight-semibold);
+    letter-spacing: -0.012em;
+    line-height: 1.2;
+
+    &[data-size="medium"] {
+      font-size: 1.125rem;
+    }
+  }
+
+  .lede {
+    max-inline-size: 58ch;
+    margin: 0;
+    color: $sq-muted;
+    font-size: 1.0625rem;
+    line-height: 1.6;
+    text-wrap: pretty;
+  }
+
+  .body {
+    margin: 0;
+    color: $sq-muted;
+    font-size: var(--ds-typography-body-small-font-size);
+    line-height: 1.6;
+    text-wrap: pretty;
+  }
+
+  .eyebrow {
+    margin: 0;
+    color: $sq-muted;
+    @include hud(11px, 500, 0.12em);
+  }
+}

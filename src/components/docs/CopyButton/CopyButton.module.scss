@@ -1,19 +1,39 @@
 @use "settings" as *;
 @use "tools" as *;
 
+// A copy button of the line drawing (scnx-platform square.css `.ix-copy`): bare and
+// square, tinted on hover.
 @layer docs.components {
   .button {
     display: inline-flex;
     flex: none;
     align-items: center;
     justify-content: center;
-    inline-size: 2.375rem;
-    block-size: 2.375rem;
+    inline-size: 36px;
+    block-size: 36px;
+    padding: 0;
     border: 0;
-    border-radius: var(--ds-dimension-radius-container);
-    color: $text;
+    border-radius: 0;
+    background: transparent;
+    color: $sq-muted;
     cursor: pointer;
-    @include fill-states($surface-chip, $surface-chip-hover, $surface-chip-pressed);
-    @include focus-ring;
+    @include focus-ring(-2px);
+
+    @include motion {
+      transition:
+        background-color $duration $ease,
+        color $duration $ease;
+    }
+
+    &:hover {
+      background: color-mix(in oklch, $sq-text 6%, transparent);
+      color: $sq-text;
+    }
+
+    &[data-variant="cell"] {
+      inline-size: 48px;
+      block-size: 100%;
+      box-shadow: inset 1px 0 0 $sq-line;
+    }
   }
 }

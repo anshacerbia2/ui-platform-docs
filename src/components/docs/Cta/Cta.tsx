@@ -24,10 +24,11 @@ export function Cta({
   className?: string;
   children: string;
 }) {
+  // the icon follows the label: "Get started →" (square.css .sq-cta)
   const body = (
     <>
-      {icon}
       <Shuffle>{children}</Shuffle>
+      {icon}
     </>
   );
   const props = { className: `${styles.cta} ${className}`.trim(), "data-variant": variant };

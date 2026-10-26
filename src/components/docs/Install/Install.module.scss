@@ -1,0 +1,29 @@
+@use "settings" as *;
+@use "tools" as *;
+
+@layer docs.components {
+  .install {
+    display: inline-flex;
+    align-items: stretch;
+    max-inline-size: 100%;
+    block-size: 48px;
+    box-shadow: inset 0 0 0 1px $sq-line;
+  }
+
+  .command {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    min-inline-size: 0;
+    padding-inline: 16px;
+    overflow: hidden;
+    color: $sq-text;
+    font: 500 13px/1 $sq-mono;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .prompt {
+    color: $sq-muted;
+  }
+}

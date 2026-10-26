@@ -1,0 +1,251 @@
+@use "settings" as *;
+@use "tools" as *;
+
+// Sheet 04 · Guarantees (scnx-platform Docs-Landing.html): a schedule, not a card grid.
+@layer docs.components {
+  .head,
+  .schedule li {
+    display: grid;
+    grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr) minmax(0, 0.85fr);
+    align-items: center;
+    gap: 32px;
+    padding-inline: $sq-pad;
+
+    @media (max-width: 980px) {
+      grid-template-columns: minmax(0, 1fr);
+      gap: 14px;
+    }
+
+    @media (max-width: 760px) {
+      padding-inline: $sq-pad-narrow;
+    }
+  }
+
+  .head {
+    padding-block: 12px;
+    box-shadow: inset 0 -1px 0 $sq-line;
+    color: $sq-muted;
+    @include hud(10px);
+
+    @media (max-width: 980px) {
+      display: none;
+    }
+  }
+
+  .schedule {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+
+    li {
+      padding-block: 32px;
+      box-shadow: inset 0 -1px 0 $sq-line;
+    }
+
+    li:last-child {
+      box-shadow: none;
+    }
+
+    h3 {
+      margin-block-end: 6px;
+    }
+  }
+
+  .specimen {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 10px;
+    min-block-size: 64px;
+  }
+
+  .proof {
+    display: grid;
+    gap: 4px;
+    color: $sq-muted;
+    font: 500 11.5px/1.5 $sq-mono;
+    text-decoration: none;
+
+    b {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      color: $sq-text;
+      font-weight: 500;
+    }
+
+    svg {
+      color: $sq-signal;
+    }
+
+    &:hover b {
+      text-decoration: underline;
+      text-underline-offset: 3px;
+    }
+  }
+
+  .keys {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  // the focus ring, drawn at rest to show what keyboard focus looks like
+  .focused {
+    display: inline-flex;
+    box-shadow:
+      0 0 0 2px $sq-ground,
+      0 0 0 4px $focus;
+  }
+
+  .kbd {
+    padding: 3px 7px;
+    box-shadow: inset 0 0 0 1px $sq-edge;
+    color: $sq-text;
+    font: 500 11px/1 $sq-mono;
+  }
+
+  .lum {
+    inline-size: 196px;
+    block-size: 40px;
+  }
+
+  .lumLabel {
+    fill: currentColor;
+    color: $sq-muted;
+    font: 500 10px/1 $sq-mono;
+  }
+
+  .rtl {
+    display: grid;
+    gap: 10px;
+    justify-items: start;
+  }
+
+  .toggle {
+    padding: 4px 8px;
+    border: 0;
+    background: transparent;
+    box-shadow: inset 0 0 0 1px $sq-line;
+    color: $sq-text;
+    font: 500 11px/1 $sq-mono;
+    cursor: pointer;
+    @include focus-ring(2px);
+
+    &[aria-pressed="true"] {
+      box-shadow: inset 0 0 0 1px $sq-signal;
+    }
+  }
+
+  .csp {
+    margin: 0;
+    color: $sq-muted;
+    font: 500 11.5px/1.6 $sq-mono;
+
+    b {
+      color: $sq-text;
+      font-weight: 500;
+    }
+  }
+
+  .motion {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 14px;
+  }
+
+  .track {
+    position: relative;
+    inline-size: 120px;
+    block-size: 2px;
+    background: $sq-line;
+
+    span {
+      position: absolute;
+      inset-block-start: -4px;
+      inset-inline-start: 0;
+      inline-size: 10px;
+      block-size: 10px;
+      background: $sq-signal;
+
+      @include motion {
+        animation: slide 1.6s $ease infinite alternate;
+      }
+    }
+
+    &[data-reduce] span {
+      animation: none;
+      inset-inline-start: calc(100% - 10px);
+    }
+  }
+
+  @keyframes slide {
+    to {
+      translate: 110px 0;
+    }
+  }
+
+  .switch {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    color: $sq-text;
+    font-size: 13px;
+    cursor: pointer;
+    @include focus-ring(3px);
+  }
+
+  .switchTrack {
+    position: relative;
+    inline-size: 32px;
+    block-size: 18px;
+    background: var(--ds-color-neutral-surface-strong-default);
+
+    &::after {
+      content: "";
+      position: absolute;
+      inset-block-start: 3px;
+      inset-inline-start: 3px;
+      inline-size: 12px;
+      block-size: 12px;
+      // a switch's thumb is a meaningful round (brand book, Principles 02)
+      border-radius: var(--ds-dimension-radius-pill);
+      background: var(--ds-color-neutral-surface-raised-default);
+
+      @include motion {
+        transition: translate $duration $ease;
+      }
+    }
+
+    .switch[aria-checked="true"] & {
+      background: $sq-signal;
+
+      &::after {
+        translate: 14px 0;
+      }
+    }
+  }
+
+  .brands {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .brandRoot {
+    display: grid;
+    gap: 8px;
+    padding: 10px 12px;
+    background: var(--ds-color-neutral-surface-canvas-default);
+    box-shadow: var(--ds-effect-material-flat);
+    color: var(--ds-color-neutral-text-default-default);
+
+    code {
+      font: 500 11px/1.3 $sq-mono;
+    }
+  }
+}

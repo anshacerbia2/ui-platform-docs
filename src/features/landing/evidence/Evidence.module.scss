@@ -1,0 +1,155 @@
+@use "settings" as *;
+@use "tools" as *;
+
+// Sheet 06 · Evidence (scnx-platform Docs-Landing.html): four gauges, then the
+// check and two side cards.
+@layer docs.components {
+  .gauges {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    box-shadow: inset 0 -1px 0 $sq-line;
+
+    li {
+      box-shadow: inset -1px 0 0 $sq-line;
+    }
+
+    li:last-child {
+      box-shadow: none;
+    }
+
+    @media (max-width: 980px) {
+      grid-template-columns: 1fr 1fr;
+
+      li:nth-child(2) {
+        box-shadow: none;
+      }
+
+      li:nth-child(-n + 2) {
+        box-shadow: inset 0 -1px 0 $sq-line;
+      }
+
+      li:first-child {
+        box-shadow:
+          inset 0 -1px 0 $sq-line,
+          inset -1px 0 0 $sq-line;
+      }
+    }
+  }
+
+  .gauge {
+    display: grid;
+    gap: 10px;
+    block-size: 100%;
+    padding: 40px $sq-pad 36px;
+    text-decoration: none;
+
+    strong {
+      color: $sq-text;
+      font-size: clamp(2.5rem, 5vw, 4rem);
+      font-variant-numeric: tabular-nums;
+      font-weight: 600;
+      letter-spacing: -0.05em;
+      line-height: 0.9;
+    }
+
+    &:hover strong {
+      color: $sq-signal-text;
+    }
+
+    @media (max-width: 760px) {
+      padding-inline: $sq-pad-narrow;
+    }
+  }
+
+  // a scale with one blue mark at the figure's level
+  .scale {
+    position: relative;
+    block-size: 8px;
+    background: repeating-linear-gradient(to right, $sq-line 0 1px, transparent 1px 11px);
+
+    &::after {
+      content: "";
+      position: absolute;
+      inset-block-start: -3px;
+      inline-size: 2px;
+      block-size: 14px;
+      background: $sq-signal;
+    }
+
+    &[data-level="0"]::after {
+      inset-inline-start: 0;
+    }
+
+    &[data-level="0.5"]::after {
+      inset-inline-start: 50%;
+    }
+
+    &[data-level="0.66"]::after {
+      inset-inline-start: 66%;
+    }
+
+    &[data-level="1"]::after {
+      inset-inline-start: calc(100% - 2px);
+    }
+  }
+
+  .gaugeText {
+    max-inline-size: 30ch;
+    color: $sq-muted;
+    font-size: 13px;
+    line-height: 1.5;
+  }
+
+  .evidence {
+    @media (min-width: 981px) {
+      grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr);
+    }
+  }
+
+  .verify {
+    display: grid;
+    align-content: start;
+    gap: 18px;
+    padding: 56px $sq-pad;
+
+    @media (max-width: 760px) {
+      padding: 40px $sq-pad-narrow;
+    }
+  }
+
+  .card {
+    display: grid;
+    align-content: start;
+    gap: 10px;
+    padding: 40px $sq-pad;
+    text-decoration: none;
+
+    &:hover {
+      background: color-mix(in oklch, $sq-text 4%, $sq-ground);
+    }
+
+    @media (max-width: 760px) {
+      padding-inline: $sq-pad-narrow;
+    }
+  }
+
+  .link {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    color: $sq-signal-text;
+    font-size: var(--ds-typography-body-small-font-size);
+    font-weight: 500;
+  }
+
+  .chip {
+    justify-self: start;
+    padding: 6px 8px;
+    box-shadow: inset 0 0 0 1px $sq-line;
+    color: $sq-text;
+    font: 500 11.5px/1 $sq-mono;
+  }
+}
