@@ -1,9 +1,10 @@
+@use "layers";
 @use "settings" as *;
 @use "tools" as *;
 
 // Sheet 01 · Proof: the hero's two cells, the claim and the assembly of the four
 // contracts (assembly/, TDD docs-site D19).
-@layer docs.components {
+@layer docs.features {
   .hero {
     @media (min-width: 1081px) {
       grid-template-columns: minmax(0, 1.08fr) minmax(0, 1fr);

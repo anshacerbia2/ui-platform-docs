@@ -2,7 +2,8 @@
 // Browser smoke test of the built site (TDD docs-site D7). Starts `next start`
 // and loads every route in each engine; fails on a page error, a console
 // error, a Content-Security-Policy violation, a failed request, a response
-// without the policy, or a page wider than the viewport at 1440px or 390px. With
+// without the policy, a page wider than the viewport at 1440px or 390px, or a
+// landing hero that is not two columns at 1440px (the layer order holds). With
 // --shots <dir> it also saves full-page screenshots.
 //
 //   node scripts/smoke.mjs [--browsers chromium,firefox,webkit] [--shots <dir>]
@@ -169,6 +170,17 @@ try {
             ),
             fullPage: true,
           });
+        }
+        // A layout a page sets on a component wins over the component's default in a built
+        // site too (TDD docs-site D4, the layer order): the landing's hero is two columns.
+        if (route === "/") {
+          const columns = await page.evaluate(
+            () =>
+              getComputedStyle(
+                document.querySelector("#proof [data-sheet-body] > *"),
+              ).gridTemplateColumns.split(" ").length,
+          );
+          if (columns !== 2) problems.push(`the hero is ${columns} column(s) at 1440px, not 2`);
         }
         // Nothing may push the page wider than the viewport, at a desktop's width or a phone's.
         for (const width of [1440, 390]) {

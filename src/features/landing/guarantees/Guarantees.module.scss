@@ -1,8 +1,9 @@
+@use "layers";
 @use "settings" as *;
 @use "tools" as *;
 
 // Sheet 04 · Guarantees (scnx-platform Docs-Landing.html): a schedule, not a card grid.
-@layer docs.components {
+@layer docs.features {
   .head,
   .schedule li {
     display: grid;

@@ -1,9 +1,10 @@
+@use "layers";
 @use "settings" as *;
 @use "tools" as *;
 
 // Sheet 01 · Get started (scnx-platform Docs-Home.html): the copy, and the chain
 // of one component's four contracts.
-@layer docs.components {
+@layer docs.features {
   .over {
     @media (min-width: 1081px) {
       grid-template-columns: minmax(0, 1fr) minmax(0, 0.95fr);

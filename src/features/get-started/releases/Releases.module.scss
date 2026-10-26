@@ -1,8 +1,9 @@
+@use "layers";
 @use "settings" as *;
 @use "tools" as *;
 
 // Sheet 04 · Releases (scnx-platform Docs-Home.html): the lead and the status matrix.
-@layer docs.components {
+@layer docs.features {
   .lead {
     display: flex;
     flex-wrap: wrap;

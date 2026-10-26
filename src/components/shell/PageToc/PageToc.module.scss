@@ -1,3 +1,4 @@
+@use "layers";
 @layer docs.components {
   // the column's right cell, unframed (the TableOfContents as it ships)
   .toc {

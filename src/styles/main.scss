@@ -3,10 +3,10 @@
 // layers come after them, so site layout never needs specificity to win, and
 // the site never selects a ui-platform class (scripts/check-styles.mjs).
 // Settings and tools emit no CSS; components are CSS Modules in
-// @layer docs.components, next to each component (D17).
+// @layer docs.components, next to each component (D17), and a page's sections are
+// CSS Modules in @layer docs.features. The layer order is _layers.scss.
 @use "sass:meta";
-
-@layer docs.generic, docs.elements, docs.objects, docs.components, docs.utilities;
+@use "layers";
 
 @layer docs.generic {
   @include meta.load-css("generic/fonts");

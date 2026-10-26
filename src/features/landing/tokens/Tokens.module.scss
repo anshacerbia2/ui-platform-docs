@@ -1,9 +1,10 @@
+@use "layers";
 @use "settings" as *;
 @use "tools" as *;
 
 // Sheet 05 · Tokens (scnx-platform Docs-Landing.html): the token name read as its
 // grammar, a state to compile, and what the build makes of it.
-@layer docs.components {
+@layer docs.features {
   .two {
     @media (min-width: 981px) {
       grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.6fr);

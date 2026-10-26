@@ -1,8 +1,9 @@
+@use "layers";
 @use "settings" as *;
 @use "tools" as *;
 
 // Sheet 05 · Color and agents (scnx-platform Docs-Home.html).
-@layer docs.components {
+@layer docs.features {
   .last {
     @media (min-width: 1081px) {
       grid-template-columns: minmax(0, 1.6fr) minmax(0, 1fr);
