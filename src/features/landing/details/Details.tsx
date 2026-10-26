@@ -1,5 +1,6 @@
 import { ThemeProvider } from "@scnx/core-ui/providers/theme-provider-base";
 import { Button } from "@scnx/system/components/button";
+import { SITE_THEME, THEME_IDS } from "@/shared/lib/themes";
 import { DarkRoot } from "@/shared/ui/DarkRoot";
 import { hex, oklchToSrgb } from "../hero/tower";
 import { SectionHead } from "../sections/SectionHead";
@@ -113,8 +114,8 @@ function Demo({ kind }: { kind: (typeof CARDS)[number]["demo"] }) {
       return (
         <div className={`${styles.demoInset} ${styles.brands}`}>
           {[
-            { theme: "scnx-platform", mode: "light" as const, name: "Northwind" },
-            { theme: "scnx-saas", mode: "dark" as const, name: "Kirana" },
+            { theme: THEME_IDS[0] ?? SITE_THEME, mode: "light" as const, name: "Northwind" },
+            { theme: THEME_IDS[1] ?? SITE_THEME, mode: "dark" as const, name: "Kirana" },
           ].map((root) => (
             <ThemeProvider key={root.theme} themeId={root.theme} mode={root.mode} storage={false}>
               <div className={styles.brandRoot}>

@@ -1,4 +1,5 @@
 import { componentSlugs, entries, getComponent, getPrimitive, pin, primitiveSlugs, titleOf } from "@/shared/lib/reference";
+import { SITE_THEME, themeStylesheet } from "@/shared/lib/themes";
 
 export const dynamic = "force-static";
 
@@ -10,7 +11,9 @@ export function GET() {
     "",
     `> An accessible React design system: @scnx/core-ui (headless primitives) and @scnx/system (styled components, tokens). Documents ${pin.packages.map((p) => `${p.name}@${p.version}`).join(", ")} built from ${pin.repository}@${pin.commit.slice(0, 7)}.`,
     "",
-    'Import each component from its own entry, for example `import { Button } from "@scnx/system/components/button"`, and load `@scnx/system/styles/components.css` plus one theme stylesheet such as `@scnx/system/tokens/css/scnx-platform.css`. Wrap the app in `ThemeProvider` from `@scnx/core-ui/providers/theme-provider-base`.',
+    'Import each component from its own entry, for example `import { Button } from "@scnx/system/components/button"`, and load `@scnx/system/styles/components.css` plus one theme stylesheet such as `' +
+      themeStylesheet(SITE_THEME) +
+      "`. Wrap the app in `ThemeProvider` from `@scnx/core-ui/providers/theme-provider-base`.",
     "",
     "## Components",
     "",

@@ -20,6 +20,12 @@ const require = createRequire(path.join(root, "package.json"));
 const PACKAGES = ["@scnx/core-ui", "@scnx/system"];
 const OUT = path.join(root, "src/generated");
 
+// The site's own look: the documentation belongs to scnx-platform (STD-UIP-TKN-001
+// 2.8.0, theme naming; TDD docs-site D16). The one place the docs name a theme id;
+// generation fails if the pinned package does not ship it, and every page takes
+// the ids from src/generated/themes.json.
+export const SITE_THEME = "scnx-platform";
+
 const packageDir = (name) => path.dirname(require.resolve(`${name}/package.json`));
 const readJson = (file) => JSON.parse(fs.readFileSync(file, "utf8"));
 const slugOf = (entry) => entry.split("/").pop();
@@ -51,8 +57,9 @@ function loadThemes() {
     const match = /^\.\/tokens\/json\/([a-z0-9-]+)\.json$/.exec(subpath);
     if (match) themes[match[1]] = readJson(path.join(dir, target));
   }
-  // The base theme (scnx-platform) first, then the others by name.
-  return Object.fromEntries(Object.entries(themes).toSorted(([a], [b]) => (a === "scnx-platform" ? -1 : b === "scnx-platform" ? 1 : a.localeCompare(b))));
+  if (!themes[SITE_THEME]) throw new Error(`the pinned @scnx/system ships no theme "${SITE_THEME}" (it ships ${Object.keys(themes).join(", ")})`);
+  // The site's theme first, then the others by name.
+  return Object.fromEntries(Object.entries(themes).toSorted(([a], [b]) => (a === SITE_THEME ? -1 : b === SITE_THEME ? 1 : a.localeCompare(b))));
 }
 
 // ---------------------------------------------------------------------------
@@ -292,7 +299,7 @@ function generate() {
   const pin = readJson(path.join(root, "vendor/ui-platform/pin.json"));
   const rows = loadSpecs();
   const themes = loadThemes();
-  const defaultTheme = themes["scnx-platform"];
+  const defaultTheme = themes[SITE_THEME];
   // WCAG 2.2 success criterion 1.4.3 (AA): text needs 4.5:1, as the token gate requires.
   const TEXT_MINIMUM = 4.5;
   const tokenNames = new Set(defaultTheme.tokens.map((t) => t.name));
@@ -404,7 +411,14 @@ ${styled.map((e, i) => `  ${JSON.stringify(e.slug)}: m${i},`).join("\n")}
     .filter((t) => t.type === "color")
     .map((t) => `  [data-swatch="${t.name}"] { background: var(${t.cssName}); }`)
     .join("\n")}\n}\n`;
-  return { "reference.json": `${JSON.stringify(reference, null, 2)}\n`, "registry.tsx": registry, "swatches.css": swatchCss };
+  // The theme ids, small enough for client modules: the site's theme, then every shipped one.
+  const themeIds = { site: SITE_THEME, ids: Object.keys(themes) };
+  return {
+    "reference.json": `${JSON.stringify(reference, null, 2)}\n`,
+    "registry.tsx": registry,
+    "swatches.css": swatchCss,
+    "themes.json": `${JSON.stringify(themeIds, null, 2)}\n`,
+  };
 }
 
 // ---------------------------------------------------------------------------
@@ -412,7 +426,7 @@ ${styled.map((e, i) => `  ${JSON.stringify(e.slug)}: m${i},`).join("\n")}
 // tokens/figma exports, served as downloads exactly as published.
 
 const DOWNLOADS = path.join(root, "public/downloads/figma");
-const themeOrder = (t) => (t === "scnx-platform" ? "" : t);
+const themeOrder = (t) => (t === SITE_THEME ? "" : t);
 const modeOrder = (m) => ({ light: 0, dark: 1 })[m] ?? 2;
 
 export function figmaFiles() {
@@ -439,7 +453,7 @@ export function figmaFiles() {
       content,
     });
   }
-  // The base theme (scnx-platform) first, colors before dimensions, light before dark.
+  // The site's theme first, colors before dimensions, light before dark.
   return files.toSorted(
     (a, b) => themeOrder(a.theme).localeCompare(themeOrder(b.theme)) || a.kind.localeCompare(b.kind) || modeOrder(a.mode) - modeOrder(b.mode),
   );

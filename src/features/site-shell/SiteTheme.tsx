@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, type ReactNode } from "react";
+import { SITE_THEME } from "@/shared/lib/themes";
 import { MODE_COOKIE } from "./modeCookie";
 import { createThemeStore, ThemeProvider, type ResolvedMode, type ThemeMode, type ThemePreferenceAdapter } from "@scnx/core-ui/providers/theme-provider-base";
 
@@ -15,13 +16,13 @@ const cookiePreference: ThemePreferenceAdapter = {
   },
 };
 
-/** The site's theme root: the scnx-platform theme, in the mode the server resolved. */
+/** The site's theme root: the site's theme (SITE_THEME), in the mode the server resolved. */
 export function SiteTheme({ mode, resolvedMode, children }: { mode: ThemeMode; resolvedMode: ResolvedMode; children: ReactNode }) {
   const [store] = useState(() =>
-    createThemeStore({ themeId: "scnx-platform", defaultMode: "system", serverHint: { mode, resolvedMode }, storage: cookiePreference }),
+    createThemeStore({ themeId: SITE_THEME, defaultMode: "system", serverHint: { mode, resolvedMode }, storage: cookiePreference }),
   );
   return (
-    <ThemeProvider themeId="scnx-platform" store={store}>
+    <ThemeProvider themeId={SITE_THEME} store={store}>
       {children}
     </ThemeProvider>
   );

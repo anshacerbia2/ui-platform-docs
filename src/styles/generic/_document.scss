@@ -1,10 +1,45 @@
+@use "../settings" as *;
+
 // The document outside the theme root: no margin, the page role behind overscroll.
+// A section jumped to lands with its line on the nav strip's line (SCROLL.md 6.9).
 html {
   -webkit-text-size-adjust: 100%;
   text-size-adjust: 100%;
-  scroll-padding-top: 6rem;
+  scroll-padding-top: $sq-nav;
 }
 
 body {
   margin: 0;
+}
+
+// The ruler scrollbar replaces the native one from 1024px up (SCROLL.md 1.4;
+// RulerScrollbar sets the attribute only while it is shown).
+html[data-ruler="on"] {
+  scrollbar-width: none;
+
+  &::-webkit-scrollbar {
+    display: none;
+    inline-size: 0;
+    block-size: 0;
+  }
+}
+
+// The page is held hidden below the nav until Reveal has marked its blocks, in the
+// same task, before first paint (SCROLL.md 1.1). The server sends html.sq-boot;
+// Reveal sets data-sq-booted. A 2.5s failsafe shows the page in any case, without
+// JavaScript too, and reduced motion never hides it.
+@keyframes sq-boot-failsafe {
+  to {
+    opacity: 1;
+  }
+}
+
+html.sq-boot:not([data-sq-booted]) :where(main, [data-sq-boot]) {
+  opacity: 0;
+  animation: sq-boot-failsafe 0s 2.5s forwards;
+
+  @media (prefers-reduced-motion: reduce) {
+    opacity: 1;
+    animation: none;
+  }
 }

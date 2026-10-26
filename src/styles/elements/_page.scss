@@ -2,11 +2,11 @@
 @use "../tools" as *;
 
 // The theme root is the page: it carries the page role and the body text style.
+// The page is the Square chrome's ground, plain: the lines draw the sheet (TDD
+// docs-site D14; square.css), so the dot grid of the earlier site is gone.
 :where([data-site-root]) {
   min-height: 100dvh;
-  background-color: $surface-page;
-  background-image: radial-gradient($dot 1px, transparent 1px);
-  background-size: 22px 22px;
+  background-color: $sq-ground;
   color: $text;
   font-family: $font-sans;
   font-size: var(--ds-typography-body-default-font-size);
@@ -29,13 +29,4 @@
 
 :where([data-site-root]) :where(code, kbd, samp, pre) {
   font-family: $font-mono;
-}
-
-// Accent parts of the site's icons (SVG presentation attributes cannot read custom properties).
-:where([data-site-root]) :where(.site-icon-accent) {
-  fill: $accent;
-}
-
-:where([data-site-root]) :where(.site-icon-accent-stroke) {
-  stroke: $accent;
 }

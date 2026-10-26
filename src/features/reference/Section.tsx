@@ -1,19 +1,29 @@
 import type { ReactNode } from "react";
 import styles from "./reference.module.scss";
 
-/** A page section: an anchor heading, an optional note on where its facts come from, and content. */
+/**
+ * A page section drawn as a sheet (TDD docs-site D14; scnehaux-design
+ * scnx-platform SCROLL.md 2): a rule across the page column at its top, a
+ * cross where the rule meets each column line, and a bar held under the nav
+ * while it is read, `NN / Name ··· source`. The section itself carries the id
+ * and the sheet's name, so "here", the contents, and the ruler measure the
+ * section's line, never the held bar.
+ */
 export function Section({ id, title, source, children }: { id: string; title: string; source?: ReactNode; children: ReactNode }) {
   return (
-    <section className={styles.section} aria-labelledby={`${id}-title`}>
+    <section id={id} data-sheet={title} className={styles.section} aria-labelledby={`${id}-title`}>
       <div className={styles.sectionHead}>
+        <span className={styles.sectionNo} aria-hidden="true" />
         <h2 id={`${id}-title`} className={styles.sectionTitle}>
-          <a id={id} href={`#${id}`} className={styles.anchor}>
+          <a href={`#${id}`} className={styles.anchor}>
             {title}
           </a>
         </h2>
         {source ? <p className={styles.source}>{source}</p> : null}
       </div>
-      {children}
+      <div className={styles.sectionBody} data-sheet-body="">
+        {children}
+      </div>
     </section>
   );
 }

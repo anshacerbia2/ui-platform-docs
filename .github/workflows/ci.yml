@@ -57,7 +57,7 @@ jobs:
     name: Build and browser smoke test
     runs-on: ubuntu-24.04
     # A hung browser download fails the job instead of leaving it pending for hours.
-    timeout-minutes: 30
+    timeout-minutes: 45
     steps:
       - uses: actions/checkout@v4
       - uses: pnpm/action-setup@v4
@@ -83,6 +83,11 @@ jobs:
       - name: Smoke test
         timeout-minutes: 10
         run: node scripts/smoke.mjs --browsers chromium,firefox,webkit --shots artifacts/screenshots
+      # TDD docs-site D15: the ruler's titles never cross, every letter is drawn, and the
+      # section bars, the nav readout, the ruler, and the contents agree on here.
+      - name: Ruler check
+        timeout-minutes: 15
+        run: node scripts/ruler-check.mjs
       - uses: actions/upload-artifact@v4
         if: always()
         with:

@@ -1,0 +1,27 @@
+// IBM Plex Mono, the chrome's HUD voice (scnehaux-design scnx-platform brand book,
+// Type), served from the site's own origin under `font-src 'self'` (TDD docs-site
+// D13). SIL Open Font License 1.1: /fonts/ibmplexmono-ofl.txt. The reference's
+// 550 and 650 weights are drawn at 600, the nearest face shipped.
+@font-face {
+  font-family: "IBM Plex Mono";
+  src: url("/fonts/ibmplexmono-regular.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "IBM Plex Mono";
+  src: url("/fonts/ibmplexmono-medium.woff2") format("woff2");
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "IBM Plex Mono";
+  src: url("/fonts/ibmplexmono-semibold.woff2") format("woff2");
+  font-weight: 600;
+  font-style: normal;
+  font-display: swap;
+}

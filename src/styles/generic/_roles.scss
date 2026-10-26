@@ -20,3 +20,34 @@
   --site-surface-chip-pressed: var(--ds-color-neutral-surface-strong-pressed);
   --site-dot: var(--ds-color-neutral-surface-strong-default);
 }
+
+// The Square chrome's roles (scnehaux-design scnx-platform square.css and
+// instrument.css; TDD docs-site D13). Every colour is a published token or a
+// mix of one; the mixing shares are the reference's expression-local values
+// (guidance, ADR-UIP-VIS-002). Declared on every theme root, so an island
+// resolves its own lines.
+:where([data-scnx-theme]) {
+  --sq-ground: var(--ds-color-neutral-surface-default-default);
+  --sq-text: var(--ds-color-neutral-text-default-default);
+  --sq-muted: var(--ds-color-neutral-text-subtle-default);
+  --sq-signal: var(--ds-color-primary-surface-solid-default);
+  --sq-signal-text: var(--ds-color-primary-text-default-default);
+  --sq-mono: "IBM Plex Mono", var(--ds-typography-code-default-font-family);
+  --sq-line: color-mix(in oklch, var(--sq-text) 16%, transparent);
+  --sq-cross: color-mix(in oklch, var(--sq-text) 72%, transparent);
+  // a control's boundary (a field, a secondary call to action): 3:1 or more
+  --sq-edge: color-mix(in oklch, var(--sq-text) 50%, var(--sq-ground));
+  // decoration only (a separator glyph, a mark not yet reached), never text
+  --sq-faint: color-mix(in oklch, var(--sq-text) 42%, var(--sq-ground));
+  --sq-glass: color-mix(in oklch, var(--sq-ground) 72%, transparent);
+  // where a rule meets a column line: an 11px plus at each end of an 11px strip
+  --sq-plus:
+    linear-gradient(var(--sq-cross), var(--sq-cross)) 5px 0 / 1px 11px no-repeat, linear-gradient(var(--sq-cross), var(--sq-cross)) 0 5px / 11px 1px no-repeat,
+    linear-gradient(var(--sq-cross), var(--sq-cross)) right 5px top 0 / 1px 11px no-repeat,
+    linear-gradient(var(--sq-cross), var(--sq-cross)) right 0 top 5px / 11px 1px no-repeat;
+}
+
+:where([data-scnx-theme][data-scnx-resolved-mode="dark"]) {
+  --sq-ground: var(--ds-color-neutral-surface-sunken-default);
+  --sq-signal-text: var(--ds-color-primary-text-subtle-default);
+}
