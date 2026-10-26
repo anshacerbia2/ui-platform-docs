@@ -37,5 +37,11 @@ export const SECTIONS: {
   },
 ];
 
+/** The nav strip's areas: the docs home, then the four contracts. */
+export const NAV_LINKS: { href: Route; label: string }[] = [
+  { href: "/get-started", label: "Get started" },
+  ...SECTIONS.map(({ href, label }) => ({ href, label })),
+];
+
 export const REPOSITORY_URL = "https://github.com/anshacerbia2/ui-platform";
 export const ARCHITECTURE_URL = "https://github.com/anshacerbia2/scnehaux-architecture";

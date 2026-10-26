@@ -1,0 +1,94 @@
+@use "settings" as *;
+@use "tools" as *;
+
+// Sheet 02 · Where to start (scnx-platform Docs-Home.html): four cards as cells;
+// the last one sits on a dark root in either mode.
+@layer docs.components {
+  .card {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    block-size: 100%;
+    padding: 36px $sq-pad 40px;
+    background: $sq-ground;
+    color: $sq-text;
+
+    @media (max-width: 760px) {
+      padding-inline: $sq-pad-narrow;
+    }
+  }
+
+  .cardTop {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 8px;
+
+    code {
+      color: $sq-muted;
+      font: 500 10.5px/1 $sq-mono;
+    }
+  }
+
+  .readout {
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+    padding-block: 14px;
+    box-shadow:
+      inset 0 1px 0 $sq-line,
+      inset 0 -1px 0 $sq-line;
+
+    strong {
+      font-size: 2rem;
+      font-variant-numeric: tabular-nums;
+      font-weight: 600;
+      letter-spacing: -0.04em;
+      line-height: 1;
+    }
+
+    span {
+      color: $sq-muted;
+      font-size: 12.5px;
+    }
+  }
+
+  .links {
+    display: grid;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+
+    a {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      padding-block: 7px;
+      color: $sq-text;
+      font-size: 13.5px;
+      text-decoration: none;
+    }
+
+    svg {
+      color: $sq-muted;
+
+      @include motion {
+        transition:
+          translate $duration $ease,
+          color $duration $ease;
+      }
+    }
+
+    a:hover svg {
+      translate: 3px 0;
+      color: $sq-text;
+    }
+  }
+
+  .audience {
+    margin: auto 0 0;
+    color: $sq-muted;
+    font: 500 11px/1.4 $sq-mono;
+  }
+}

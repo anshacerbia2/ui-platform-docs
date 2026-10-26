@@ -38,7 +38,7 @@ export function SiteHeader() {
       <Cta href={REPOSITORY_URL} variant="ghost" className={styles.optional}>
         GitHub
       </Cta>
-      <Cta href="/components/button" variant="primary">
+      <Cta href="/get-started" variant="primary">
         Get started
       </Cta>
     </header>

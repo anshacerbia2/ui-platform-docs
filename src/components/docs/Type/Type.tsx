@@ -5,7 +5,7 @@ type TypeProps = {
   as?: "h1" | "h2" | "h3" | "h4" | "p" | "span" | "div" | "strong";
   id?: string;
   /** A smaller step of the same voice: a closing headline, a lead in a narrow cell. */
-  size?: "medium";
+  size?: "medium" | "large";
   className?: string;
   children: ReactNode;
 };
