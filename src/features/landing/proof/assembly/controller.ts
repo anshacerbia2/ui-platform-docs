@@ -21,8 +21,12 @@ const CALLOUT_EDGE = 8;
  */
 const TURN = 0.4;
 const TAU_COAST = 320;
-/** The controls: a held state eases in at 160ms, a quarter turn at 200ms; the turntable runs 30° a second. */
-const TAU_HOLD = 160;
+/**
+ * The stack follows where it should be with a 180ms time constant, whether the scroll
+ * or a control moved it, so it never jumps. A quarter turn eases at 200ms; the
+ * turntable runs 30° a second.
+ */
+const TAU_CLOSE = 180;
 const TAU_AIM = 200;
 const TURNTABLE = 0.03;
 /** The resting view, the scene's REST_YAW (not imported: the scene loads on demand). */
@@ -80,13 +84,16 @@ export type AssemblyState = { assembled: boolean; held: boolean; spinning: boole
 
 /** The controls' hold on the assembly, and its clean-up. */
 export type AssemblyHandle = {
-  /** Holds the stack apart (0) or closed (1); the scroll no longer moves it until reset. */
+  /**
+   * Takes the stack apart (0) or closes it (1). The scroll still moves it: from there,
+   * and taking its say back as it moves, so the two never fight.
+   */
   hold(p: 0 | 1): void;
   /** Turns the stack by `deg`, eased. */
   turn(deg: number): void;
   /** Starts or stops the turntable. */
   spin(on: boolean): void;
-  /** Back to rest: the resting view, the scroll in charge, the turntable off. */
+  /** Back to rest: the resting view, no offset from the scroll, the turntable off. */
   reset(): void;
   dispose(): void;
 };
@@ -125,10 +132,12 @@ export function mountAssembly(
   let height = 0;
   let callouts = false;
   let visible = true;
-  // how far the stack is closed: as drawn, as the scroll asks, and as the reader holds it
+  // How far the stack is closed: as drawn, as the scroll asks, and the reader's offset
+  // from the scroll (set by a control, worn away by scrolling).
   let progress = 0;
   let scrolled = 0;
-  let hold: number | null = null;
+  let offset = 0;
+  const target = () => clamp(scrolled + offset, 0, 1);
   let yaw = REST;
   // a yaw to turn to (a quarter turn, or back to rest), and the turntable
   let aim: number | null = null;
@@ -157,8 +166,8 @@ export function mountAssembly(
   let told = "";
   const tell = () => {
     const state: AssemblyState = {
-      assembled: (hold ?? scrolled) >= 0.5,
-      held: hold !== null,
+      assembled: target() >= 0.5,
+      held: offset !== 0,
       spinning: turntable,
     };
     const key = JSON.stringify(state);
@@ -176,13 +185,21 @@ export function mountAssembly(
   // The stack closes while it is in view: from where its centre passes 50% of the
   // viewport (or the top of the page, if it starts above that), over 22% of the
   // viewport. So it is held apart on arrival and assembled well before it leaves.
+  // A control's offset wears away as the page scrolls, as fast as the scroll moves the
+  // stack (counted unclamped, so scrolling past the range takes it back too).
+  let lastRaw: number | null = null;
   const measure = () => {
     const rect = stage.getBoundingClientRect();
     const vh = window.innerHeight;
     const centre = rect.top + rect.height / 2 + window.scrollY;
     const from = Math.max(0, centre - OPENS_AT * vh);
-    const p = clamp((window.scrollY - from) / (CLOSES_OVER * vh), 0, 1);
-    scrolled = reduce ? 0 : p;
+    const raw = (window.scrollY - from) / (CLOSES_OVER * vh);
+    if (offset && lastRaw !== null) {
+      const worn = Math.abs(raw - lastRaw);
+      offset = Math.sign(offset) * Math.max(0, Math.abs(offset) - worn);
+    }
+    lastRaw = raw;
+    scrolled = reduce ? 0 : clamp(raw, 0, 1);
     tell();
   };
 
@@ -219,7 +236,9 @@ export function mountAssembly(
     anchors.forEach((a, i) => {
       const y = ys[i] ?? a.y;
       const part = parts[i];
-      if (callouts && part) put(part, "transform", `translate(${x}px, ${y.toFixed(1)}px)`);
+      // beside the stack a callout is placed; in the list it is laid out, so a placement
+      // left from a wider figure is cleared (else it flies out of its cell)
+      if (part) put(part, "transform", callouts ? `translate(${x}px, ${y.toFixed(1)}px)` : "none");
       leaders[i]?.setAttribute(
         "d",
         `M${a.x.toFixed(1)} ${a.y.toFixed(1)} H${(a.x + 14).toFixed(1)} L${(x - 14).toFixed(1)} ${y.toFixed(1)} H${x - 4}`,
@@ -242,13 +261,13 @@ export function mountAssembly(
       drop = clamp((t - dropStart) / DROP_MS, 0, 1);
       moving = true;
     }
-    // the scroll is followed at once; a held state is eased to (at once, reduced)
-    const target = hold ?? scrolled;
-    if (hold === null || reduce) progress = target;
+    // eased toward where the scroll and the controls put it (at once under reduced motion)
+    const to = target();
+    if (reduce) progress = to;
     else {
-      progress += (target - progress) * (1 - Math.exp(-dt / TAU_HOLD));
-      if (Math.abs(target - progress) < 0.001) progress = target;
-      moving ||= progress !== target;
+      progress += (to - progress) * (1 - Math.exp(-dt / TAU_CLOSE));
+      if (Math.abs(to - progress) < 0.001) progress = to;
+      moving ||= progress !== to;
     }
     show();
     if (!dragging && spin) {
@@ -405,7 +424,7 @@ export function mountAssembly(
 
   return {
     hold(p) {
-      hold = p;
+      offset = p - scrolled;
       tell();
       request();
     },
@@ -425,7 +444,7 @@ export function mountAssembly(
       request();
     },
     reset() {
-      hold = null;
+      offset = 0;
       turntable = false;
       spin = 0;
       // the nearest resting view, so it never winds back through whole turns
