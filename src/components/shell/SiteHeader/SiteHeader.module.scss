@@ -73,6 +73,13 @@
       color: $sq-text;
     }
 
+    // A link the call to action repeats leaves first (the strip needs 1076px with it).
+    &[data-echo] {
+      @media (max-width: 1080px) {
+        display: none;
+      }
+    }
+
     // The current area: the label in ground on a 22px ink bar.
     &[aria-current="page"] {
       color: $sq-ground;
@@ -116,8 +123,8 @@
       color: $sq-text;
     }
 
-    // The ruler repeats it; the strip fits down to 1024px without it.
-    @media (max-width: 1240px) {
+    // The ruler repeats it; the strip needs 1314px with it.
+    @media (max-width: 1320px) {
       display: none;
     }
   }

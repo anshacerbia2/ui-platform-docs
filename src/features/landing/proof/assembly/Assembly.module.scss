@@ -1,0 +1,257 @@
+@use "settings" as *;
+@use "tools" as *;
+
+// The exploded view (TDD docs-site D19). The figure reads its own width: from 480px
+// of stage the callouts stand in a column right of the stack, with leaders to the
+// plates; narrower, they are a list under it and the plates carry their numbers.
+// data-state: loading, live, or flat (no WebGL, or no script: the list alone).
+@layer docs.components {
+  .asm {
+    --p: 0;
+
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    min-inline-size: 0;
+    margin: 0;
+    padding: 24px $sq-pad 28px;
+    container-type: inline-size;
+
+    @media (max-width: 760px) {
+      padding-inline: $sq-pad-narrow;
+    }
+  }
+
+  .hud {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 8px 16px;
+    color: $sq-muted;
+    @include hud(11px, 500, 0.08em);
+
+    b {
+      color: $sq-text;
+      font-weight: 500;
+      font-variant-numeric: tabular-nums;
+    }
+  }
+
+  .meter {
+    position: relative;
+    display: inline-block;
+    inline-size: 96px;
+    block-size: 3px;
+    margin-inline-start: 10px;
+    overflow: hidden;
+    vertical-align: middle;
+    background: $line;
+
+    &::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: $sq-signal;
+      scale: var(--p) 1;
+      transform-origin: left;
+    }
+  }
+
+  .body {
+    position: relative;
+  }
+
+  .stage {
+    position: relative;
+    block-size: clamp(300px, 92cqi, 440px);
+
+    @container (min-width: 480px) {
+      block-size: clamp(440px, 80cqi, 560px);
+    }
+  }
+
+  .canvas {
+    position: absolute;
+    inset: 0;
+    display: block;
+    inline-size: 100%;
+    block-size: 100%;
+    cursor: grab;
+    // a vertical swipe still scrolls the page; a horizontal one turns the stack
+    touch-action: pan-y;
+
+    .asm[data-dragging] & {
+      cursor: grabbing;
+    }
+  }
+
+  .leaders {
+    position: absolute;
+    inset: 0;
+    inline-size: 100%;
+    block-size: 100%;
+    overflow: visible;
+    pointer-events: none;
+
+    path {
+      display: none;
+      fill: none;
+      stroke: $line-strong;
+      stroke-width: 1;
+    }
+
+    circle {
+      display: none;
+      fill: $sq-ground;
+      stroke: $sq-text;
+      stroke-width: 1;
+    }
+
+    text {
+      display: none;
+      fill: $sq-muted;
+      font: 500 10px/1 $sq-mono;
+      letter-spacing: 0.08em;
+      dominant-baseline: middle;
+    }
+
+    [data-lit] {
+      stroke: $sq-signal;
+    }
+
+    .asm[data-state="live"] & circle {
+      display: inline;
+    }
+
+    .asm[data-state="live"][data-layout="callouts"] & path {
+      display: inline;
+    }
+
+    // narrow: the plates carry their numbers until the stack has closed
+    .asm[data-state="live"][data-layout="list"]:not([data-closed]) & text {
+      display: inline;
+    }
+
+    .asm[data-layout="list"][data-closed] & circle {
+      display: none;
+    }
+  }
+
+  // The four contracts: a list of cells by default (narrow, flat, or no script).
+  .parts {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1px;
+    margin: 16px 0 0;
+    padding: 0;
+    list-style: none;
+    background: $sq-line;
+    box-shadow: 0 0 0 1px $sq-line;
+
+    @container (min-width: 480px) {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+
+    // beside the stack: a column of callouts, placed by the controller
+    .asm[data-state="live"][data-layout="callouts"] & {
+      position: absolute;
+      inset: 0;
+      display: block;
+      margin: 0;
+      background: none;
+      box-shadow: none;
+      pointer-events: none;
+    }
+
+    // until the scene is up, a wide figure keeps its callouts back, so nothing jumps
+    .asm[data-state="loading"] & {
+      @container (min-width: 480px) {
+        visibility: hidden;
+      }
+    }
+  }
+
+  .part {
+    display: grid;
+    align-content: start;
+    gap: 4px;
+    min-inline-size: 0;
+    padding: 12px 14px;
+    background: $sq-ground;
+
+    .asm[data-state="live"][data-layout="callouts"] & {
+      position: absolute;
+      inset-block-start: 0;
+      inset-inline-start: 0;
+      inline-size: 176px;
+      padding: 0;
+      background: none;
+      translate: 0 -50%;
+      pointer-events: auto;
+      cursor: default;
+    }
+
+    b {
+      color: $sq-muted;
+      font: 500 10.5px/1.2 $sq-mono;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+
+      @include motion {
+        transition: color $duration;
+      }
+    }
+
+    em {
+      font-size: 13.5px;
+      font-style: normal;
+      font-weight: 600;
+      letter-spacing: -0.01em;
+    }
+
+    small {
+      color: $sq-muted;
+      font: 500 11px/1.35 $sq-mono;
+    }
+
+    &[data-lit] b {
+      color: $sq-signal-text;
+    }
+  }
+
+  // Without WebGL or a script, the figure is its text: the list, and the caption.
+  .asm:not([data-state="live"], [data-state="loading"]) {
+    justify-content: center;
+
+    .hud,
+    .stage {
+      display: none;
+    }
+
+    .parts {
+      margin: 0;
+    }
+  }
+
+  .sum {
+    min-inline-size: 0;
+  }
+
+  // The specimens the plates are read from: laid out, so they can be measured, unseen.
+  .specimen {
+    position: absolute;
+    inset-block-start: 0;
+    inset-inline-start: 0;
+    display: flex;
+    gap: 4px;
+    visibility: hidden;
+    pointer-events: none;
+
+    i {
+      display: block;
+      inline-size: 8px;
+      block-size: 8px;
+    }
+  }
+}

@@ -10,7 +10,7 @@ import { Tape } from "@/components/docs/Tape";
 import { Display, Lede } from "@/components/docs/Type";
 import { landing } from "@/shared/lib/reference";
 import { INSTALL, releaseFacts, tape, version, versionTag } from "../data";
-import { Assembly } from "./Assembly";
+import { Assembly } from "./assembly/Assembly";
 import styles from "./Proof.module.scss";
 
 const SUPPORT = ["React 19", "SSR and RSC", "Strict CSP", "WCAG 2.2", "OKLCH, P3"];
