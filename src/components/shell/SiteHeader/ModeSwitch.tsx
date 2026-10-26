@@ -2,6 +2,7 @@
 
 import { useTheme, type ThemeMode } from "@/components/system/Theme";
 import { Monitor, Moon, Sun } from "@/components/docs/Icons";
+import { withoutTransitions } from "@/shared/lib/withoutTransitions";
 import styles from "./ModeSwitch.module.scss";
 
 const MODES: { mode: ThemeMode; label: string; Icon: typeof Sun }[] = [
@@ -10,7 +11,7 @@ const MODES: { mode: ThemeMode; label: string; Icon: typeof Sun }[] = [
   { mode: "system", label: "Match the system", Icon: Monitor },
 ];
 
-/** Light, dark, or system: three toggle buttons, one pressed. */
+/** Light, dark, or system: three toggle buttons, one pressed. The page switches with no transition. */
 export function ModeSwitch() {
   const { mode, setMode } = useTheme();
   return (
@@ -23,7 +24,7 @@ export function ModeSwitch() {
           aria-pressed={mode === value}
           aria-label={label}
           title={label}
-          onClick={() => setMode(value)}
+          onClick={() => withoutTransitions(() => setMode(value))}
         >
           <Icon size={16} />
         </button>

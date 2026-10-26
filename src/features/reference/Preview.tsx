@@ -11,6 +11,7 @@ import {
 import { Swatch } from "@/components/docs/Swatch";
 import { ToggleGroup } from "@/components/docs/ToggleGroup";
 import { ThemeRoot } from "@/components/system/Theme";
+import { withoutTransitions } from "@/shared/lib/withoutTransitions";
 import { registry } from "@/generated/registry";
 import { defaultsOf, effective, tokensIn } from "@/shared/lib/bindings";
 import type { FixtureNode, StyledSpec } from "@/shared/lib/reference";
@@ -103,9 +104,15 @@ export function Preview({ slug, spec, themes }: Props) {
           size="small"
           options={themes.map((id) => ({ value: id }))}
           value={theme}
-          onChange={setTheme}
+          onChange={(id) => withoutTransitions(() => setTheme(id))}
         />
-        <ToggleGroup label="Mode" size="small" options={MODES} value={mode} onChange={setMode} />
+        <ToggleGroup
+          label="Mode"
+          size="small"
+          options={MODES}
+          value={mode}
+          onChange={(m) => withoutTransitions(() => setMode(m))}
+        />
       </div>
       <div className={styles.body}>
         <ThemeRoot theme={theme} mode={mode}>

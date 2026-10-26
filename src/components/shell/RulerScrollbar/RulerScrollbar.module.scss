@@ -154,6 +154,13 @@
       transition: opacity 200ms $sq-settle-easing;
     }
 
+    // a block filling its box: inline, it would sit on a baseline and drop below centre
+    svg {
+      display: block;
+      inline-size: 100%;
+      block-size: 100%;
+    }
+
     path {
       stroke-dasharray: 24;
       stroke-dashoffset: 24;
@@ -266,27 +273,28 @@
     }
   }
 
-  // The corner glass under each stack of titles. ruler.ts sizes it to the stack it
-  // covers each frame, plus a margin for the fade, so it never spreads over the page
-  // beyond the titles (the reference's fixed 380 × 260px did).
-  .corner {
+  // A plate behind each title lying across (the docs' replacement for the reference's
+  // corner glass, which spread over the page): the ground, sized by ruler.ts to its
+  // letters, with no frame of its own, so the plates of a stack join into one stepped
+  // block. It leaves while its title moves.
+  .plates {
     position: fixed;
-    right: 0;
+    inset: 0;
     z-index: 43;
-    inline-size: 0;
-    block-size: 0;
     pointer-events: none;
-    background: color-mix(in oklab, $sq-ground 64%, transparent);
-    backdrop-filter: blur(9px);
 
-    &[data-at="top"] {
-      top: $sq-nav;
-      mask-image: radial-gradient(100% 100% at 100% 0%, #000 55%, transparent 100%);
-    }
+    span {
+      position: absolute;
+      left: 0;
+      top: 0;
+      inline-size: 0;
+      block-size: 0;
+      background: $sq-ground;
+      opacity: 0;
 
-    &[data-at="bottom"] {
-      bottom: 0;
-      mask-image: radial-gradient(100% 100% at 100% 100%, #000 55%, transparent 100%);
+      @include motion {
+        transition: opacity $duration $ease;
+      }
     }
   }
 }

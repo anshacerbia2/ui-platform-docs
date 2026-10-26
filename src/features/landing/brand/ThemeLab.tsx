@@ -10,6 +10,7 @@ import { Button } from "@/components/system/Button";
 import { Tabs } from "@/components/system/Tabs";
 import { TextField } from "@/components/system/TextField";
 import { ThemeRoot } from "@/components/system/Theme";
+import { withoutTransitions } from "@/shared/lib/withoutTransitions";
 import type { Lab } from "@/shared/lib/reference";
 import { SITE_THEME } from "@/shared/lib/themes";
 import styles from "./ThemeLab.module.scss";
@@ -44,12 +45,17 @@ export function ThemeLab({ lab, swatches }: { lab: Lab; swatches: string[] }) {
               label="Theme"
               options={themes.map((id) => ({ value: id }))}
               value={theme}
-              onChange={setTheme}
+              onChange={(id) => withoutTransitions(() => setTheme(id))}
             />
           </div>
           <div className={styles.control}>
             <span className={styles.controlName}>Mode</span>
-            <ToggleGroup label="Mode" options={MODES} value={mode} onChange={setMode} />
+            <ToggleGroup
+              label="Mode"
+              options={MODES}
+              value={mode}
+              onChange={(m) => withoutTransitions(() => setMode(m))}
+            />
           </div>
           <ThemeRoot theme={theme} mode={mode}>
             <div

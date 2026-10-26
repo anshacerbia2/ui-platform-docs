@@ -24,7 +24,9 @@ const TAU_WHEEL = 120;
 const TAU_DRAG = 80; // a drag glides too, closer behind the pointer
 const SPREAD = 0.55; // share of a title's move spent staggering its letters
 const DIM = 0.68; // a title not current: text at 68% still reads 4.5:1 or more in both modes
-const GLASS_MARGIN = 32; // the corner glass reaches this far past its titles, for its fade
+// a plate reaches this far past its title's letters: across, then up and down
+const PLATE_X = 8;
+const PLATE_Y = 4;
 const DECODE_LEAD = 120;
 const DECODE_STEP = 45; // a hovered title: hash for 120ms, then a letter resolves every 45ms
 const HEX = "0123456789ABCDEF";
@@ -44,7 +46,7 @@ export type RulerClasses = Record<
   | "labels"
   | "verified"
   | "jumps"
-  | "corner",
+  | "plates",
   string
 >;
 
@@ -55,6 +57,7 @@ type Label = {
   name: string;
   letters: Letter[];
   link: HTMLAnchorElement;
+  plate: HTMLSpanElement;
   mark: HTMLSpanElement;
   W: number;
   v: number;
@@ -77,15 +80,6 @@ const ease = (t: number) => (t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 
 const blend = (a: number[], b: number[], t: number) => a.map((v, j) => mix(v, b[j] ?? v, t));
 const noop = () => {};
 const ty = (y: number) => `translate3d(0, ${y.toFixed(1)}px, 0)`;
-/**
- * The corner glass's size for a stack of titles `width` × `height` from its corner, plus
- * a margin for its fade: it never spreads over the page beyond the titles it keeps
- * legible. An empty stack takes no glass.
- */
-const glassSize = (width: number, height: number) =>
-  width > 0 && height > 0
-    ? [`${(width + GLASS_MARGIN).toFixed(0)}px`, `${(height + GLASS_MARGIN).toFixed(0)}px`]
-    : ["0px", "0px"];
 const written = new WeakMap<HTMLElement, Record<string, string>>();
 // write a style only when it changes
 const put = (node: HTMLElement, prop: string, value: string) => {
@@ -104,6 +98,26 @@ const el = <K extends keyof HTMLElementTagNameMap>(
   if (cls) n.className = cls;
   for (const [k, v] of Object.entries(attrs)) n.setAttribute(k, v);
   return n;
+};
+/**
+ * Where the capitals' centre sits relative to the centre of a letter's line box, in px
+ * at `size`: the title letters are centred on their line box (line-height 1), which
+ * also holds the room below the baseline, so a mark centred on the box sits low.
+ * Measured from the face the letters render in.
+ */
+const capCentre = (sample: HTMLElement | undefined, size: number) => {
+  if (!sample) return 0;
+  const cs = getComputedStyle(sample);
+  const g = document.createElement("canvas").getContext("2d");
+  if (!g) return 0;
+  g.font = `${cs.fontWeight} ${size}px ${cs.fontFamily}`;
+  const m = g.measureText("H");
+  const ascent = m.fontBoundingBoxAscent;
+  const descent = m.fontBoundingBoxDescent;
+  if (!Number.isFinite(ascent) || !Number.isFinite(descent)) return 0;
+  // line-height 1: the content area is centred in a line box `size` tall
+  const baseline = (size - (ascent + descent)) / 2 + ascent;
+  return baseline - m.actualBoundingBoxAscent / 2 - size / 2;
 };
 /** The scroll position at which a section's line sits on the nav. */
 const lineAtNav = (L: { top: number }) => L.top - NAV;
@@ -170,8 +184,8 @@ export function mountRuler(
   now.append(pct);
   rail.append(scale, win, now);
   const cursor = el("div", cls.cursor, { "aria-hidden": "true" });
-  const glassTop = el("div", cls.corner, { "data-at": "top", "aria-hidden": "true" });
-  const glassBottom = el("div", cls.corner, { "data-at": "bottom", "aria-hidden": "true" });
+  // a plate behind each title lying across: a label on the drawing, never a glass over the page
+  const plates = el("div", cls.plates, { "aria-hidden": "true" });
   const layer = el("div", cls.labels, { "aria-hidden": "true" });
   const verified = el("div", cls.verified, { "aria-hidden": "true" });
   verified.innerHTML = CHECK;
@@ -187,6 +201,8 @@ export function mountRuler(
       layer.append(span);
       return { span, real: ch, shown: ch, w: 0, c: 0 };
     });
+    const plate = el("span");
+    plates.append(plate);
     const a = el("a", "", { href: `#${s.id}`, "aria-label": `Jump to ${s.dataset.sheet || s.id}` });
     jumps.append(a);
     const mark = el("span", cls.mark, { "data-state": "ahead" });
@@ -198,6 +214,7 @@ export function mountRuler(
       name,
       letters,
       link: a,
+      plate,
       mark,
       W: 0,
       v: 0,
@@ -225,7 +242,7 @@ export function mountRuler(
     return L;
   });
   const last = labels.length - 1;
-  host.append(glassTop, glassBottom, layer, verified, jumps, rail, cursor);
+  host.append(plates, layer, verified, jumps, rail, cursor);
 
   /* ---------- measure: on resize only, never while scrolling ---------- */
   let vw = 0;
@@ -237,12 +254,15 @@ export function mountRuler(
   // a row of either stack: the small title size plus a quarter (SCROLL.md 6.1)
   let pitch = 20;
   let room = 0;
+  // how far the capitals' centre sits from the line box's centre, at the base size
+  let capShift = 0;
   let scaleState = "";
   let tops: number[] = [];
   const measureLetters = () => {
     big = clamp(Math.round(vw * 0.0177), 22, 34);
     pitch = big * SMALL * 1.25;
     layer.style.setProperty("--sq-label-size", `${big}px`);
+    capShift = capCentre(labels[0]?.letters[0]?.span, big);
     for (const L of labels) {
       let c = 0;
       // offsetWidth is the laid-out width at the base size, before scale and rotation
@@ -415,11 +435,6 @@ export function mountRuler(
     let check: { L: Label; y: number; s: number } | null = null;
     // the lowest point the previous title reaches on screen, letter by letter, this frame
     let tail = -Infinity;
-    // what the corner glass has to cover: the titles lying across the top and the bottom
-    let topLeft = vw;
-    let topBottom = 0;
-    let bottomLeft = vw;
-    let bottomTop = vh;
     for (const L of labels) {
       const n = L.letters.length;
       const { sBig, curY, C } = moveIn[L.i]!;
@@ -440,6 +455,9 @@ export function mountRuler(
         ? Math.min(clamp((L.limit - line) / L.stand, 0, 1), clamp((L.hang - tail) / L.stand, 0, 1))
         : 0;
       let lowest = -Infinity;
+      // the letters' extent this frame, and whether any letter is between two places
+      let [left, right, high, low] = [Infinity, -Infinity, Infinity, -Infinity];
+      let moving = false;
       // the current title leaves within the first 1 − SPREAD of the next title's move (6.8)
       const Q = labels[L.i + 1] ? clamp(moveIn[L.i + 1]!.C / (1 - SPREAD), 0, 1) : 0;
       const opening = modeTarget === 1;
@@ -458,7 +476,9 @@ export function mountRuler(
         // folded: every title lies at the point its section begins
         const mk = ease(clamp(mode * 1.4 - (0.4 * k) / Math.max(1, n - 1), 0, 1));
         if (mk > 0) at = blend(at, across(L, k, hoverY(L.v), SMALL, L.i === cur ? 1 : 0.86), mk);
-        if (!opening && ((u > 0 && u < 1) || (c > 0 && c < 1) || (q > 0 && q < 1))) settled = false;
+        const between = (u > 0 && u < 1) || (c > 0 && c < 1) || (q > 0 && q < 1);
+        if (between || (mk > 0 && mk < 1)) moving = true;
+        if (!opening && between) settled = false;
         let ch = l.real;
         if (L.decode && l.real !== " " && t < L.decode + DECODE_LEAD + k * DECODE_STEP)
           ch = HEX[hash(L.i, k, Math.floor((t - L.decode) / 50))]!;
@@ -477,6 +497,12 @@ export function mountRuler(
         );
         // how far the letter reaches below its centre: its width when turned upright
         lowest = Math.max(lowest, top + ((Math.abs(turn) > 45 ? l.w : big) * size) / 2);
+        if (l.real !== " ") {
+          left = Math.min(left, x - (l.w * size) / 2);
+          right = Math.max(right, x + (l.w * size) / 2);
+          high = Math.min(high, top - (big * size) / 2);
+          low = Math.max(low, top + (big * size) / 2);
+        }
       }
       tail = lowest;
       L.settled = settled;
@@ -505,14 +531,18 @@ export function mountRuler(
                   L.W * SMALL,
                   big * SMALL,
                 ];
-      const [left = 0, boxTop = 0, , boxHeight = 0] = box;
-      if (place === "past" || place === "current") {
-        topLeft = Math.min(topLeft, left);
-        topBottom = Math.max(topBottom, boxTop + boxHeight);
-      } else if (place === "stack") {
-        bottomLeft = Math.min(bottomLeft, left);
-        bottomTop = Math.min(bottomTop, boxTop);
-      }
+      // the plate: under a title lying across and at rest; it leaves while the title moves
+      // or stands on the ruler, so it never stretches over the letters' path
+      const shown = !moving && place !== "upright" && Number.isFinite(left);
+      put(L.plate, "opacity", shown ? "1" : "0");
+      if (shown)
+        put(
+          L.plate,
+          "transform",
+          `translate3d(${(left - PLATE_X).toFixed(1)}px, ${(high - PLATE_Y).toFixed(1)}px, 0)`,
+        );
+      if (shown) put(L.plate, "width", `${(right - left + 2 * PLATE_X).toFixed(1)}px`);
+      if (shown) put(L.plate, "height", `${(low - high + 2 * PLATE_Y).toFixed(1)}px`);
       const key = box.map((v) => v.toFixed(0)).join(",");
       if (key !== L.box) {
         L.box = key;
@@ -521,13 +551,6 @@ export function mountRuler(
         L.link.style.setProperty("height", `${box[3]}px`);
       }
     }
-    // The corner glass covers only the stacks it sits under (glassSize).
-    const [topWidth, topHeight] = glassSize(vw - topLeft, topBottom - NAV);
-    const [bottomWidth, bottomHeight] = glassSize(vw - bottomLeft, vh - bottomTop);
-    put(glassTop, "width", topWidth!);
-    put(glassTop, "height", topHeight!);
-    put(glassBottom, "width", bottomWidth!);
-    put(glassBottom, "height", bottomHeight!);
     // the check beside the current title, once it stands whole
     if (check) {
       const size = big * check.s * 0.62;
@@ -535,7 +558,8 @@ export function mountRuler(
       put(
         verified,
         "transform",
-        `translate3d(${x.toFixed(1)}px, ${(check.y - size / 2).toFixed(1)}px, 0)`,
+        // centred on the capitals, not on the line box, which holds the descender's room too
+        `translate3d(${x.toFixed(1)}px, ${(check.y + capShift * check.s - size / 2).toFixed(1)}px, 0)`,
       );
       put(verified, "width", `${size.toFixed(1)}px`);
       put(verified, "height", `${size.toFixed(1)}px`);
@@ -648,8 +672,7 @@ export function mountRuler(
   const on = () => {
     const active = wide.matches;
     doc.dataset.ruler = active ? "on" : "off";
-    for (const n of [rail, cursor, layer, verified, jumps, glassTop, glassBottom])
-      n.hidden = !active;
+    for (const n of [rail, cursor, layer, verified, jumps, plates]) n.hidden = !active;
     if (!active) return;
     measure();
     invalidate();
