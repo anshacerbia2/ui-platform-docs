@@ -9,7 +9,7 @@
 // cached, and a style is written only when it changes, through the CSSOM (the
 // site's Content-Security-Policy allows no style attribute in HTML).
 
-import { NAV_LINE, RULER_MIN_WIDTH } from "@/shared/lib/chrome";
+import { JUMP_LINE, NAV_LINE, RULER_MIN_WIDTH } from "@/shared/lib/chrome";
 import { glideTo, onGlideWrite } from "@/shared/lib/glide";
 import { currentSection } from "@/shared/lib/useHere";
 
@@ -113,8 +113,8 @@ const capCentre = (sample: HTMLElement | undefined, size: number) => {
   const baseline = (size - (ascent + descent)) / 2 + ascent;
   return baseline - m.actualBoundingBoxAscent / 2 - size / 2;
 };
-/** The scroll position at which a section's line sits on the nav. */
-const lineAtNav = (L: { top: number }) => L.top - NAV;
+/** The scroll position at which a section's line sits on the nav's line, as one line with it. */
+const lineAtNav = (L: { top: number }) => L.top - JUMP_LINE;
 const hash = (a: number, b: number, c: number) => {
   let h = (a * 73856093) ^ (b * 19349663) ^ (c * 83492791);
   h = (h ^ (h >>> 13)) * 1274126177;

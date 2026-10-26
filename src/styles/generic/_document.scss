@@ -1,11 +1,13 @@
 @use "../settings" as *;
 
 // The document outside the theme root: no margin, the page role behind overscroll.
-// A section jumped to lands with its line on the nav strip's line (SCROLL.md 6.9).
+// A section jumped to lands with its line on the nav strip's line (SCROLL.md 6.9):
+// one pixel up, on the nav's last row, so the two lines are one, never a double border
+// (shared/lib/chrome.ts JUMP_LINE).
 html {
   -webkit-text-size-adjust: 100%;
   text-size-adjust: 100%;
-  scroll-padding-top: $sq-nav;
+  scroll-padding-top: $sq-nav - 1px;
 }
 
 body {
