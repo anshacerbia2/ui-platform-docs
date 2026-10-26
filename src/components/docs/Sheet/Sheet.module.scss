@@ -5,8 +5,9 @@
 // The page counts the sheets (`counter-reset: sheet` on its main).
 @layer docs.components {
   .sheet {
-    // A jump lands the section's line on the nav's: the document's scroll-padding
-    // (generic/_document.scss) is the one offset. A scroll-margin here too doubled it.
+    // A jump lands the section's line on the nav's own line: the document's
+    // scroll-padding (generic/_document.scss) is the one offset, and a sheet adds no
+    // scroll-margin, save the first of a page of sheets (below).
     position: relative;
     counter-increment: sheet;
 
@@ -61,6 +62,12 @@
       &:first-child::before,
       &:first-child::after {
         display: none;
+      }
+
+      // with no rule of its own, it lands where the page loads (scroll 0), not 1px down:
+      // its top sits under the nav's line, not on it (the ruler reads this margin too)
+      &:first-child {
+        scroll-margin-block-start: 1px;
       }
     }
   }

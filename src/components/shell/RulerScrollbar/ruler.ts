@@ -56,6 +56,8 @@ type Label = {
   W: number;
   v: number;
   top: number;
+  /** The scroll position a jump to the section lands at (see measureLayout). */
+  jump: number;
   end: number;
   sBig: number;
   curY: number;
@@ -113,8 +115,6 @@ const capCentre = (sample: HTMLElement | undefined, size: number) => {
   const baseline = (size - (ascent + descent)) / 2 + ascent;
   return baseline - m.actualBoundingBoxAscent / 2 - size / 2;
 };
-/** The scroll position at which a section's line sits on the nav's line, as one line with it. */
-const lineAtNav = (L: { top: number }) => L.top - JUMP_LINE;
 const hash = (a: number, b: number, c: number) => {
   let h = (a * 73856093) ^ (b * 19349663) ^ (c * 83492791);
   h = (h ^ (h >>> 13)) * 1274126177;
@@ -207,6 +207,7 @@ export function mountRuler(
       W: 0,
       v: 0,
       top: 0,
+      jump: 0,
       end: 0,
       sBig: 1,
       curY: 0,
@@ -229,8 +230,8 @@ export function mountRuler(
       if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey || e.button !== 0) return;
       e.preventDefault();
       history.replaceState(history.state, "", `#${s.id}`);
-      // its section's line lands exactly on the nav line (SCROLL.md 6.9); glideTo jumps under reduced motion
-      glideTo(lineAtNav(L));
+      // its section's line lands on the nav's line (SCROLL.md 6.12); glideTo jumps under reduced motion
+      glideTo(L.jump);
     });
     listen(a, "pointerenter", verify);
     listen(a, "focus", verify);
@@ -279,6 +280,10 @@ export function mountRuler(
     H = Math.max(1, vh - TOP - BOTTOM);
     for (const L of labels) {
       L.top = L.sheet.getBoundingClientRect().top + window.scrollY;
+      // a jump lands the section's line on the nav's own line (JUMP_LINE), less the
+      // sheet's scroll-margin: the stylesheet's, so the ruler, the contents and a #hash
+      // land alike (a first sheet with no rule of its own takes 1px and lands at the top)
+      L.jump = L.top - JUMP_LINE - (parseFloat(getComputedStyle(L.sheet).scrollMarginTop) || 0);
       // its place on the scale: where its line sits in the document
       L.v = L.i === 0 ? 0 : clamp((L.top / docH) * 100, 0, 100);
       // the highest its line gets on screen: under the nav, or where the page ends
@@ -628,14 +633,10 @@ export function mountRuler(
       top = ((p + (e.shiftKey ? 5 : 1)) / 100) * maxScroll;
     else if (e.key === "ArrowUp" || e.key === "ArrowLeft")
       top = ((p - (e.shiftKey ? 5 : 1)) / 100) * maxScroll;
-    else if (e.key === "PageDown") top = labels[cur + 1] ? lineAtNav(labels[cur + 1]!) : maxScroll;
+    else if (e.key === "PageDown") top = labels[cur + 1]?.jump ?? maxScroll;
     else if (e.key === "PageUp")
       top =
-        window.scrollY > lineAtNav(labels[cur]!) + 4
-          ? lineAtNav(labels[cur]!)
-          : labels[cur - 1]
-            ? lineAtNav(labels[cur - 1]!)
-            : 0;
+        window.scrollY > labels[cur]!.jump + 4 ? labels[cur]!.jump : (labels[cur - 1]?.jump ?? 0);
     else if (e.key === "Home") top = 0;
     else if (e.key === "End") top = maxScroll;
     if (top === null) return;
