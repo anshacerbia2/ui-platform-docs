@@ -1,6 +1,6 @@
 "use client";
 
-import { useTheme, type ThemeMode } from "@scnx/core-ui/providers/theme-provider-base";
+import { useTheme, type ThemeMode } from "@/components/system/Theme";
 import { Monitor, Moon, Sun } from "@/shared/ui/icons";
 import styles from "./ModeSwitch.module.scss";
 

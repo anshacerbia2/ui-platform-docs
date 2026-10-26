@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { pin } from "@/shared/lib/reference";
 import { CodeBlock } from "@/shared/ui/CodeBlock";
-import { DarkRoot } from "@/shared/ui/DarkRoot";
+import { DarkRoot } from "@/components/system/Theme";
 import { ArrowRight } from "@/shared/ui/icons";
 import styles from "./closing.module.scss";
 

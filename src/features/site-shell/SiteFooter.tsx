@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { pin, sourceUrl } from "@/shared/lib/reference";
-import { DarkRoot } from "@/shared/ui/DarkRoot";
+import { DarkRoot } from "@/components/system/Theme";
 import { ARCHITECTURE_URL, REPOSITORY_URL } from "./nav";
 import styles from "./SiteFooter.module.scss";
 

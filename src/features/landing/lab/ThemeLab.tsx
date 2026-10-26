@@ -1,9 +1,9 @@
 "use client";
 
-import { ThemeProvider } from "@scnx/core-ui/providers/theme-provider-base";
-import { Button } from "@scnx/system/components/button";
-import { Tabs } from "@scnx/system/components/tabs";
-import { TextField } from "@scnx/system/components/text-field";
+import { ThemeRoot } from "@/components/system/Theme";
+import { Button } from "@/components/system/Button";
+import { Tabs } from "@/components/system/Tabs";
+import { TextField } from "@/components/system/TextField";
 import { useState } from "react";
 import type { Lab } from "@/shared/lib/reference";
 import { SITE_THEME } from "@/shared/lib/themes";
@@ -38,7 +38,7 @@ export function ThemeLab({ lab, swatches }: { lab: Lab; swatches: string[] }) {
         </div>
       </div>
       <div className={styles.body}>
-        <ThemeProvider themeId={theme} mode={mode} storage={false}>
+        <ThemeRoot theme={theme} mode={mode}>
           <div className={styles.canvas}>
             <form
               className={styles.form}
@@ -83,7 +83,7 @@ export function ThemeLab({ lab, swatches }: { lab: Lab; swatches: string[] }) {
               <Swatch key={token} token={token} />
             ))}
           </div>
-        </ThemeProvider>
+        </ThemeRoot>
         <ul className={styles.checks} aria-label={`Contrast in ${theme}, ${mode} mode`}>
           {checks.map((c) => (
             <li key={c.label} className={styles.check}>

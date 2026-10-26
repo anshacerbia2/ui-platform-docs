@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useStyleVars } from "@/shared/lib/useStyleVars";
-import { DarkRoot } from "@/shared/ui/DarkRoot";
+import { DarkRoot } from "@/components/system/Theme";
 import styles from "./TokenStates.module.scss";
 
 // The surface states the token grammar allows (STD-UIP-TKN-001); focus is not one.

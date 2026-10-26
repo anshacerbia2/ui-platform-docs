@@ -1,6 +1,6 @@
 "use client";
 
-import { ThemeProvider } from "@scnx/core-ui/providers/theme-provider-base";
+import { ThemeRoot } from "@/components/system/Theme";
 import {
   useCallback,
   useEffect,
@@ -97,14 +97,14 @@ export function LightsSplit() {
       data-edge={rounded === 0 || rounded === 100 || undefined}
     >
       <div className={styles.pane}>
-        <ThemeProvider themeId={SITE_THEME} mode="light" storage={false}>
+        <ThemeRoot theme={SITE_THEME} mode="light">
           <MiniDashboard />
-        </ThemeProvider>
+        </ThemeRoot>
       </div>
       <div className={`${styles.pane} ${styles.dark}`}>
-        <ThemeProvider themeId={SITE_THEME} mode="dark" storage={false}>
+        <ThemeRoot theme={SITE_THEME} mode="dark">
           <MiniDashboard hidden />
-        </ThemeProvider>
+        </ThemeRoot>
       </div>
       <span className={styles.label} data-side="light">
         Light

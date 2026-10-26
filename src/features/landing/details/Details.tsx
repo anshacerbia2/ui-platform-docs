@@ -1,7 +1,7 @@
-import { ThemeProvider } from "@scnx/core-ui/providers/theme-provider-base";
-import { Button } from "@scnx/system/components/button";
+import { ThemeRoot } from "@/components/system/Theme";
+import { Button } from "@/components/system/Button";
 import { SITE_THEME, THEME_IDS } from "@/shared/lib/themes";
-import { DarkRoot } from "@/shared/ui/DarkRoot";
+import { DarkRoot } from "@/components/system/Theme";
 import { hex, oklchToSrgb } from "../hero/tower";
 import { SectionHead } from "../sections/SectionHead";
 import sectionStyles from "../sections/sections.module.scss";
@@ -141,7 +141,7 @@ function Demo({ kind }: { kind: (typeof CARDS)[number]["demo"] }) {
             { theme: THEME_IDS[0] ?? SITE_THEME, mode: "light" as const, name: "Northwind" },
             { theme: THEME_IDS[1] ?? SITE_THEME, mode: "dark" as const, name: "Kirana" },
           ].map((root) => (
-            <ThemeProvider key={root.theme} themeId={root.theme} mode={root.mode} storage={false}>
+            <ThemeRoot key={root.theme} theme={root.theme} mode={root.mode}>
               <div className={styles.brandRoot}>
                 <span className={styles.brandAttr}>data-scnx-theme=&quot;{root.theme}&quot;</span>
                 <span className={styles.brandName}>{root.name}</span>
@@ -150,7 +150,7 @@ function Demo({ kind }: { kind: (typeof CARDS)[number]["demo"] }) {
                   Continue
                 </Button>
               </div>
-            </ThemeProvider>
+            </ThemeRoot>
           ))}
         </div>
       );

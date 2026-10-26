@@ -1,15 +1,13 @@
 "use client";
 
-import { useState, type ReactNode } from "react";
-import { SITE_THEME } from "@/shared/lib/themes";
-import { MODE_COOKIE } from "./modeCookie";
+import type { ReactNode } from "react";
 import {
-  createThemeStore,
-  ThemeProvider,
+  StoredThemeRoot,
   type ResolvedMode,
   type ThemeMode,
   type ThemePreferenceAdapter,
-} from "@scnx/core-ui/providers/theme-provider-base";
+} from "@/components/system/Theme";
+import { MODE_COOKIE } from "./modeCookie";
 
 // TDD docs-site D6: the mode preference lives in a cookie, so the server
 // renders the reader's mode and the first client render matches it.
@@ -24,7 +22,7 @@ const cookiePreference: ThemePreferenceAdapter = {
   },
 };
 
-/** The site's theme root: the site's theme (SITE_THEME), in the mode the server resolved. */
+/** The site's theme root: the site's theme, in the mode the server resolved. */
 export function SiteTheme({
   mode,
   resolvedMode,
@@ -34,17 +32,9 @@ export function SiteTheme({
   resolvedMode: ResolvedMode;
   children: ReactNode;
 }) {
-  const [store] = useState(() =>
-    createThemeStore({
-      themeId: SITE_THEME,
-      defaultMode: "system",
-      serverHint: { mode, resolvedMode },
-      storage: cookiePreference,
-    }),
-  );
   return (
-    <ThemeProvider themeId={SITE_THEME} store={store}>
+    <StoredThemeRoot mode={mode} resolvedMode={resolvedMode} preference={cookiePreference}>
       {children}
-    </ThemeProvider>
+    </StoredThemeRoot>
   );
 }

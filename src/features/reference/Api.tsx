@@ -1,5 +1,5 @@
 import type { ApiExport } from "@/shared/lib/reference";
-import { DarkRoot } from "@/shared/ui/DarkRoot";
+import { DarkRoot } from "@/components/system/Theme";
 import { Code, SubHeading, Table } from "./Section";
 import styles from "./reference.module.scss";
 

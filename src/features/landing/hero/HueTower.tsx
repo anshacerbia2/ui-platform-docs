@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { ThemeProvider } from "@scnx/core-ui/providers/theme-provider-base";
+import { ThemeRoot } from "@/components/system/Theme";
 import { SITE_THEME } from "@/shared/lib/themes";
 import { useStyleVars } from "@/shared/lib/useStyleVars";
 import { Orbit, Reset } from "@/shared/ui/icons";
@@ -87,7 +87,7 @@ export function HueTower() {
 
   // The stage is a dark showroom in either site mode: its own theme root, in dark mode.
   return (
-    <ThemeProvider themeId={SITE_THEME} mode="dark" storage={false}>
+    <ThemeRoot theme={SITE_THEME} mode="dark">
       <div className={styles.stage}>
         <canvas
           ref={canvas}
@@ -165,6 +165,6 @@ export function HueTower() {
           ) : null}
         </div>
       </div>
-    </ThemeProvider>
+    </ThemeRoot>
   );
 }

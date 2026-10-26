@@ -1,6 +1,6 @@
 "use client";
 
-import { Tabs } from "@scnx/system/components/tabs";
+import { Tabs } from "@/components/system/Tabs";
 import { useState } from "react";
 import styles from "./Details.module.scss";
 

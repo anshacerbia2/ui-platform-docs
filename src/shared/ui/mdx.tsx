@@ -1,6 +1,6 @@
 import type { MDXComponents } from "mdx/types";
-import { Heading } from "@scnx/system/components/heading";
-import { Text } from "@scnx/system/components/text";
+import { Heading } from "@/components/system/Heading";
+import { Text } from "@/components/system/Text";
 import { CodeBlock } from "./CodeBlock";
 import styles from "./mdx.module.scss";
 

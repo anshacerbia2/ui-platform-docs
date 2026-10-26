@@ -1,6 +1,4 @@
-import "@scnx/system/styles/components.css";
-import "@scnx/system/tokens/css/scnx-platform.css";
-import "@scnx/system/tokens/css/scnx-saas.css";
+import "@/components/system/styles";
 import "@/styles/main.scss";
 import "@/generated/swatches.css";
 import type { Metadata, Viewport } from "next";

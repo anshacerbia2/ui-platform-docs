@@ -1,6 +1,6 @@
 "use client";
 
-import { ThemeProvider } from "@scnx/core-ui/providers/theme-provider-base";
+import { ThemeRoot } from "@/components/system/Theme";
 import {
   createElement,
   useEffect,
@@ -103,7 +103,7 @@ export function Preview({ slug, spec, themes }: Props) {
         </div>
       </div>
       <div className={styles.body}>
-        <ThemeProvider themeId={theme} mode={mode} storage={false}>
+        <ThemeRoot theme={theme} mode={mode}>
           <div
             ref={stage}
             className={styles.stage}
@@ -118,7 +118,7 @@ export function Preview({ slug, spec, themes }: Props) {
                 : createElement(resolve(mod, null), { ...spec.fixture.props, ...rootProps })}
             </div>
           </div>
-        </ThemeProvider>
+        </ThemeRoot>
         <div className={styles.controls}>
           {Object.entries(spec.options).map(([name, o]) => (
             <fieldset key={name} className={styles.control}>

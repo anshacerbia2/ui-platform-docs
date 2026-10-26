@@ -21,10 +21,21 @@
     "import/no-unassigned-import": [
       "error",
       {
-        "allow": ["**/*.css", "**/*.scss", "server-only"]
+        "allow": ["**/*.css", "**/*.scss", "server-only", "@/components/system/styles"]
       }
     ],
-    "jsx-a11y/prefer-tag-over-role": "off"
+    "jsx-a11y/prefer-tag-over-role": "off",
+    "no-restricted-imports": [
+      "error",
+      {
+        "patterns": [
+          {
+            "group": ["@scnx/**"],
+            "message": "Use the design system through @/components/system: it is wrapped once, there, and nowhere else (TDD docs-site D17)."
+          }
+        ]
+      }
+    ]
   },
   "ignorePatterns": ["node_modules", ".next", "src/generated", "next-env.d.ts"],
   "overrides": [
@@ -32,6 +43,28 @@
       "files": ["scripts/**"],
       "rules": {
         "no-console": "off"
+      }
+    },
+    {
+      "files": ["src/components/system/**"],
+      "rules": {
+        "no-restricted-imports": "off"
+      }
+    },
+    {
+      "files": ["src/components/**"],
+      "rules": {
+        "no-restricted-imports": [
+          "error",
+          {
+            "patterns": [
+              {
+                "group": ["@/features/**", "@/app/**"],
+                "message": "A component depends only on components and shared libraries, never on a feature or a route (TDD docs-site D17)."
+              }
+            ]
+          }
+        ]
       }
     }
   ]

@@ -1,5 +1,5 @@
+import { DarkRoot } from "@/components/system/Theme";
 import { CopyButton } from "./CopyButton";
-import { DarkRoot } from "./DarkRoot";
 import styles from "./CodeBlock.module.scss";
 
 /** A block of code or a terminal session, with line numbers and a copy button. */

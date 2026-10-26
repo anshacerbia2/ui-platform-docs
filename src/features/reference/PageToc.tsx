@@ -1,6 +1,6 @@
 "use client";
 
-import { TableOfContents } from "@scnx/system/components/table-of-contents";
+import { TableOfContents } from "@/components/system/TableOfContents";
 import { useSheets } from "@/features/site-shell/Here";
 import { NAV_LINE } from "@/shared/lib/chrome";
 import { useHere } from "@/shared/lib/useHere";

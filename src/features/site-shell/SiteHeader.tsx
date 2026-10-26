@@ -1,4 +1,4 @@
-import { Badge } from "@scnx/system/components/badge";
+import { Badge } from "@/components/system/Badge";
 import Link from "next/link";
 import { pin } from "@/shared/lib/reference";
 import { Cta } from "@/shared/ui/Cta";

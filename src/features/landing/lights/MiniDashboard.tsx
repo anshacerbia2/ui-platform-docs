@@ -1,4 +1,4 @@
-import { Button } from "@scnx/system/components/button";
+import { Button } from "@/components/system/Button";
 import styles from "./Lights.module.scss";
 
 const KPIS = [
