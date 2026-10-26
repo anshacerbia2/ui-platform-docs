@@ -87,7 +87,7 @@
       block-size: 7px;
       translate: 0 -50%;
       background: $sq-signal;
-      box-shadow: 0 0 0 4px color-mix(in oklch, $sq-signal 22%, transparent);
+      box-shadow: 0 0 0 4px color-mix(in srgb, $sq-signal 22%, transparent);
       opacity: var(--sig-on);
     }
 

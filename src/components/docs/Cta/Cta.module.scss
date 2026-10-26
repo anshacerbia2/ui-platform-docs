@@ -32,7 +32,7 @@
     }
 
     &:hover {
-      background: color-mix(in oklch, $sq-text 6%, transparent);
+      background: color-mix(in srgb, $sq-text 6%, transparent);
     }
 
     &:focus-visible {

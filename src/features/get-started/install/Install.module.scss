@@ -163,7 +163,7 @@
         place-items: center;
         inline-size: 22px;
         block-size: 22px;
-        background: color-mix(in oklch, $sq-text 10%, transparent);
+        background: color-mix(in srgb, $sq-text 10%, transparent);
         font: 500 11px/1 $sq-mono;
       }
 
@@ -216,7 +216,7 @@
     }
 
     &[data-on] {
-      background: color-mix(in oklch, $sq-signal 14%, transparent);
+      background: color-mix(in srgb, $sq-signal 14%, transparent);
     }
   }
 

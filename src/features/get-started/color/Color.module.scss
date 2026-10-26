@@ -34,7 +34,7 @@
     color: $sq-signal-text;
     font-weight: 500;
     text-decoration: underline;
-    text-decoration-color: color-mix(in oklch, currentColor 35%, transparent);
+    text-decoration-color: color-mix(in srgb, currentColor 35%, transparent);
     text-underline-offset: 3px;
   }
 

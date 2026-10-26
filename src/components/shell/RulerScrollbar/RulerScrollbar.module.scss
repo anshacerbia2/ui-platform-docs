@@ -34,7 +34,7 @@
   .glass {
     position: absolute;
     inset: 0;
-    background: color-mix(in oklch, $sq-ground 55%, transparent);
+    background: color-mix(in srgb, $sq-ground 55%, transparent);
     backdrop-filter: blur(9px);
     mask-image: linear-gradient(to left, #000 40%, transparent);
   }
@@ -178,7 +178,7 @@
     inline-size: 60px;
     top: 0;
     block-size: 0;
-    background: color-mix(in oklch, $sq-text 9%, transparent);
+    background: color-mix(in srgb, $sq-text 9%, transparent);
     opacity: 0;
     will-change: transform, opacity;
   }
@@ -272,7 +272,7 @@
     z-index: 43;
     inline-size: min(380px, 30vw);
     pointer-events: none;
-    background: color-mix(in oklch, $sq-ground 80%, transparent);
+    background: color-mix(in srgb, $sq-ground 80%, transparent);
     backdrop-filter: blur(9px);
 
     &[data-at="top"] {

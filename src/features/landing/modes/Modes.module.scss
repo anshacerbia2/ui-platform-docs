@@ -90,7 +90,7 @@
     border-radius: 0;
     background: $sq-signal;
     color: var(--ds-color-primary-text-contrast-default);
-    box-shadow: 0 0 0 4px color-mix(in oklch, $sq-signal 25%, transparent);
+    box-shadow: 0 0 0 4px color-mix(in srgb, $sq-signal 25%, transparent);
     cursor: ew-resize;
     @include focus-ring(3px);
   }

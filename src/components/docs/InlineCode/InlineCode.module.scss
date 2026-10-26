@@ -3,7 +3,7 @@
 @layer docs.components {
   .code {
     padding: 0.1em 0.35em;
-    background: color-mix(in oklch, $sq-text 7%, transparent);
+    background: color-mix(in srgb, $sq-text 7%, transparent);
     color: $sq-text;
     font: 500 0.8125rem/1.5 $sq-mono;
     overflow-wrap: anywhere;

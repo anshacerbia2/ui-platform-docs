@@ -10,13 +10,16 @@
   --sq-signal: var(--ds-color-primary-surface-solid-default);
   --sq-signal-text: var(--ds-color-primary-text-default-default);
   --sq-mono: "IBM Plex Mono", var(--ds-typography-code-default-font-family);
-  --sq-line: color-mix(in oklch, var(--sq-text) 16%, transparent);
-  --sq-cross: color-mix(in oklch, var(--sq-text) 72%, transparent);
+  // A mix with `transparent` is made in sRGB: in OKLCH, transparent has no hue, the
+  // result takes hue `none` (read as 0°, red), and a grey turns warm. Two opaque
+  // colours mix in OKLCH.
+  --sq-line: color-mix(in srgb, var(--sq-text) 16%, transparent);
+  --sq-cross: color-mix(in srgb, var(--sq-text) 72%, transparent);
   // a control's boundary (a field, a secondary call to action): 3:1 or more
   --sq-edge: color-mix(in oklch, var(--sq-text) 50%, var(--sq-ground));
   // decoration only (a separator glyph, a mark not yet reached), never text
   --sq-faint: color-mix(in oklch, var(--sq-text) 42%, var(--sq-ground));
-  --sq-glass: color-mix(in oklch, var(--sq-ground) 72%, transparent);
+  --sq-glass: color-mix(in srgb, var(--sq-ground) 72%, transparent);
   // where a rule meets a column line: an 11px plus at each end of an 11px strip
   --sq-plus:
     linear-gradient(var(--sq-cross), var(--sq-cross)) 5px 0 / 1px 11px no-repeat,
