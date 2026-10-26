@@ -53,11 +53,22 @@ jobs:
       - run: pnpm lint
       - run: pnpm typecheck
 
-  site:
-    name: Build and browser smoke test
+  # The browser jobs run in Playwright's own image, which carries the browsers and the
+  # system libraries they need: nothing is downloaded or installed with apt per run (a
+  # slow Ubuntu mirror once held the old install step for 15 minutes). Its tag must
+  # follow the `playwright` version in package.json; each job checks that first.
+  # Every engine and the ruler check run side by side.
+  smoke:
+    name: Smoke test (${{ matrix.browser }})
     runs-on: ubuntu-24.04
-    # A hung browser download fails the job instead of leaving it pending for hours.
-    timeout-minutes: 45
+    timeout-minutes: 20
+    container:
+      image: mcr.microsoft.com/playwright:v1.63.0-noble
+      options: --user 1001
+    strategy:
+      fail-fast: false
+      matrix:
+        browser: [chromium, firefox, webkit]
     steps:
       - uses: actions/checkout@v4
       - uses: pnpm/action-setup@v4
@@ -66,34 +77,57 @@ jobs:
           node-version-file: .node-version
           cache: pnpm
       - run: pnpm install --frozen-lockfile
+      - name: The image matches Playwright
+        run: sh scripts/playwright-image.sh 1.63.0
       - run: pnpm build
-      # Browser builds are cached per Playwright version; system libraries are installed every run.
-      - name: Playwright version
-        id: playwright
-        run: echo "version=$(node -p "require('playwright/package.json').version")" >> "$GITHUB_OUTPUT"
-      - uses: actions/cache@v4
-        with:
-          path: ~/.cache/ms-playwright
-          key: playwright-${{ runner.os }}-${{ steps.playwright.outputs.version }}
-      - name: Install the browsers
-        timeout-minutes: 15
-        run: pnpm exec playwright install --with-deps chromium firefox webkit
-      # Every route in Chromium, Firefox, and WebKit, light and dark: no page
-      # error, no console error, no CSP violation, and a nonce on every response.
+      # Every route, light and dark: no page error, no console error, no CSP
+      # violation, a nonce on every response, nothing wider than 1440px or 390px.
       - name: Smoke test
         timeout-minutes: 10
-        run: node scripts/smoke.mjs --browsers chromium,firefox,webkit --shots artifacts/screenshots
+        run: node scripts/smoke.mjs --browsers ${{ matrix.browser }} --shots artifacts/screenshots
+      - uses: actions/upload-artifact@v4
+        if: always() && matrix.browser == 'chromium'
+        with:
+          name: screenshots
+          path: artifacts/screenshots
+          retention-days: 14
+
+  ruler:
+    name: Ruler check
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    container:
+      image: mcr.microsoft.com/playwright:v1.63.0-noble
+      options: --user 1001
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .node-version
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - name: The image matches Playwright
+        run: sh scripts/playwright-image.sh 1.63.0
+      - run: pnpm build
       # TDD docs-site D15: the ruler's titles never cross, every letter is drawn, and the
       # section bars, the nav readout, the ruler, and the contents agree on here.
       - name: Ruler check
         timeout-minutes: 15
         run: node scripts/ruler-check.mjs
-      - uses: actions/upload-artifact@v4
-        if: always()
-        with:
-          name: screenshots
-          path: artifacts/screenshots
-          retention-days: 14
+
+  # The check branch protection knows by this name: green only when every engine's smoke
+  # test and the ruler check are.
+  site:
+    name: Build and browser smoke test
+    needs: [smoke, ruler]
+    if: always()
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Every browser job passed
+        run: |
+          test "${{ needs.smoke.result }}" = success
+          test "${{ needs.ruler.result }}" = success
 
   governance:
     name: Central governance linter
