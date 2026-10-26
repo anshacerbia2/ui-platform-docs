@@ -1,6 +1,6 @@
 import type { Route } from "next";
 import Link from "next/link";
-import { DocsLayout } from "@/features/site-shell/DocsLayout";
+import { DocsLayout } from "@/components/shell/DocsLayout";
 import { titleOf, type EntryRow, type PrimitiveReference } from "@/shared/lib/reference";
 import { Accessibility } from "./Accessibility";
 import { Api } from "./Api";

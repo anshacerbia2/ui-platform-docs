@@ -1,11 +1,11 @@
 import type { Metadata } from "next";
-import { DocsLayout } from "@/features/site-shell/DocsLayout";
+import { DocsLayout } from "@/components/shell/DocsLayout";
 import { PageToc } from "@/features/reference/PageToc";
 import { Code, Section, Table } from "@/features/reference/Section";
 import styles from "@/features/reference/reference.module.scss";
 import { figmaFiles, pin, sourceUrl } from "@/shared/lib/reference";
 import { SITE_THEME } from "@/shared/lib/themes";
-import { CodeBlock } from "@/shared/ui/CodeBlock";
+import { CodeBlock } from "@/components/docs/CodeBlock";
 
 export const metadata: Metadata = { title: "Tokens in Figma" };
 

@@ -1,8 +1,8 @@
 import Link from "next/link";
 import { pin } from "@/shared/lib/reference";
-import { CodeBlock } from "@/shared/ui/CodeBlock";
+import { CodeBlock } from "@/components/docs/CodeBlock";
 import { DarkRoot } from "@/components/system/Theme";
-import { ArrowRight } from "@/shared/ui/icons";
+import { ArrowRight } from "@/components/docs/Icons";
 import styles from "./closing.module.scss";
 
 export function Verify() {

@@ -1,5 +1,5 @@
-import { SiteFooter } from "@/features/site-shell/SiteFooter";
-import { SiteHeader } from "@/features/site-shell/SiteHeader";
+import { SiteFooter } from "@/components/shell/SiteFooter";
+import { SiteHeader } from "@/components/shell/SiteHeader";
 import { Details } from "./details/Details";
 import { Hero } from "./hero/Hero";
 import { ThemeLabSection } from "./lab/ThemeLabSection";

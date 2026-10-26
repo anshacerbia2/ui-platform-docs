@@ -11,7 +11,7 @@ import {
 } from "react";
 import { SITE_THEME } from "@/shared/lib/themes";
 import { useStyleVars } from "@/shared/lib/useStyleVars";
-import { Split } from "@/shared/ui/icons";
+import { Split } from "@/components/docs/Icons";
 import { MiniDashboard } from "./MiniDashboard";
 import styles from "./Lights.module.scss";
 

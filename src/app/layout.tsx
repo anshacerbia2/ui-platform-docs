@@ -4,9 +4,8 @@ import "@/generated/swatches.css";
 import type { Metadata, Viewport } from "next";
 import { cookies, headers } from "next/headers";
 import type { ReactNode } from "react";
-import { MODE_COOKIE } from "@/features/site-shell/modeCookie";
-import { Reveal } from "@/features/site-shell/Reveal";
-import { SiteTheme } from "@/features/site-shell/SiteTheme";
+import { Reveal } from "@/components/shell/Reveal";
+import { MODE_COOKIE, SiteTheme } from "@/components/shell/SiteTheme";
 
 export const metadata: Metadata = {
   metadataBase: new URL(

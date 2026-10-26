@@ -1,7 +1,7 @@
 import type { Route } from "next";
 import Link from "next/link";
 import type { ComponentType } from "react";
-import { DocsLayout } from "@/features/site-shell/DocsLayout";
+import { DocsLayout } from "@/components/shell/DocsLayout";
 import {
   entries,
   pin,

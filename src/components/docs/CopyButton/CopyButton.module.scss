@@ -1,0 +1,19 @@
+@use "settings" as *;
+@use "tools" as *;
+
+@layer docs.components {
+  .button {
+    display: inline-flex;
+    flex: none;
+    align-items: center;
+    justify-content: center;
+    inline-size: 2.375rem;
+    block-size: 2.375rem;
+    border: 0;
+    border-radius: var(--ds-dimension-radius-container);
+    color: $text;
+    cursor: pointer;
+    @include fill-states($surface-chip, $surface-chip-hover, $surface-chip-pressed);
+    @include focus-ring;
+  }
+}

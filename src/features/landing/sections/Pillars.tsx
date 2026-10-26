@@ -1,6 +1,6 @@
 import Link from "next/link";
-import { SECTIONS } from "@/features/site-shell/nav";
-import { ComponentMark, PrimitiveMark, ReleaseMark, TokenMark } from "@/shared/ui/icons";
+import { SECTIONS } from "@/shared/lib/site";
+import { ComponentMark, PrimitiveMark, ReleaseMark, TokenMark } from "@/components/docs/Icons";
 import { SectionHead } from "./SectionHead";
 import styles from "./closing.module.scss";
 import sectionStyles from "./sections.module.scss";

@@ -1,0 +1,164 @@
+@use "settings" as *;
+@use "tools" as *;
+
+// The docs column (TDD docs-site D14; scnehaux-design scnx-platform
+// Docs-Button.html): a centred frame whose sides are lines, holding the
+// sidebar, the page, and its contents. The page draws the two dividers.
+@layer docs.components {
+  .frame {
+    box-sizing: border-box;
+    max-inline-size: $sq-col;
+    margin-inline: auto;
+    border-inline: 1px solid $sq-line;
+  }
+
+  .columns {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    align-items: start;
+
+    @include from(lg) {
+      grid-template-columns: 248px minmax(0, 1fr);
+    }
+
+    @include from(xl) {
+      &[data-aside] {
+        grid-template-columns: 248px minmax(0, 1fr) 232px;
+      }
+    }
+  }
+
+  .main {
+    display: flex;
+    flex-direction: column;
+    min-inline-size: 0;
+    min-block-size: calc(100vh - #{$sq-nav});
+    counter-reset: sheet;
+
+    @include from(lg) {
+      box-shadow: inset 1px 0 0 $sq-line;
+    }
+
+    @include from(xl) {
+      .columns[data-aside] & {
+        box-shadow:
+          inset 1px 0 0 $sq-line,
+          inset -1px 0 0 $sq-line;
+      }
+    }
+  }
+
+  .sidebar,
+  .aside {
+    position: sticky;
+    inset-block-start: $sq-nav;
+    max-block-size: calc(100vh - #{$sq-nav});
+    overflow-y: auto;
+  }
+
+  .sidebar {
+    display: none;
+    flex-direction: column;
+    gap: 4px;
+    padding: 24px 12px;
+
+    @include from(lg) {
+      display: flex;
+    }
+  }
+
+  .aside {
+    display: none;
+
+    @include from(xl) {
+      display: block;
+    }
+  }
+
+  .mobileNav {
+    box-shadow: inset 0 -1px 0 $sq-line;
+
+    @include from(lg) {
+      display: none;
+    }
+  }
+
+  .mobileSummary {
+    display: flex;
+    align-items: center;
+    min-block-size: $sq-nav;
+    padding-inline: $sq-pad-narrow;
+    color: $sq-text;
+    cursor: pointer;
+    @include hud;
+    @include focus-ring(-2px);
+  }
+
+  .compactNav {
+    display: grid;
+    gap: $space-md;
+    padding: $space-xs 12px $space-md;
+  }
+
+  .group {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .groupTitle {
+    margin: 20px 10px 6px;
+    color: $sq-muted;
+    @include hud(10px);
+  }
+
+  .group:first-child .groupTitle {
+    margin-block-start: 0;
+  }
+
+  .groupList {
+    display: grid;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .sideLink {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: $space-xs;
+    min-block-size: 32px;
+    padding-inline: 10px;
+    border-radius: var(--ds-dimension-radius-element);
+    color: $sq-muted;
+    font-size: var(--ds-typography-label-default-font-size);
+    text-decoration: none;
+
+    &:hover {
+      background: var(--ds-color-neutral-surface-default-hover);
+      color: $sq-text;
+    }
+
+    // The current page: a faint ink fill and a 2px signal marker (Docs-Button.html .side).
+    &[aria-current="page"] {
+      background: color-mix(in oklch, $sq-text 7%, transparent);
+      color: $sq-text;
+      font-weight: 500;
+
+      &::before {
+        content: "";
+        position: absolute;
+        inset-block: 8px;
+        inset-inline-start: 0;
+        inline-size: 2px;
+        background: $sq-signal;
+      }
+    }
+  }
+
+  .sideTag {
+    color: $sq-muted;
+    @include hud(10px, 500, 0.08em);
+  }
+}

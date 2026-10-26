@@ -1,0 +1,134 @@
+@use "settings" as *;
+@use "tools" as *;
+
+// The nav strip (TDD docs-site D14; square.css "Navigation"; SCROLL.md 2.1): a
+// full-width strip of 48px cells, one line between any two, sticky above
+// everything, the ruler included (z 50 over the ruler's 45: the reference's
+// stacking order, expression-local).
+@layer docs.components {
+  .header {
+    position: sticky;
+    inset-block-start: 0;
+    z-index: 50;
+    display: flex;
+    align-items: stretch;
+    block-size: $sq-nav;
+    background: $sq-ground;
+    box-shadow: inset 0 -1px 0 $sq-line;
+
+    > * {
+      flex: none;
+    }
+  }
+
+  .brand {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding-inline: 20px 24px;
+    box-shadow: inset -1px 0 0 $sq-line;
+    color: $sq-text;
+    font-size: var(--ds-typography-body-small-font-size);
+    font-weight: 600;
+    letter-spacing: -0.01em;
+    text-decoration: none;
+    @include focus-ring(-2px);
+  }
+
+  // A tag cell beside the brand; the Badge it holds is the component, as it ships.
+  .tag {
+    display: inline-flex;
+    align-items: center;
+    padding-inline: 16px;
+  }
+
+  // One line between two cells, never two: the brand draws the line after it, the
+  // links take one before them after the tag, and the spacer draws the line after
+  // the links, so with no room left it has no width and the next cell's line stands.
+  .nav {
+    display: flex;
+    align-items: stretch;
+    padding-inline: 4px;
+
+    .tag + & {
+      box-shadow: inset 1px 0 0 $sq-line;
+    }
+
+    @media (max-width: 980px) {
+      display: none;
+    }
+  }
+
+  .navLink {
+    display: flex;
+    align-items: center;
+    padding-inline: 16px;
+    color: $sq-muted;
+    text-decoration: none;
+    @include hud;
+    line-height: 1;
+    @include focus-ring(-4px);
+
+    &:hover {
+      color: $sq-text;
+    }
+
+    // The current area: the label in ground on a 22px ink bar.
+    &[aria-current="page"] {
+      color: $sq-ground;
+      background: linear-gradient($sq-text, $sq-text) center / calc(100% - 20px) 22px no-repeat;
+    }
+  }
+
+  .spacer {
+    flex: 1;
+    box-shadow: inset 1px 0 0 $sq-line;
+  }
+
+  // Every cell after the spacer takes the line before it as its only edge.
+  .readout,
+  .cell,
+  .header > a:not(.brand) {
+    display: inline-flex;
+    align-items: center;
+    box-shadow: inset 1px 0 0 $sq-line;
+  }
+
+  .header > a[data-variant="primary"] {
+    box-shadow: none;
+  }
+
+  .readout {
+    gap: 8px;
+    padding-inline: 18px;
+    color: $sq-muted;
+    @include hud(11px, 500, 0.12em);
+    line-height: 1;
+
+    i {
+      inline-size: 6px;
+      block-size: 6px;
+      background: $sq-signal;
+    }
+
+    b {
+      font-weight: 500;
+      color: $sq-text;
+    }
+
+    // The ruler repeats it; the strip fits down to 1024px without it.
+    @media (max-width: 1240px) {
+      display: none;
+    }
+  }
+
+  .cell {
+    padding-inline: 6px;
+  }
+
+  .optional {
+    @media (max-width: 1180px) {
+      display: none !important;
+    }
+  }
+}

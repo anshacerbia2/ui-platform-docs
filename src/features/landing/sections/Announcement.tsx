@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { DarkRoot } from "@/components/system/Theme";
-import { ArrowRight } from "@/shared/ui/icons";
+import { ArrowRight } from "@/components/docs/Icons";
 import styles from "./sections.module.scss";
 
 export function Announcement() {

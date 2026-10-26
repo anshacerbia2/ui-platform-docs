@@ -1,3 +1,4 @@
+import { fileURLToPath } from "node:url";
 import createMDX from "@next/mdx";
 import type { NextConfig } from "next";
 
@@ -23,6 +24,9 @@ const config: NextConfig = {
   reactStrictMode: true,
   poweredByHeader: false,
   typedRoutes: true,
+  // A component stylesheet reads the ITCSS settings and tools by name
+  // (`@use "settings"`), wherever its folder sits (TDD docs-site D4, D17).
+  sassOptions: { loadPaths: [fileURLToPath(new URL("./src/styles", import.meta.url))] },
   async headers() {
     return [{ source: "/:path*", headers: securityHeaders }];
   },

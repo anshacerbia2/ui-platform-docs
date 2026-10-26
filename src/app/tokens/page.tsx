@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { DocsLayout } from "@/features/site-shell/DocsLayout";
+import { DocsLayout } from "@/components/shell/DocsLayout";
 import { PageToc } from "@/features/reference/PageToc";
 import { Code, Section, Table } from "@/features/reference/Section";
 import styles from "@/features/reference/reference.module.scss";

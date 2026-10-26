@@ -1,13 +1,13 @@
 import type { Route } from "next";
 import type { Metadata } from "next";
 import Link from "next/link";
-import { DocsLayout } from "@/features/site-shell/DocsLayout";
+import { DocsLayout } from "@/components/shell/DocsLayout";
 import { PageToc } from "@/features/reference/PageToc";
 import { Code, Section, Table } from "@/features/reference/Section";
 import { StabilityBadge } from "@/features/reference/Status";
 import styles from "@/features/reference/reference.module.scss";
 import { entries, pin } from "@/shared/lib/reference";
-import { CodeBlock } from "@/shared/ui/CodeBlock";
+import { CodeBlock } from "@/components/docs/CodeBlock";
 
 export const metadata: Metadata = { title: "Releases" };
 

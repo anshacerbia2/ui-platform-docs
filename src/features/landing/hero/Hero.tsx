@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { pin } from "@/shared/lib/reference";
-import { CopyButton } from "@/shared/ui/CopyButton";
-import { ArrowRight } from "@/shared/ui/icons";
+import { CopyButton } from "@/components/docs/CopyButton";
+import { ArrowRight } from "@/components/docs/Icons";
 import { HueTower } from "./HueTower";
 import styles from "./Hero.module.scss";
 

@@ -1,0 +1,57 @@
+@use "settings" as *;
+@use "tools" as *;
+
+// A call to action of the docs chrome (TDD docs-site D14; square.css .sq-cta):
+// the reference's 650 weight is drawn at 600, the nearest Plex Mono face.
+@layer docs.components {
+  .cta {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    block-size: $sq-nav;
+    padding-inline: 22px;
+    border: 0;
+    border-radius: 0;
+    background: transparent;
+    color: $sq-text;
+    text-decoration: none;
+    white-space: nowrap;
+    cursor: pointer;
+    @include hud(11px, 600, 0.14em);
+    line-height: 1;
+
+    @include motion {
+      transition: background-color $duration $ease;
+    }
+
+    svg {
+      flex: none;
+      inline-size: 16px;
+      block-size: 16px;
+    }
+
+    &:hover {
+      background: color-mix(in oklch, $sq-text 6%, transparent);
+    }
+
+    &:focus-visible {
+      outline: var(--ds-dimension-border-width-strong) solid $focus;
+      outline-offset: -2px;
+    }
+
+    &[data-variant="primary"] {
+      background: $ink;
+      color: $on-ink;
+
+      &:hover {
+        background: $ink-hover;
+        color: $on-ink-hover;
+      }
+    }
+
+    &[data-variant="secondary"] {
+      box-shadow: inset 0 0 0 1px $sq-edge;
+    }
+  }
+}

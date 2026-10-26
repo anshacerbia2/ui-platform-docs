@@ -1,6 +1,6 @@
 import type { Route } from "next";
 import Link from "next/link";
-import { DocsLayout } from "@/features/site-shell/DocsLayout";
+import { DocsLayout } from "@/components/shell/DocsLayout";
 import { entries, titleOf } from "@/shared/lib/reference";
 import { StabilityBadge } from "./Status";
 import styles from "./reference.module.scss";

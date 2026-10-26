@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { ThemeRoot } from "@/components/system/Theme";
 import { SITE_THEME } from "@/shared/lib/themes";
 import { useStyleVars } from "@/shared/lib/useStyleVars";
-import { Orbit, Reset } from "@/shared/ui/icons";
+import { Orbit, Reset } from "@/components/docs/Icons";
 import { hex, maxChroma, oklchToSrgb, startTower, type Step, type Tower } from "./tower";
 import styles from "./HueTower.module.scss";
 

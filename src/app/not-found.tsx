@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { DocsLayout } from "@/features/site-shell/DocsLayout";
+import { DocsLayout } from "@/components/shell/DocsLayout";
 import styles from "@/features/reference/reference.module.scss";
 
 export default function NotFound() {

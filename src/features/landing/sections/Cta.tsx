@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { REPOSITORY_URL } from "@/features/site-shell/nav";
+import { REPOSITORY_URL } from "@/shared/lib/site";
 import styles from "./closing.module.scss";
 
 export function Cta() {

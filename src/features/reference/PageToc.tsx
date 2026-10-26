@@ -1,7 +1,7 @@
 "use client";
 
 import { TableOfContents } from "@/components/system/TableOfContents";
-import { useSheets } from "@/features/site-shell/Here";
+import { useSheets } from "@/components/shell/Here";
 import { NAV_LINE } from "@/shared/lib/chrome";
 import { useHere } from "@/shared/lib/useHere";
 import styles from "./reference.module.scss";
