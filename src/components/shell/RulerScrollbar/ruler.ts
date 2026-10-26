@@ -1,6 +1,6 @@
-// The ruler scrollbar and its section titles (TDD docs-site D15), ported from
-// scnehaux-design scnx-platform square.js and SCROLL.md (as revised by
-// scnehaux-design #28). A page-position ruler replaces the native scrollbar on
+// The ruler scrollbar and its section titles (TDD docs-site D15), as
+// docs/designs/SCROLL.md describes them (first ported from scnehaux-design scnx-platform
+// square.js). A page-position ruler replaces the native scrollbar on
 // the right edge, kept as an evidence ledger; the page's section titles stand
 // beside it, letter by letter. The numbers below are the reference's
 // expression-local values (guidance, ADR-UIP-VIS-002).

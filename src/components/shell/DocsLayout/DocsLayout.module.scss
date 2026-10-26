@@ -1,8 +1,8 @@
 @use "settings" as *;
 @use "tools" as *;
 
-// The docs column (TDD docs-site D14; scnehaux-design scnx-platform
-// Docs-Button.html): a centred frame whose sides are lines, holding the
+// The docs column (TDD docs-site D14; first drawn as
+// scnehaux-design scnx-platform Docs-Button.html): a centred frame whose sides are lines, holding the
 // sidebar, the page, and its contents. The page draws the two dividers.
 @layer docs.components {
   .frame {

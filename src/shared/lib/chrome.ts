@@ -1,5 +1,5 @@
-// The Square chrome's shared numbers (TDD docs-site D13; scnehaux-design
-// scnx-platform square.css, SCROLL.md). styles/settings/_square.scss holds the
+// The Square chrome's shared numbers (TDD docs-site D13;
+// docs/designs/SCROLL.md). styles/settings/_square.scss holds the
 // same values for the stylesheets.
 
 /** The nav strip's height, and the line a section's top reaches when it becomes here (SCROLL.md 6.9). */

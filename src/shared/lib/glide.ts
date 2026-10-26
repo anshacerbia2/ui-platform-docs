@@ -1,5 +1,5 @@
-// Wheel glide (TDD docs-site D14; scnehaux-design scnx-platform square.js and
-// SCROLL.md 4): every wheel input, mouse or trackpad, moves a target and the page
+// Wheel glide (TDD docs-site D14; docs/designs/SCROLL.md
+// 4): every wheel input, mouse or trackpad, moves a target and the page
 // eases toward it with a 120ms time constant, landing within 0.5px. Left to the
 // browser: ctrl or pinch zoom, a mostly horizontal swipe, an element under the
 // pointer that can still scroll that way, an event another handler took, and

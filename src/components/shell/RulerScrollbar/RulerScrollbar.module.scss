@@ -1,8 +1,8 @@
 @use "settings" as *;
 @use "tools" as *;
 
-// The ruler scrollbar (TDD docs-site D15; scnehaux-design scnx-platform
-// square.css "The ruler scrollbar"). The sizes, layers (jumps 44,
+// The ruler scrollbar (TDD docs-site D15; docs/designs/SCROLL.md
+// 5-7). The sizes, layers (jumps 44,
 // ruler 45, titles 46, cursor 47, under the nav's 50) and opacities are the
 // reference's expression-local values (ADR-UIP-VIS-002). ruler.ts builds the
 // parts and places them through the CSSOM.

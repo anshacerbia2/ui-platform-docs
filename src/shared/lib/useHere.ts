@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 
 /**
- * The page's one "here" (scnehaux-design, scnx-platform SCROLL.md 6.9): the last
+ * The page's one "here" (docs/designs/SCROLL.md 6.9): the last
  * section whose top line has reached the line under the fixed header. Where the
  * page ends first, a section counts once its line is as high as it can go. Before
  * any section has reached the line, the first section is here.

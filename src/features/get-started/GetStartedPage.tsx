@@ -6,7 +6,7 @@ import { ReleasesSheet } from "./releases/ReleasesSheet";
 import { StartSheet } from "./start/StartSheet";
 
 /**
- * The docs home (scnehaux-design scnx-platform Docs-Home.html): five sheets, no
+ * The docs home (first drawn as scnehaux-design scnx-platform Docs-Home.html): five sheets, no
  * sign-in. Every figure comes from the pinned build's generated reference.
  */
 export function GetStartedPage() {

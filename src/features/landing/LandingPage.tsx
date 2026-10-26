@@ -8,7 +8,7 @@ import { ProofSheet } from "./proof/ProofSheet";
 import { TokensSheet } from "./tokens/TokensSheet";
 
 /**
- * The public landing (scnehaux-design scnx-platform Docs-Landing.html): seven sheets
+ * The public landing (first drawn as scnehaux-design scnx-platform Docs-Landing.html): seven sheets
  * of one drawing set. Every claim on it is true of the pinned build (TDD docs-site D8).
  */
 export function LandingPage() {

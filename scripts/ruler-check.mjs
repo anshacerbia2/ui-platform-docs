@@ -1,7 +1,6 @@
 #!/usr/bin/env node
-// The ruler's titles and the page's "here" (TDD docs-site D15; scnehaux-design
-// scnx-platform SCROLL.md 6, after the design agent's check of scnehaux-design
-// #28). Starts `next start`, then, for every page that has sheets and at
+// The ruler's titles and the page's "here" (TDD docs-site D15;
+// docs/designs/SCROLL.md 6, first checked in scnehaux-design #28). Starts `next start`, then, for every page that has sheets and at
 // several viewport sizes:
 // 1. scrolls the page in small steps, has the ruler draw each position, and fails
 //    if a letter of one title overlaps a letter of another title (their drawn
