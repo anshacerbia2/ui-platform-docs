@@ -1,96 +1,67 @@
-import Link from "next/link";
 import type { Route } from "next";
+import Link from "next/link";
+import { Block } from "@/components/docs/Block";
+import { DataTable } from "@/components/docs/DataTable";
+import { FactGrid } from "@/components/docs/FactGrid";
+import { InlineCode } from "@/components/docs/InlineCode";
+import { Keys } from "@/components/docs/Keys";
 import type { PrimitiveSpec } from "@/shared/lib/reference";
-import { Code, SubHeading, Table } from "./Section";
-import styles from "./reference.module.scss";
+import styles from "./Reference.module.scss";
 
-const Keys = ({ value }: { value: string }) => (
-  <span className={styles.keys}>
-    {value.split("+").map((k) => (
-      <kbd key={k} className={styles.kbd}>
-        {k}
-      </kbd>
-    ))}
-  </span>
-);
+const codes = (values: string[]) => values.map((v) => <InlineCode key={v}>{v}</InlineCode>);
 
 /** The behavior contract of a primitive; every key row is verified in Chromium, Firefox, and WebKit. */
 export function Accessibility({ spec, inherited }: { spec: PrimitiveSpec; inherited?: boolean }) {
   const slug = spec.entry.split("/").pop()!;
+  const facts = [
+    { term: "Root element", value: <InlineCode>{`<${spec.root}>`}</InlineCode> },
+    { term: "Accessible name", value: spec.accessibleName },
+    { term: "Initial focus", value: spec.focus.initial },
+    { term: "Focus movement", value: spec.focus.movement },
+    { term: "Focus restoration", value: spec.focus.restoration },
+    { term: "States", value: spec.states.join(" · ") },
+    ...(spec.controlledProps.length
+      ? [{ term: "Controlled props", value: codes(spec.controlledProps) }]
+      : []),
+    ...(spec.dataHooks.length ? [{ term: "Data hooks", value: codes(spec.dataHooks) }] : []),
+  ];
   return (
     <>
       {inherited ? (
-        <p className={styles.lead}>
-          This component styles{" "}
-          <Link href={`/primitives/${slug}` as Route} className={styles.link}>
-            {spec.name}
-          </Link>{" "}
-          (<Code>{spec.entry}</Code>) and inherits its contract unchanged.
-        </p>
+        <Block>
+          <p>
+            This component styles{" "}
+            <Link href={`/primitives/${slug}` as Route} className={styles.link}>
+              {spec.name}
+            </Link>{" "}
+            (<InlineCode>{spec.entry}</InlineCode>) and inherits its contract unchanged.
+          </p>
+        </Block>
       ) : null}
-      <dl className={styles.facts}>
-        <div>
-          <dt>Root element</dt>
-          <dd>
-            <Code>&lt;{spec.root}&gt;</Code>
-          </dd>
-        </div>
-        <div>
-          <dt>Accessible name</dt>
-          <dd>{spec.accessibleName}</dd>
-        </div>
-        <div>
-          <dt>Initial focus</dt>
-          <dd>{spec.focus.initial}</dd>
-        </div>
-        <div>
-          <dt>Focus movement</dt>
-          <dd>{spec.focus.movement}</dd>
-        </div>
-        <div>
-          <dt>Focus restoration</dt>
-          <dd>{spec.focus.restoration}</dd>
-        </div>
-        <div>
-          <dt>States</dt>
-          <dd>{spec.states.join(" · ")}</dd>
-        </div>
-        {spec.controlledProps.length ? (
-          <div>
-            <dt>Controlled props</dt>
-            <dd>
-              {spec.controlledProps.map((p) => (
-                <Code key={p}>{p}</Code>
-              ))}
-            </dd>
-          </div>
-        ) : null}
-        {spec.dataHooks.length ? (
-          <div>
-            <dt>Data hooks</dt>
-            <dd>
-              {spec.dataHooks.map((p) => (
-                <Code key={p}>{p}</Code>
-              ))}
-            </dd>
-          </div>
-        ) : null}
-      </dl>
+      <FactGrid label="Behavior contract" items={facts} />
       {spec.keys.length ? (
         <>
-          <SubHeading>Keyboard</SubHeading>
-          <Table
+          <Block title="Keyboard" />
+          <DataTable
             caption="Keyboard contract"
             head={["Key", "On", "When", "Result"]}
-            rows={spec.keys.map((k) => [<Keys key="k" value={k.key} />, <Code key="p">{k.part}</Code>, k.condition, k.effect])}
+            rows={spec.keys.map((k) => [
+              <Keys key="k" value={k.key} />,
+              <InlineCode key="p">{k.part}</InlineCode>,
+              k.condition,
+              k.effect,
+            ])}
           />
         </>
       ) : null}
-      <SubHeading>Parts</SubHeading>
-      <Table
+      <Block title="Parts" />
+      <DataTable
         caption="Primitive parts"
         head={["Part", "Element"]}
-        rows={spec.parts.map((p) => [<Code key="n">{p.name}</Code>, <Code key="e">&lt;{p.element}&gt;</Code>])}
+        rows={spec.parts.map((p) => [
+          <InlineCode key="n">{p.name}</InlineCode>,
+          <InlineCode key="e">{`<${p.element}>`}</InlineCode>,
+        ])}
       />
     </>
   );

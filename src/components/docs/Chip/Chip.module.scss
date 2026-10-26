@@ -1,0 +1,20 @@
+@use "settings" as *;
+@use "tools" as *;
+
+@layer docs.components {
+  .chip {
+    // the Badge's public hook (ui-platform TDD styled HK2): square, like the chrome
+    --scnx-badge-radius: 0;
+
+    display: inline-flex;
+    align-items: center;
+    align-self: flex-start;
+    gap: 8px;
+    block-size: 28px;
+    padding-inline: 4px 10px;
+    box-shadow: inset 0 0 0 1px $sq-line;
+    color: $sq-muted;
+    @include hud(11px, 500, 0.12em);
+    line-height: 1;
+  }
+}

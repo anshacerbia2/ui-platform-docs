@@ -1,3 +1,4 @@
+import { fileURLToPath } from "node:url";
 import createMDX from "@next/mdx";
 import type { NextConfig } from "next";
 
@@ -6,7 +7,10 @@ import type { NextConfig } from "next";
 const securityHeaders = [
   { key: "X-Content-Type-Options", value: "nosniff" },
   { key: "Referrer-Policy", value: "strict-origin-when-cross-origin" },
-  { key: "Permissions-Policy", value: "camera=(), microphone=(), geolocation=(), browsing-topics=()" },
+  {
+    key: "Permissions-Policy",
+    value: "camera=(), microphone=(), geolocation=(), browsing-topics=()",
+  },
   { key: "Strict-Transport-Security", value: "max-age=63072000" },
   { key: "Cross-Origin-Opener-Policy", value: "same-origin" },
   // TDD docs-site D6: Chromium sends the color-scheme preference on the first
@@ -20,6 +24,9 @@ const config: NextConfig = {
   reactStrictMode: true,
   poweredByHeader: false,
   typedRoutes: true,
+  // A component stylesheet reads the ITCSS settings and tools by name
+  // (`@use "settings"`), wherever its folder sits (TDD docs-site D4, D17).
+  sassOptions: { loadPaths: [fileURLToPath(new URL("./src/styles", import.meta.url))] },
   async headers() {
     return [{ source: "/:path*", headers: securityHeaders }];
   },

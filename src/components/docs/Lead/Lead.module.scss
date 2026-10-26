@@ -1,0 +1,18 @@
+@use "settings" as *;
+
+@layer docs.components {
+  .lead {
+    display: grid;
+    gap: 16px;
+    padding: 72px $sq-pad 64px;
+    box-shadow: inset 0 -1px 0 $sq-line;
+
+    > h2 {
+      max-inline-size: 18ch;
+    }
+
+    @media (max-width: 760px) {
+      padding: 48px $sq-pad-narrow 40px;
+    }
+  }
+}

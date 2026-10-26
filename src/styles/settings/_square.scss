@@ -1,5 +1,5 @@
-// The Square chrome (scnehaux-design scnx-platform square.css; TDD docs-site
-// D13). Roles are custom properties declared per mode in generic/_roles.scss;
+// The Square chrome (TDD docs-site D13, TDD docs-site annex A; first
+// drawn in scnehaux-design scnx-platform square.css). Roles are custom properties declared per mode in generic/_roles.scss;
 // the sizes below are the reference's expression-local values, guidance under
 // ADR-UIP-VIS-002, not tokens.
 $sq-ground: var(--sq-ground);
@@ -12,15 +12,18 @@ $sq-line: var(--sq-line);
 $sq-cross: var(--sq-cross);
 $sq-edge: var(--sq-edge);
 $sq-faint: var(--sq-faint);
-$sq-glass: var(--sq-glass);
 $sq-plus: var(--sq-plus);
+$sq-glass: var(--sq-glass);
 
 // The nav strip's height: the line a section's top reaches when it becomes here
-// (SCROLL.md 6.9). src/shared/lib/chrome.ts holds the same number for scripts.
+// (annex A 6.9). src/shared/lib/chrome.ts holds the same number for scripts.
 $sq-nav: 48px;
-// The column: centred, at most 1280px, between margins of 16px to 320px.
+// The column: centred, at most 1280px, between margins of 16px to 320px where the
+// ruler shows; below that width (chrome.ts RULER_MIN_WIDTH) it takes the full width,
+// the owner, 2026-10-27. generic/_document.scss declares --sq-col for each.
+$sq-ruler-min: 1024px;
 $sq-margin: clamp(16px, 8vw, 320px);
-$sq-col: min(1280px, calc(100vw - 2 * #{$sq-margin}));
+$sq-col: var(--sq-col);
 // Inline padding of bars, leads, and facts; 20px on narrow screens.
 $sq-pad: 40px;
 $sq-pad-narrow: 20px;

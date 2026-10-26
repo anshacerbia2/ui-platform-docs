@@ -1,0 +1,36 @@
+@use "settings" as *;
+@use "tools" as *;
+
+@layer docs.components {
+  .cells {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 1px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    background: $sq-line;
+
+    > * {
+      min-inline-size: 0;
+      background: $sq-ground;
+    }
+
+    @media (min-width: 761px) {
+      &[data-columns="2"],
+      &[data-columns="4"] {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+    }
+
+    @media (min-width: 981px) {
+      &[data-columns="3"] {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+      }
+
+      &[data-columns="4"] {
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+      }
+    }
+  }
+}

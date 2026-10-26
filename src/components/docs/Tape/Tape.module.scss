@@ -1,0 +1,72 @@
+@use "settings" as *;
+@use "tools" as *;
+
+@layer docs.components {
+  .tape {
+    position: relative;
+    block-size: 44px;
+    overflow: hidden;
+    box-shadow: inset 0 1px 0 $sq-line;
+    // the row fades out at both ends; only alpha matters in a mask
+    mask-image: linear-gradient(90deg, transparent, #000 6%, #000 94%, transparent);
+  }
+
+  @keyframes feed {
+    to {
+      translate: -50% 0;
+    }
+  }
+
+  .track {
+    display: flex;
+    inline-size: max-content;
+    block-size: 100%;
+
+    @include motion {
+      animation: feed 80s linear infinite;
+    }
+
+    .tape:hover &,
+    .tape:focus-within & {
+      animation-play-state: paused;
+    }
+  }
+
+  .row {
+    display: flex;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+
+    li {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      block-size: 44px;
+      padding-inline: 18px;
+      box-shadow: inset -1px 0 0 $sq-line;
+      color: $sq-muted;
+      font: 500 11.5px/1 $sq-mono;
+      white-space: nowrap;
+    }
+
+    b {
+      color: $sq-text;
+      font-weight: 500;
+    }
+  }
+
+  .ok {
+    color: var(--ds-color-success-text-default-default);
+  }
+
+  .ref {
+    color: var(--ds-color-neutral-text-subtle-disabled);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .tape {
+      overflow-x: auto;
+    }
+  }
+}

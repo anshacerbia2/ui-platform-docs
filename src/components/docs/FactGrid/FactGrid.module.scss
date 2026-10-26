@@ -1,0 +1,65 @@
+@use "settings" as *;
+@use "tools" as *;
+
+@layer docs.components {
+  .grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 1px;
+    margin: 0;
+    background: $sq-line;
+    box-shadow: inset 0 1px 0 $sq-line;
+
+    > div {
+      display: grid;
+      align-content: start;
+      gap: 6px;
+      padding: 20px $sq-pad;
+      background: $sq-ground;
+    }
+
+    dt {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      gap: 8px;
+      color: $sq-text;
+      font-size: 14px;
+      font-weight: 600;
+    }
+
+    dd {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 6px;
+      margin: 0;
+      color: $sq-muted;
+      font-size: 13px;
+      line-height: 1.5;
+    }
+
+    @media (min-width: 761px) {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+
+      > div {
+        padding-inline: 24px;
+      }
+
+      > div:nth-child(odd) {
+        padding-inline-start: $sq-pad;
+      }
+    }
+
+    @media (max-width: 760px) {
+      > div {
+        padding-inline: $sq-pad-narrow;
+      }
+    }
+  }
+
+  .aside {
+    color: var(--ds-color-success-text-default-default);
+    font: 500 11px/1.4 $sq-mono;
+  }
+}

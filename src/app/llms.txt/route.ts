@@ -1,4 +1,12 @@
-import { componentSlugs, entries, getComponent, getPrimitive, pin, primitiveSlugs, titleOf } from "@/shared/lib/reference";
+import {
+  componentSlugs,
+  entries,
+  getComponent,
+  getPrimitive,
+  pin,
+  primitiveSlugs,
+  titleOf,
+} from "@/shared/lib/reference";
 import { SITE_THEME, themeStylesheet } from "@/shared/lib/themes";
 
 export const dynamic = "force-static";
@@ -20,7 +28,9 @@ export function GET() {
     ...componentSlugs.map((slug) => {
       const ref = getComponent(slug)!;
       const main = ref.api.find((a) => a.kind === "component");
-      const props = (main?.props ?? []).map((p) => `${p.name}${p.optional ? "?" : ""}: ${p.type}`).join("; ");
+      const props = (main?.props ?? [])
+        .map((p) => `${p.name}${p.optional ? "?" : ""}: ${p.type}`)
+        .join("; ");
       return `- [${titleOf(slug)}](/components/${slug}): \`${ref.spec.entry}\` (${ref.spec.stability}). Props: ${props || "none"}.`;
     }),
     "",
@@ -37,5 +47,7 @@ export function GET() {
     `- [Releases](/releases): stability of all ${entries.length} entries and provenance verification`,
     "",
   ];
-  return new Response(lines.join("\n"), { headers: { "content-type": "text/plain; charset=utf-8" } });
+  return new Response(lines.join("\n"), {
+    headers: { "content-type": "text/plain; charset=utf-8" },
+  });
 }

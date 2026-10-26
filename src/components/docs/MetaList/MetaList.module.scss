@@ -1,0 +1,28 @@
+@use "settings" as *;
+@use "tools" as *;
+
+@layer docs.components {
+  .meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px 22px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    color: $sq-muted;
+    @include hud;
+
+    li {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    li::before {
+      content: "";
+      inline-size: 6px;
+      block-size: 6px;
+      background: $sq-signal;
+    }
+  }
+}

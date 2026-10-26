@@ -1,0 +1,172 @@
+@use "settings" as *;
+@use "tools" as *;
+
+// Sheet 01 · Get started (scnx-platform Docs-Home.html): the copy, and the chain
+// of one component's four contracts.
+@layer docs.components {
+  .over {
+    @media (min-width: 1081px) {
+      grid-template-columns: minmax(0, 1fr) minmax(0, 0.95fr);
+    }
+  }
+
+  .copy {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 24px;
+    padding: 72px $sq-pad 64px;
+
+    @media (max-width: 760px) {
+      padding: 48px $sq-pad-narrow;
+    }
+  }
+
+  .actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .lineage {
+    padding-block-end: 40px;
+  }
+
+  .lineageHead {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 12px 16px;
+    padding: 40px $sq-pad 28px;
+
+    > div:first-child {
+      flex: 1 1 220px;
+    }
+
+    strong {
+      font-size: 14px;
+    }
+
+    p {
+      margin: 4px 0 0;
+      color: $sq-muted;
+      font-size: 12.5px;
+    }
+
+    @media (max-width: 760px) {
+      padding-inline: $sq-pad-narrow;
+    }
+  }
+
+  // the chain: a line down the numbers, and a signal that runs along it
+  .chain {
+    --sig: 0;
+    --sig-on: 0;
+
+    position: relative;
+    display: grid;
+    margin-inline: $sq-pad;
+
+    &::before {
+      content: "";
+      position: absolute;
+      inset-block: 28px;
+      inset-inline-start: 31px;
+      inline-size: 1px;
+      background: $line-strong;
+    }
+
+    &::after {
+      content: "";
+      position: absolute;
+      inset-block-start: calc(28px + (100% - 56px) * var(--sig));
+      inset-inline-start: 28px;
+      inline-size: 7px;
+      block-size: 7px;
+      translate: 0 -50%;
+      background: $sq-signal;
+      box-shadow: 0 0 0 4px color-mix(in oklab, $sq-signal 22%, transparent);
+      opacity: var(--sig-on);
+    }
+
+    @media (max-width: 760px) {
+      margin-inline: $sq-pad-narrow;
+    }
+  }
+
+  .link {
+    display: grid;
+  }
+
+  .relation {
+    display: block;
+    padding: 6px 0 6px 64px;
+    color: $sq-muted;
+    font: 500 9.5px/1 $sq-mono;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+  }
+
+  .node {
+    position: relative;
+    display: grid;
+    grid-template-columns: 48px minmax(0, 1fr);
+    padding: 14px 16px 14px 0;
+    background: $sq-ground;
+    box-shadow: inset 0 0 0 1px $sq-line;
+
+    @include motion {
+      transition: box-shadow $duration $ease;
+    }
+
+    &[data-hit] {
+      box-shadow: inset 0 0 0 1px $sq-signal;
+    }
+
+    pre {
+      margin: 8px 0 6px;
+      color: $sq-text;
+      font: 500 12px/1.5 $sq-mono;
+      white-space: pre-wrap;
+    }
+
+    p {
+      margin: 0;
+      color: $sq-muted;
+      font-size: 12.5px;
+      line-height: 1.5;
+    }
+
+    .link:last-child & .nodeNo {
+      background: $ink;
+      color: $on-ink;
+    }
+  }
+
+  .nodeNo {
+    position: relative;
+    z-index: 1;
+    display: grid;
+    place-items: center;
+    align-self: start;
+    justify-self: center;
+    inline-size: 26px;
+    block-size: 26px;
+    background: color-mix(in oklab, $sq-text 10%, $sq-ground);
+    font: 500 11px/1 $sq-mono;
+  }
+
+  .nodeTop {
+    strong {
+      font-size: 14px;
+      letter-spacing: -0.01em;
+    }
+
+    strong span {
+      color: $sq-muted;
+      font-weight: 500;
+    }
+  }
+}

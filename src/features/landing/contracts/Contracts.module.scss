@@ -1,0 +1,91 @@
+@use "settings" as *;
+@use "tools" as *;
+
+// Sheet 07 · Contracts (scnx-platform Docs-Landing.html): four cells under their
+// measures, then the closing panel.
+@layer docs.components {
+  .contracts {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+
+    @media (max-width: 980px) {
+      grid-template-columns: 1fr 1fr;
+    }
+
+    @media (max-width: 560px) {
+      grid-template-columns: minmax(0, 1fr);
+    }
+  }
+
+  .measures {
+    display: grid;
+    grid-column: 1 / -1;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    padding-block-start: 24px;
+
+    > * {
+      padding-inline: $sq-pad;
+    }
+
+    @media (max-width: 980px) {
+      display: none;
+    }
+  }
+
+  .contract {
+    position: relative;
+    display: grid;
+    align-content: start;
+    gap: 12px;
+    padding: 36px $sq-pad 40px;
+    box-shadow: inset -1px 0 0 $sq-line;
+    text-decoration: none;
+
+    &:last-child {
+      box-shadow: none;
+    }
+
+    &:hover {
+      background: color-mix(in oklab, $sq-text 4%, $sq-ground);
+    }
+
+    @media (max-width: 560px) {
+      padding-inline: $sq-pad-narrow;
+      box-shadow: inset 0 -1px 0 $sq-line;
+    }
+  }
+
+  .no {
+    justify-self: end;
+    color: $sq-muted;
+    @include hud(11px, 500, 0.15em);
+  }
+
+  .package {
+    justify-self: start;
+    padding: 6px 8px;
+    box-shadow: inset 0 0 0 1px $sq-line;
+    color: $sq-text;
+    font: 500 11.5px/1 $sq-mono;
+  }
+
+  .closing {
+    display: grid;
+    justify-items: center;
+    gap: 24px;
+    padding: 112px $sq-pad 120px;
+    box-shadow: inset 0 1px 0 $sq-line;
+    text-align: center;
+
+    @media (max-width: 760px) {
+      padding: 72px $sq-pad-narrow 80px;
+    }
+  }
+
+  .actions {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 10px;
+  }
+}

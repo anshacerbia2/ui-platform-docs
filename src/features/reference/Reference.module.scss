@@ -1,0 +1,154 @@
+@use "settings" as *;
+@use "tools" as *;
+
+// The reference pages' own parts: values and ratios in tables, prop flags, the usage
+// prose, the index tiles, and the contents cell.
+@layer docs.components {
+  .value {
+    display: inline-flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .ratio {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    color: $sq-text;
+    font: 500 12px/1 $sq-mono;
+    white-space: nowrap;
+  }
+
+  .verdict {
+    padding: 2px 5px;
+    background: var(--ds-color-danger-surface-solid-default);
+    color: var(--ds-color-danger-text-contrast-default);
+    font-size: 10px;
+    text-transform: uppercase;
+
+    .ratio[data-pass] & {
+      background: var(--ds-color-success-surface-solid-default);
+      color: var(--ds-color-success-text-contrast-default);
+    }
+  }
+
+  .propName {
+    display: inline-flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .required,
+  .deprecated {
+    font: 500 10px/1 $sq-mono;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  .required {
+    color: $sq-signal-text;
+  }
+
+  .deprecated {
+    color: var(--ds-color-danger-text-default-default);
+  }
+
+  .propText {
+    display: grid;
+    gap: 4px;
+  }
+
+  .mode {
+    font-size: var(--ds-typography-label-small-font-size);
+    font-style: italic;
+  }
+
+  .link {
+    color: $sq-signal-text;
+    text-decoration: underline;
+    text-decoration-color: color-mix(in oklab, currentColor 35%, transparent);
+    text-underline-offset: 3px;
+
+    &:hover {
+      text-decoration-color: currentColor;
+    }
+  }
+
+  // informative MDX: the sheet's pad, the reading measure
+  .usage {
+    display: grid;
+    // one column that never grows past its cell: a long name breaks instead of
+    // pushing the page wider than a phone
+    grid-template-columns: minmax(0, 1fr);
+    gap: 14px;
+    max-inline-size: calc(72ch + 2 * #{$sq-pad});
+    overflow-wrap: anywhere;
+    padding: 28px $sq-pad 40px;
+
+    @media (max-width: 760px) {
+      padding-inline: $sq-pad-narrow;
+    }
+  }
+
+  .generated {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 8px;
+    margin: 0;
+    padding: 16px $sq-pad;
+    box-shadow: inset 0 1px 0 $sq-line;
+    color: $sq-muted;
+    font: 500 11px/1.5 $sq-mono;
+
+    a {
+      color: inherit;
+    }
+  }
+
+  .index {
+    box-shadow: inset 0 1px 0 $sq-line;
+  }
+
+  .tile {
+    display: grid;
+    align-content: start;
+    gap: 8px;
+    block-size: 100%;
+    padding: 24px $sq-pad;
+    color: $sq-text;
+    text-decoration: none;
+
+    &:hover {
+      background: color-mix(in oklab, $sq-text 5%, $sq-ground);
+    }
+
+    code {
+      color: $sq-muted;
+      font: 500 11px/1.4 $sq-mono;
+      overflow-wrap: anywhere;
+    }
+
+    @media (max-width: 760px) {
+      padding-inline: $sq-pad-narrow;
+    }
+  }
+
+  .tileHead {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+
+    strong {
+      font-size: var(--ds-typography-heading-xsmall-font-size);
+    }
+  }
+
+  // "On this page", in the column's right cell, unframed (the TableOfContents as it ships)
+  .toc {
+    padding: 24px 20px;
+  }
+}

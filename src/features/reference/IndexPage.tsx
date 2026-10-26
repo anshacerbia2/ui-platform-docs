@@ -1,9 +1,11 @@
 import type { Route } from "next";
 import Link from "next/link";
-import { DocsLayout } from "@/features/site-shell/DocsLayout";
+import { Cells } from "@/components/docs/Cells";
+import { PageHead } from "@/components/docs/PageHead";
+import { StabilityBadge } from "@/components/docs/StabilityBadge";
+import { DocsLayout } from "@/components/shell/DocsLayout";
 import { entries, titleOf } from "@/shared/lib/reference";
-import { StabilityBadge } from "./Status";
-import styles from "./reference.module.scss";
+import styles from "./Reference.module.scss";
 
 const COPY = {
   styled: {
@@ -16,27 +18,29 @@ const COPY = {
   },
 } as const;
 
+/** Every page of one kind, as cells: its name, its lifecycle, and its entry. */
 export function IndexPage({ kind }: { kind: "styled" | "primitive" }) {
-  const rows = entries.filter((e) => e.kind === kind).toSorted((a, b) => a.slug.localeCompare(b.slug));
+  const rows = entries
+    .filter((e) => e.kind === kind)
+    .toSorted((a, b) => a.slug.localeCompare(b.slug));
   const copy = COPY[kind];
   return (
     <DocsLayout>
-      <header className={styles.header}>
-        <h1 className={styles.title}>{copy.title}</h1>
-        <p className={styles.lead}>{copy.lead}</p>
-      </header>
-      <div className={styles.grid}>
+      <PageHead title={copy.title} lead={copy.lead} />
+      <Cells as="ul" columns={3} className={styles.index} aria-label={copy.title}>
         {rows.map((row) => (
-          <Link key={row.entry} href={row.page as Route} className={styles.tile}>
-            <span className={styles.tileHead}>
-              <span className={styles.tileTitle}>{titleOf(row.slug)}</span>
-              <StabilityBadge stability={row.stability} />
-            </span>
-            <span className={styles.tileMeta}>{row.entry}</span>
-            {row.primitive ? <span className={styles.tileMeta}>styles {row.primitive}</span> : null}
-          </Link>
+          <li key={row.entry}>
+            <Link href={row.page as Route} className={styles.tile}>
+              <span className={styles.tileHead}>
+                <strong>{titleOf(row.slug)}</strong>
+                <StabilityBadge stability={row.stability} />
+              </span>
+              <code>{row.entry}</code>
+              {row.primitive ? <code>styles {row.primitive}</code> : null}
+            </Link>
+          </li>
         ))}
-      </div>
+      </Cells>
     </DocsLayout>
   );
 }

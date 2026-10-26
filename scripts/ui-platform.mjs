@@ -34,16 +34,22 @@ const writeJson = (file, value) => fs.writeFileSync(file, `${JSON.stringify(valu
 /** Findings for a pin, the vendored files, and the manifest, independent of the file system. */
 export function pinFindings(pin, files, manifest) {
   const findings = [];
-  if (!/^[0-9a-f]{40}$/.test(pin.commit ?? "")) findings.push("pin.commit must be a full commit SHA");
+  if (!/^[0-9a-f]{40}$/.test(pin.commit ?? ""))
+    findings.push("pin.commit must be a full commit SHA");
   for (const pkg of pin.packages ?? []) {
     const actual = files[pkg.tarball];
     if (actual === undefined) findings.push(`${pkg.tarball} is pinned but not vendored`);
-    else if (actual !== pkg.sha256) findings.push(`${pkg.tarball} has sha256 ${actual}, pinned ${pkg.sha256}`);
+    else if (actual !== pkg.sha256)
+      findings.push(`${pkg.tarball} has sha256 ${actual}, pinned ${pkg.sha256}`);
     const spec = manifest.dependencies?.[pkg.name];
     if (spec !== `file:vendor/ui-platform/${pkg.tarball}`)
-      findings.push(`package.json must install ${pkg.name} from file:vendor/ui-platform/${pkg.tarball}, not ${spec}`);
+      findings.push(
+        `package.json must install ${pkg.name} from file:vendor/ui-platform/${pkg.tarball}, not ${spec}`,
+      );
   }
-  for (const file of Object.keys(files)) if (!(pin.packages ?? []).some((p) => p.tarball === file)) findings.push(`${file} is vendored but not pinned`);
+  for (const file of Object.keys(files))
+    if (!(pin.packages ?? []).some((p) => p.tarball === file))
+      findings.push(`${file} is vendored but not pinned`);
   return findings;
 }
 
@@ -57,13 +63,19 @@ function vendoredFiles() {
 }
 
 function check() {
-  const findings = pinFindings(readJson(PIN), vendoredFiles(), readJson(path.join(root, "package.json")));
+  const findings = pinFindings(
+    readJson(PIN),
+    vendoredFiles(),
+    readJson(path.join(root, "package.json")),
+  );
   if (findings.length) {
     console.error(findings.join("\n"));
     process.exit(1);
   }
   const pin = readJson(PIN);
-  console.log(`Pinned ui-platform ${pin.commit.slice(0, 7)}: ${pin.packages.map((p) => `${p.name}@${p.version}`).join(", ")} match`);
+  console.log(
+    `Pinned ui-platform ${pin.commit.slice(0, 7)}: ${pin.packages.map((p) => `${p.name}@${p.version}`).join(", ")} match`,
+  );
   return pin;
 }
 
@@ -89,7 +101,9 @@ function verify() {
       { stdio: "inherit" },
     );
   }
-  console.log(`Provenance verified: every tarball was built by ${SIGNER} from ${pin.commit.slice(0, 7)} on main`);
+  console.log(
+    `Provenance verified: every tarball was built by ${SIGNER} from ${pin.commit.slice(0, 7)} on main`,
+  );
 }
 
 function pinFrom() {
@@ -97,16 +111,20 @@ function pinFrom() {
   const commit = arg("--commit");
   const run = arg("--run");
   if (!fs.existsSync(path.join(packs, "pack-report.json")) || !commit || !run) {
-    console.error("usage: node scripts/ui-platform.mjs pin --packs <inspect-packages output> --commit <sha> --run <CI run URL>");
+    console.error(
+      "usage: node scripts/ui-platform.mjs pin --packs <inspect-packages output> --commit <sha> --run <CI run URL>",
+    );
     process.exit(2);
   }
   const report = readJson(path.join(packs, "pack-report.json"));
-  for (const file of fs.readdirSync(VENDOR).filter((f) => f.endsWith(".tgz"))) fs.rmSync(path.join(VENDOR, file));
+  for (const file of fs.readdirSync(VENDOR).filter((f) => f.endsWith(".tgz")))
+    fs.rmSync(path.join(VENDOR, file));
   const manifest = readJson(path.join(root, "package.json"));
   const packages = report.packages.map((pkg) => {
     fs.copyFileSync(path.join(packs, pkg.tarball), path.join(VENDOR, pkg.tarball));
     const digest = sha256(path.join(VENDOR, pkg.tarball));
-    if (digest !== pkg.tarballSha256) throw new Error(`${pkg.tarball}: copied sha256 ${digest} differs from the pack report`);
+    if (digest !== pkg.tarballSha256)
+      throw new Error(`${pkg.tarball}: copied sha256 ${digest} differs from the pack report`);
     manifest.dependencies[pkg.name] = `file:vendor/ui-platform/${pkg.tarball}`;
     return { name: pkg.name, version: pkg.version, tarball: pkg.tarball, sha256: digest };
   });
@@ -121,7 +139,9 @@ function pinFrom() {
     signerWorkflow: SIGNER,
     packages,
   });
-  console.log(`Pinned ${packages.map((p) => `${p.name}@${p.version}`).join(", ")} from ${commit.slice(0, 7)}; run pnpm install`);
+  console.log(
+    `Pinned ${packages.map((p) => `${p.name}@${p.version}`).join(", ")} from ${commit.slice(0, 7)}; run pnpm install`,
+  );
 }
 
 if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {

@@ -1,0 +1,176 @@
+@use "settings" as *;
+@use "tools" as *;
+
+// A sheet (TDD docs-site D14; scnx-platform square.css "Sheets", annex A 2.2-2.7).
+// The page counts the sheets (`counter-reset: sheet` on its main).
+@layer docs.components {
+  .sheet {
+    // A jump lands the section's line on the nav's own line: the document's
+    // scroll-padding (generic/_document.scss) is the one offset, and a sheet adds no
+    // scroll-margin, save the first of a page of sheets (below).
+    position: relative;
+    counter-increment: sheet;
+
+    // the rule: across the page column, drawn in from the left once (Reveal sets data-drawn)
+    &::before {
+      content: "";
+      position: absolute;
+      z-index: 31;
+      inset-block-start: 0;
+      inset-inline: 0;
+      block-size: 1px;
+      background: $sq-line;
+      pointer-events: none;
+      transform-origin: left;
+
+      @include motion {
+        transition: scale 1100ms $sq-draw-easing;
+      }
+    }
+
+    // a cross where the rule meets each column line
+    &::after {
+      content: "";
+      position: absolute;
+      z-index: 32;
+      inset-block-start: -5px;
+      inset-inline: -6px;
+      block-size: 11px;
+      background: $sq-plus;
+      pointer-events: none;
+
+      // where the column takes the full width it has no lines for a cross to mark,
+      // and the crosses would stick out past the viewport
+      @include full-width {
+        display: none;
+      }
+    }
+
+    :global(html[data-sq-draw]) &:not([data-drawn])::before {
+      scale: 0 1;
+    }
+
+    // A page of sheets (SheetLayout): the rule crosses the whole viewport, and the
+    // first sheet starts under the nav, whose line is its top line.
+    :where([data-layout="sheets"]) > & {
+      @include column;
+
+      &::before {
+        inset-inline: auto;
+        inset-inline-start: 50%;
+        inline-size: 100vw;
+        translate: -50% 0;
+      }
+
+      &:first-child::before,
+      &:first-child::after {
+        display: none;
+      }
+
+      // with no rule of its own, it lands where the page loads (scroll 0), not 1px down:
+      // its top sits under the nav's line, not on it (the ruler reads this margin too)
+      &:first-child {
+        scroll-margin-block-start: 1px;
+      }
+    }
+  }
+
+  // The bar: "02 / Label ··· facts", held under the nav on glass, so the page reads
+  // through it as it scrolls under (the owner, 2026-10-27). Its -1px bottom margin
+  // lands its line on the next sheet's rule when that sheet pushes it up.
+  .bar {
+    position: sticky;
+    inset-block-start: $sq-nav;
+    z-index: 30;
+    display: flex;
+    align-items: center;
+    margin: 0 0 -1px;
+    padding: 14px $sq-pad;
+    background: $sq-glass;
+    backdrop-filter: blur(12px);
+    box-shadow: inset 0 -1px 0 $sq-line;
+    color: $sq-muted;
+    @include hud;
+
+    @media (max-width: 760px) {
+      padding-inline: $sq-pad-narrow;
+    }
+  }
+
+  .number {
+    color: $sq-muted;
+
+    @include motion {
+      transition: color $duration;
+    }
+
+    &::before {
+      content: counter(sheet, decimal-leading-zero);
+    }
+
+    &::after {
+      content: "/";
+      margin-inline: 10px;
+      color: $sq-faint;
+    }
+
+    // the number turns blue when its sheet is here (annex A 2.7)
+    .sheet[data-here] & {
+      color: $sq-signal-text;
+    }
+  }
+
+  .label {
+    margin: 0 auto 0 0;
+    font: inherit;
+    letter-spacing: inherit;
+    color: $sq-text;
+  }
+
+  .anchor {
+    text-decoration: none;
+  }
+
+  .meta {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    margin: 0;
+
+    > div {
+      display: flex;
+      gap: 8px;
+    }
+
+    > div + div::before {
+      content: "·";
+      margin-inline: 12px;
+      color: $sq-faint;
+    }
+
+    dt {
+      color: $sq-muted;
+    }
+
+    dd {
+      margin: 0;
+      color: $sq-text;
+      white-space: nowrap;
+    }
+
+    @media (max-width: 760px) {
+      display: none;
+    }
+  }
+
+  .body[data-padded] {
+    display: flex;
+    flex-direction: column;
+    gap: $space-md;
+    padding: 24px $sq-pad 48px;
+
+    @media (max-width: 760px) {
+      padding-inline: $sq-pad-narrow;
+    }
+  }
+}

@@ -1,0 +1,35 @@
+@use "settings" as *;
+@use "tools" as *;
+
+// The mode cell of the nav strip (TDD docs-site D14): three toggle buttons on
+// the strip's lines; the pressed one carries a faint ink fill.
+@layer docs.components {
+  .group {
+    display: flex;
+    gap: 2px;
+  }
+
+  .button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    inline-size: 36px;
+    block-size: 36px;
+    border: 0;
+    border-radius: 0;
+    background: transparent;
+    color: $sq-muted;
+    cursor: pointer;
+    @include focus-ring(-2px);
+
+    &:hover {
+      color: $sq-text;
+      background: color-mix(in oklab, $sq-text 6%, transparent);
+    }
+
+    &[aria-pressed="true"] {
+      background: color-mix(in oklab, $sq-text 9%, transparent);
+      color: $sq-text;
+    }
+  }
+}

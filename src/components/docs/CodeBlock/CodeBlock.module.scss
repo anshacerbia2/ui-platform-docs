@@ -1,0 +1,85 @@
+@use "settings" as *;
+@use "tools" as *;
+
+// A terminal of the line drawing (scnx-platform instrument.css `.ix-term`, square.css):
+// square, framed by one line, on its own dark theme root.
+@layer docs.components {
+  .block {
+    margin: 0;
+    overflow: hidden;
+    background: var(--ds-color-neutral-surface-sunken-default);
+    color: $sq-text;
+    box-shadow: inset 0 0 0 1px $sq-line;
+  }
+
+  .bar {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    block-size: 36px;
+    padding-inline-start: 14px;
+    box-shadow: inset 0 -1px 0 $sq-line;
+    color: $sq-muted;
+    font: 500 11px/1 $sq-mono;
+    letter-spacing: 0.04em;
+  }
+
+  .lamps {
+    display: flex;
+    gap: 6px;
+
+    i {
+      inline-size: 8px;
+      block-size: 8px;
+      box-shadow: inset 0 0 0 1px $sq-edge;
+    }
+  }
+
+  .title {
+    flex: 1;
+    min-inline-size: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .pre {
+    margin: 0;
+    padding: 16px 0;
+    overflow-x: auto;
+    counter-reset: line;
+    font: 400 12.5px/1.75 $sq-mono;
+  }
+
+  .line {
+    display: block;
+    padding-inline: 18px;
+    white-space: pre;
+
+    &[data-tone="command"] {
+      color: $sq-text;
+    }
+
+    &[data-tone="ok"] {
+      color: var(--ds-color-success-text-subtle-default);
+    }
+
+    &[data-tone="note"] {
+      color: $sq-muted;
+    }
+
+    .pre[data-numbered] & {
+      counter-increment: line;
+
+      &::before {
+        content: counter(line);
+        display: inline-block;
+        inline-size: 2.2ch;
+        margin-inline-end: 2ch;
+        color: var(--ds-color-neutral-text-subtle-disabled);
+        text-align: end;
+        user-select: none;
+      }
+    }
+  }
+}

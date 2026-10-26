@@ -6,7 +6,9 @@ import { entries, getPrimitive, primitiveSlugs, titleOf } from "@/shared/lib/ref
 export const dynamicParams = false;
 export const generateStaticParams = () => primitiveSlugs.map((slug) => ({ slug }));
 
-export async function generateMetadata({ params }: PageProps<"/primitives/[slug]">): Promise<Metadata> {
+export async function generateMetadata({
+  params,
+}: PageProps<"/primitives/[slug]">): Promise<Metadata> {
   const { slug } = await params;
   return { title: `${titleOf(slug)} primitive` };
 }

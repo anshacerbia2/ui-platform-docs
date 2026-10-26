@@ -1,24 +1,20 @@
-import Link from "next/link";
-import { DocsLayout } from "@/features/site-shell/DocsLayout";
-import styles from "@/features/reference/reference.module.scss";
+import { PageHead } from "@/components/docs/PageHead";
+import { TextLink } from "@/components/docs/TextLink";
+import { DocsLayout } from "@/components/shell/DocsLayout";
 
 export default function NotFound() {
   return (
     <DocsLayout>
-      <header className={styles.header}>
-        <h1 className={styles.title}>Page not found</h1>
-        <p className={styles.lead}>
-          This page does not exist in the documented release. Browse the{" "}
-          <Link className={styles.link} href="/components">
-            components
-          </Link>{" "}
-          or{" "}
-          <Link className={styles.link} href="/primitives">
-            primitives
-          </Link>
-          .
-        </p>
-      </header>
+      <PageHead
+        title="Page not found"
+        lead={
+          <>
+            This page does not exist in the documented release. Browse the{" "}
+            <TextLink href="/components">components</TextLink> or{" "}
+            <TextLink href="/primitives">primitives</TextLink>.
+          </>
+        }
+      />
     </DocsLayout>
   );
 }

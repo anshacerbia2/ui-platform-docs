@@ -1,0 +1,192 @@
+@use "settings" as *;
+@use "tools" as *;
+
+// Sheet 05 · Tokens (scnx-platform Docs-Landing.html): the token name read as its
+// grammar, a state to compile, and what the build makes of it.
+@layer docs.components {
+  .two {
+    @media (min-width: 981px) {
+      grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.6fr);
+    }
+  }
+
+  .copy {
+    display: grid;
+    align-content: start;
+    gap: 20px;
+    padding: 56px $sq-pad;
+
+    @media (max-width: 760px) {
+      padding: 40px $sq-pad-narrow;
+    }
+  }
+
+  .grammar {
+    display: grid;
+    gap: 22px;
+    padding: 40px $sq-pad 32px;
+    overflow-x: auto;
+
+    @media (max-width: 760px) {
+      padding-inline: $sq-pad-narrow;
+    }
+  }
+
+  .line {
+    display: flex;
+    align-items: flex-start;
+    font: 500 clamp(13px, 1.6vw, 19px) / 1 $sq-mono;
+    white-space: nowrap;
+  }
+
+  .pair {
+    display: inline-flex;
+  }
+
+  .segment {
+    display: grid;
+    gap: 12px;
+
+    code {
+      padding-inline: 1px;
+      font: inherit;
+    }
+
+    &[data-kind="prefix"] code {
+      color: $sq-muted;
+    }
+
+    &[data-kind="state"] code {
+      color: $sq-signal-text;
+    }
+  }
+
+  .sep {
+    color: $sq-muted;
+  }
+
+  .states {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+
+    button {
+      block-size: 28px;
+      padding-inline: 10px;
+      border: 0;
+      background: transparent;
+      box-shadow: inset 0 0 0 1px $sq-line;
+      color: $sq-muted;
+      font: 500 12px/1 $sq-mono;
+      cursor: pointer;
+      @include focus-ring(2px);
+
+      &:hover {
+        color: $sq-text;
+      }
+
+      &[aria-pressed="true"] {
+        box-shadow: inset 0 0 0 1px $sq-text;
+        color: $sq-text;
+      }
+
+      &[data-invalid] {
+        text-decoration: line-through;
+        text-decoration-color: var(--ds-color-danger-text-subtle-default);
+      }
+    }
+  }
+
+  .compile {
+    @media (min-width: 981px) {
+      grid-template-columns: minmax(0, 1fr) 240px;
+    }
+  }
+
+  .term {
+    margin: 0;
+    block-size: 100%;
+    background: var(--ds-color-neutral-surface-sunken-default);
+    color: var(--ds-color-neutral-text-default-default);
+
+    pre {
+      min-block-size: 132px;
+      margin: 0;
+      padding: 16px 18px;
+      overflow-x: auto;
+      font: 400 12.5px/1.75 $sq-mono;
+      white-space: pre;
+    }
+  }
+
+  .termBar {
+    display: flex;
+    align-items: center;
+    block-size: 36px;
+    padding-inline: 14px;
+    box-shadow: inset 0 -1px 0 $sq-line;
+    color: $sq-muted;
+    font: 500 11px/1 $sq-mono;
+    letter-spacing: 0.04em;
+  }
+
+  .k {
+    color: var(--ds-color-info-text-subtle-default);
+  }
+
+  .p {
+    color: var(--ds-color-primary-text-subtle-default);
+  }
+
+  .ok {
+    color: var(--ds-color-success-text-subtle-default);
+  }
+
+  .n {
+    color: var(--ds-color-warning-text-subtle-default);
+  }
+
+  .c {
+    color: $sq-muted;
+  }
+
+  .render {
+    display: grid;
+    place-items: center;
+    align-content: center;
+    gap: 10px;
+    padding: 16px;
+    text-align: center;
+
+    code {
+      max-inline-size: 100%;
+      overflow-wrap: anywhere;
+      color: $sq-muted;
+      font: 500 10.5px/1.4 $sq-mono;
+    }
+  }
+
+  .pay {
+    display: inline-flex;
+    align-items: center;
+    block-size: 36px;
+    padding-inline: 16px;
+    border-radius: var(--ds-dimension-radius-control);
+    background: var(--bg);
+    color: var(--fg);
+    font-size: 14px;
+    font-weight: 600;
+
+    @include motion {
+      transition: background-color $duration $ease;
+    }
+
+    &[data-state="pressed"] {
+      translate: 0 1px;
+    }
+
+    &[data-state="focus"] {
+      opacity: 0.25;
+    }
+  }
+}

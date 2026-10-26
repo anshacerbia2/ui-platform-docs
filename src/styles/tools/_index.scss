@@ -15,50 +15,6 @@
   }
 }
 
-/// An interactive fill with a token per state: rest, hover, and pressed. The
-/// states are tokens, not a filter, so every state is a measured pair and the
-/// change reads in both modes (a brightness filter darkens a dark-mode fill).
-@mixin fill-states($fill, $hover, $pressed, $label: null, $label-hover: null) {
-  background-color: $fill;
-  @if $label {
-    color: $label;
-  }
-  transition:
-    background-color $duration $ease,
-    color $duration $ease;
-
-  @media (hover: hover) {
-    &:hover {
-      background-color: $hover;
-      @if $label-hover {
-        color: $label-hover;
-      }
-    }
-  }
-
-  &:active {
-    background-color: $pressed;
-  }
-}
-
-@mixin mono($size: small) {
-  font-family: $font-mono;
-  @if $size == small {
-    font-size: var(--ds-typography-code-small-font-size);
-    line-height: var(--ds-typography-code-small-line-height);
-  } @else {
-    font-size: var(--ds-typography-code-default-font-size);
-    line-height: var(--ds-typography-code-default-line-height);
-  }
-}
-
-@mixin eyebrow {
-  @include mono(small);
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  color: $text-muted;
-}
-
 /// The Square chrome's HUD voice (TDD docs-site D13): mono, tracked, upper case.
 /// 11px is the reference's size; the system has no 11px typography token.
 @mixin hud($size: 11px, $weight: 500, $tracking: 0.15em) {
@@ -67,28 +23,24 @@
   text-transform: uppercase;
 }
 
-@mixin card($radius: $radius-card) {
-  background: $surface-card;
-  border-radius: $radius;
-  box-shadow: $shadow-card;
+/// The Square chrome's centre column (TDD docs-site D14): framed by two lines between
+/// margins where the ruler shows; below that width it takes the full width and its
+/// lines, now the screen's edges, go (the owner, 2026-10-27).
+@mixin column {
+  box-sizing: border-box;
+  max-inline-size: $sq-col;
+  margin-inline: auto;
+  border-inline: 1px solid $sq-line;
+
+  @media (max-width: $sq-ruler-min - 0.02px) {
+    border-inline: 0;
+  }
 }
 
-@mixin display($level: 2) {
-  margin: 0;
-  font-weight: 600;
-  color: $text;
-  @if $level == 1 {
-    font-size: $display-1;
-    line-height: 0.95;
-    letter-spacing: $display-tracking-1;
-  } @else if $level == 2 {
-    font-size: $display-2;
-    line-height: 1.02;
-    letter-spacing: $display-tracking-2;
-  } @else {
-    font-size: $display-3;
-    line-height: 1.05;
-    letter-spacing: -0.03em;
+/// Below the ruler's width, where the column is the full width.
+@mixin full-width {
+  @media (max-width: $sq-ruler-min - 0.02px) {
+    @content;
   }
 }
 

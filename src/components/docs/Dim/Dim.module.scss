@@ -1,0 +1,40 @@
+@use "settings" as *;
+@use "tools" as *;
+
+@layer docs.components {
+  .dim {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: $sq-muted;
+    font: 500 10px/1 $sq-mono;
+    letter-spacing: 0.06em;
+    white-space: nowrap;
+
+    &::before,
+    &::after {
+      content: "";
+      flex: 1;
+      block-size: 9px;
+      background: linear-gradient($sq-cross, $sq-cross) center / 100% 1px no-repeat;
+    }
+
+    &::before {
+      box-shadow: inset 1px 0 0 $sq-cross;
+    }
+
+    &::after {
+      box-shadow: inset -1px 0 0 $sq-cross;
+    }
+
+    &[data-signal] {
+      color: $sq-signal-text;
+
+      &::before,
+      &::after {
+        background-image: linear-gradient($sq-signal, $sq-signal);
+        box-shadow: none;
+      }
+    }
+  }
+}

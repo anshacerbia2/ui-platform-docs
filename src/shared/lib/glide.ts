@@ -1,5 +1,5 @@
-// Wheel glide (TDD docs-site D14; scnehaux-design scnx-platform square.js and
-// SCROLL.md 4): every wheel input, mouse or trackpad, moves a target and the page
+// Wheel glide (TDD docs-site D14; TDD docs-site annex A
+// 4): every wheel input, mouse or trackpad, moves a target and the page
 // eases toward it with a 120ms time constant, landing within 0.5px. Left to the
 // browser: ctrl or pinch zoom, a mostly horizontal swipe, an element under the
 // pointer that can still scroll that way, an event another handler took, and
@@ -65,7 +65,11 @@ export function onGlideWrite(fn: Listener): () => void {
 
 // An element that can still scroll this way keeps the wheel.
 function scrollsItself(node: EventTarget | null, dy: number) {
-  for (let n = node instanceof Element ? node : null; n && n !== document.body && n !== document.documentElement; n = n.parentElement) {
+  for (
+    let n = node instanceof Element ? node : null;
+    n && n !== document.body && n !== document.documentElement;
+    n = n.parentElement
+  ) {
     const oy = getComputedStyle(n).overflowY;
     if ((oy === "auto" || oy === "scroll") && n.scrollHeight > n.clientHeight + 1) {
       if (dy > 0 ? n.scrollTop + n.clientHeight < n.scrollHeight - 1 : n.scrollTop > 0) return true;

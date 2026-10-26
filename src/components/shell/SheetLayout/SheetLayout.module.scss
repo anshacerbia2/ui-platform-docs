@@ -1,0 +1,9 @@
+@use "settings" as *;
+
+@layer docs.components {
+  .main {
+    counter-reset: sheet;
+    // the rules cross the whole viewport; nothing scrolls sideways
+    overflow-x: clip;
+  }
+}

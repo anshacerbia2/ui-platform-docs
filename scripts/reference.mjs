@@ -40,7 +40,11 @@ function loadSpecs() {
     const index = readJson(path.join(dir, "dist/specs/index.json"));
     for (const row of index.specs) {
       const spec = readJson(path.join(dir, "dist", row.path));
-      specs.push({ package: name, version: readJson(path.join(dir, "package.json")).version, spec });
+      specs.push({
+        package: name,
+        version: readJson(path.join(dir, "package.json")).version,
+        spec,
+      });
     }
   }
   return specs;
@@ -57,9 +61,16 @@ function loadThemes() {
     const match = /^\.\/tokens\/json\/([a-z0-9-]+)\.json$/.exec(subpath);
     if (match) themes[match[1]] = readJson(path.join(dir, target));
   }
-  if (!themes[SITE_THEME]) throw new Error(`the pinned @scnx/system ships no theme "${SITE_THEME}" (it ships ${Object.keys(themes).join(", ")})`);
+  if (!themes[SITE_THEME])
+    throw new Error(
+      `the pinned @scnx/system ships no theme "${SITE_THEME}" (it ships ${Object.keys(themes).join(", ")})`,
+    );
   // The site's theme first, then the others by name.
-  return Object.fromEntries(Object.entries(themes).toSorted(([a], [b]) => (a === SITE_THEME ? -1 : b === SITE_THEME ? 1 : a.localeCompare(b))));
+  return Object.fromEntries(
+    Object.entries(themes).toSorted(([a], [b]) =>
+      a === SITE_THEME ? -1 : b === SITE_THEME ? 1 : a.localeCompare(b),
+    ),
+  );
 }
 
 // ---------------------------------------------------------------------------
@@ -68,12 +79,16 @@ function loadThemes() {
 // the defaults, jointly where one binding names several; a more specific
 // binding (more options, then a state) wins, then spec order.
 
-const comboKey = (combo) => JSON.stringify(Object.entries(combo).toSorted(([a], [b]) => a.localeCompare(b)));
+const comboKey = (combo) =>
+  JSON.stringify(Object.entries(combo).toSorted(([a], [b]) => a.localeCompare(b)));
 const bindingWeight = (b) => Object.keys(b.option ?? {}).length + (b.state ? 10 : 0);
-const ownDeclaration = (declaration) => /[\\/]@scnx[\\/]/.test(declaration.getSourceFile().fileName);
+const ownDeclaration = (declaration) =>
+  /[\\/]@scnx[\\/]/.test(declaration.getSourceFile().fileName);
 const spelled = (types) => {
   const kept = types.filter((t) => t !== "undefined" && t !== "never");
-  return kept.length === 2 && kept.includes("true") && kept.includes("false") ? "boolean" : kept.join(" | ");
+  return kept.length === 2 && kept.includes("true") && kept.includes("false")
+    ? "boolean"
+    : kept.join(" | ");
 };
 
 export function combinations(spec) {
@@ -84,11 +99,20 @@ export function combinations(spec) {
   );
   const out = new Map([[comboKey(defaults), defaults]]);
   const add = (combo) => out.set(comboKey(combo), combo);
-  for (const [option, { values }] of Object.entries(spec.options)) for (const value of values) add({ ...defaults, [option]: value });
+  for (const [option, { values }] of Object.entries(spec.options))
+    for (const value of values) add({ ...defaults, [option]: value });
   for (const binding of spec.bindings) {
     const joint = Object.keys(binding.option ?? {});
     if (joint.length < 2) continue;
-    joint.reduce((acc, option) => acc.flatMap((combo) => spec.options[option].values.map((value) => ({ ...combo, [option]: value }))), [defaults]).forEach(add);
+    joint
+      .reduce(
+        (acc, option) =>
+          acc.flatMap((combo) =>
+            spec.options[option].values.map((value) => ({ ...combo, [option]: value })),
+          ),
+        [defaults],
+      )
+      .forEach(add);
   }
   return [...out.values()];
 }
@@ -99,7 +123,12 @@ export function effective(spec, part, option, state) {
   const out = {};
   spec.bindings
     .map((b, index) => ({ b, index }))
-    .filter(({ b }) => chain.includes(b.part) && (!b.state || b.state === state) && Object.entries(b.option ?? {}).every(([k, v]) => option[k] === v))
+    .filter(
+      ({ b }) =>
+        chain.includes(b.part) &&
+        (!b.state || b.state === state) &&
+        Object.entries(b.option ?? {}).every(([k, v]) => option[k] === v),
+    )
     .toSorted((x, y) => bindingWeight(x.b) - bindingWeight(y.b) || x.index - y.index)
     .forEach(({ b }) => {
       for (const [property, value] of Object.entries(b.declarations)) {
@@ -110,7 +139,8 @@ export function effective(spec, part, option, state) {
   return out;
 }
 
-const singleToken = (value) => (value && /^\{[a-z0-9.-]+\}$/.test(value) ? value.slice(1, -1) : null);
+const singleToken = (value) =>
+  value && /^\{[a-z0-9.-]+\}$/.test(value) ? value.slice(1, -1) : null;
 
 /** TDD styled CS5: a part's color on its background, per combination and state; disabled is exempt. */
 export function contrastCases(spec) {
@@ -150,7 +180,13 @@ function contrastTable(spec, themes, minimum) {
         const canvas = parseColor(canvasToken.resolved[themeId][mode]);
         if (!fg || !bg) continue;
         const { ratio, path: worst } = contrastRatio(fg, bg, canvas);
-        results.push({ theme: themeId, mode, ratio: Math.floor(ratio * 100) / 100, path: worst, pass: ratio >= minimum });
+        results.push({
+          theme: themeId,
+          mode,
+          ratio: Math.floor(ratio * 100) / 100,
+          path: worst,
+          pass: ratio >= minimum,
+        });
       }
     }
     rows.push({ ...c, minimum, results });
@@ -182,8 +218,18 @@ function apiOf(entries) {
   );
   const checker = program.getTypeChecker();
   const doc = (symbol) => ts.displayPartsToString(symbol.getDocumentationComment(checker)).trim();
-  const tags = (symbol) => Object.fromEntries(symbol.getJsDocTags(checker).map((t) => [t.name, ts.displayPartsToString(t.text ?? []).trim()]));
-  const typeText = (type) => checker.typeToString(type, undefined, ts.TypeFormatFlags.NoTruncation | ts.TypeFormatFlags.UseAliasDefinedOutsideCurrentScope);
+  const tags = (symbol) =>
+    Object.fromEntries(
+      symbol
+        .getJsDocTags(checker)
+        .map((t) => [t.name, ts.displayPartsToString(t.text ?? []).trim()]),
+    );
+  const typeText = (type) =>
+    checker.typeToString(
+      type,
+      undefined,
+      ts.TypeFormatFlags.NoTruncation | ts.TypeFormatFlags.UseAliasDefinedOutsideCurrentScope,
+    );
 
   // Props of a component. A union of prop shapes (a button, link, or child mode) lists every
   // prop of every member; a prop missing from some members is optional and names its modes.
@@ -196,11 +242,14 @@ function apiOf(entries) {
         const declarations = property.getDeclarations() ?? [];
         const declared = declarations.find(ownDeclaration);
         if (!declared) {
-          if (/@types[\\/]react/.test(declarations[0]?.getSourceFile().fileName ?? "")) extendsNative = true;
+          if (/@types[\\/]react/.test(declarations[0]?.getSourceFile().fileName ?? ""))
+            extendsNative = true;
           continue;
         }
         const t = tags(property);
-        const written = declared.type?.getText() ?? typeText(checker.getNonNullableType(checker.getTypeOfSymbolAtLocation(property, at)));
+        const written =
+          declared.type?.getText() ??
+          typeText(checker.getNonNullableType(checker.getTypeOfSymbolAtLocation(property, at)));
         const row = byName.get(property.getName()) ?? {
           name: property.getName(),
           types: [],
@@ -226,7 +275,9 @@ function apiOf(entries) {
       modes: present.length < members.length ? present.length : null,
     }));
     return {
-      props: props.toSorted((a, b) => Number(a.optional) - Number(b.optional) || a.name.localeCompare(b.name)),
+      props: props.toSorted(
+        (a, b) => Number(a.optional) - Number(b.optional) || a.name.localeCompare(b.name),
+      ),
       extendsNative,
       modes: members.length > 1 ? members.length : null,
     };
@@ -249,7 +300,8 @@ function apiOf(entries) {
     };
     if (isComponent) {
       const parameter = signatures[0].getParameters()[0];
-      if (parameter) Object.assign(out, propsOf(checker.getTypeOfSymbolAtLocation(parameter, at), at));
+      if (parameter)
+        Object.assign(out, propsOf(checker.getTypeOfSymbolAtLocation(parameter, at), at));
       if (depth === 0) {
         out.parts = checker
           .getPropertiesOfType(type)
@@ -271,7 +323,11 @@ function apiOf(entries) {
         .replace(/\s+/g, " ")
         .trim();
     } else if (out.kind === "function") {
-      out.signature = checker.signatureToString(signatures[0], undefined, ts.TypeFormatFlags.NoTruncation);
+      out.signature = checker.signatureToString(
+        signatures[0],
+        undefined,
+        ts.TypeFormatFlags.NoTruncation,
+      );
     }
     return out;
   };
@@ -287,7 +343,9 @@ function apiOf(entries) {
     });
     api[entry] = exports.toSorted(
       (a, b) =>
-        ["component", "function", "value", "type"].indexOf(a.kind) - ["component", "function", "value", "type"].indexOf(b.kind) || a.name.localeCompare(b.name),
+        ["component", "function", "value", "type"].indexOf(a.kind) -
+          ["component", "function", "value", "type"].indexOf(b.kind) ||
+        a.name.localeCompare(b.name),
     );
   }
   return api;
@@ -306,7 +364,9 @@ function generate() {
 
   const api = apiOf(rows.map(({ spec }) => ({ entry: spec.entry })));
 
-  const primitives = Object.fromEntries(rows.filter((r) => r.spec.kind === "primitive").map((r) => [r.spec.name, r.spec]));
+  const primitives = Object.fromEntries(
+    rows.filter((r) => r.spec.kind === "primitive").map((r) => [r.spec.name, r.spec]),
+  );
   const entries = rows.map(({ package: pkg, version, spec }) => ({
     entry: spec.entry,
     package: pkg,
@@ -316,15 +376,27 @@ function generate() {
     stability: spec.stability,
     entryKind: spec.entryKind ?? null,
     primitive: spec.kind === "styled" ? spec.primitive : null,
-    page: spec.kind === "styled" ? `/components/${slugOf(spec.entry)}` : spec.kind === "primitive" ? `/primitives/${slugOf(spec.entry)}` : null,
+    page:
+      spec.kind === "styled"
+        ? `/components/${slugOf(spec.entry)}`
+        : spec.kind === "primitive"
+          ? `/primitives/${slugOf(spec.entry)}`
+          : null,
   }));
 
   const components = {};
   for (const { spec } of rows.filter((r) => r.spec.kind === "styled")) {
     const unknownTokens = spec.bindings
-      .flatMap((b) => Object.values(b.declarations).flatMap((v) => [...v.matchAll(/\{([a-z0-9.-]+)\}/g)].map((m) => m[1])))
+      .flatMap((b) =>
+        Object.values(b.declarations).flatMap((v) =>
+          [...v.matchAll(/\{([a-z0-9.-]+)\}/g)].map((m) => m[1]),
+        ),
+      )
       .filter((t) => !tokenNames.has(t));
-    if (unknownTokens.length) throw new Error(`${spec.entry}: bindings name unpublished tokens ${unknownTokens.join(", ")}`);
+    if (unknownTokens.length)
+      throw new Error(
+        `${spec.entry}: bindings name unpublished tokens ${unknownTokens.join(", ")}`,
+      );
     components[slugOf(spec.entry)] = {
       spec,
       primitive: spec.primitive ? (primitives[spec.primitive] ?? null) : null,
@@ -338,11 +410,20 @@ function generate() {
     primitivePages[slugOf(spec.entry)] = {
       spec,
       api: api[spec.entry],
-      styledBy: rows.filter((r) => r.spec.kind === "styled" && r.spec.primitive === spec.name).map((r) => slugOf(r.spec.entry)),
+      styledBy: rows
+        .filter((r) => r.spec.kind === "styled" && r.spec.primitive === spec.name)
+        .map((r) => slugOf(r.spec.entry)),
     };
 
   const tokens = Object.fromEntries(
-    Object.entries(themes).map(([id, theme]) => [id, { standard: theme.standard, modes: theme.modes, count: theme.tokens.filter((t) => t.canonical).length }]),
+    Object.entries(themes).map(([id, theme]) => [
+      id,
+      {
+        standard: theme.standard,
+        modes: theme.modes,
+        count: theme.tokens.filter((t) => t.canonical).length,
+      },
+    ]),
   );
   // The token list for the Tokens page: canonical tokens with every theme's value per mode.
   const tokenList = defaultTheme.tokens
@@ -353,14 +434,46 @@ function generate() {
       type: t.type,
       tier: t.tier,
       lifecycle: t.lifecycle,
-      values: Object.fromEntries(Object.entries(themes).map(([id, theme]) => [id, theme.tokens.find((x) => x.name === t.name)?.resolved[id] ?? null])),
+      values: Object.fromEntries(
+        Object.entries(themes).map(([id, theme]) => [
+          id,
+          theme.tokens.find((x) => x.name === t.name)?.resolved[id] ?? null,
+        ]),
+      ),
     }));
   // The landing page's theme lab: what its sample form renders (TextField and Button bindings).
+  // The form sits on the site's ground, as a page on the theme would: surface.default in
+  // light, surface.sunken in dark (src/styles/generic/_roles.scss, --sq-ground). A pair
+  // whose background is "ground" is measured there, and every pair is composited over it.
+  const GROUND = {
+    light: "color.neutral.surface.default.default",
+    dark: "color.neutral.surface.sunken.default",
+  };
   const LAB_PAIRS = [
-    { label: "Label on brand fill", fg: "color.primary.text.contrast.default", bg: "color.primary.surface.solid.default", minimum: 4.5 },
-    { label: "Field text", fg: "color.neutral.text.default.default", bg: "color.neutral.surface.raised.default", minimum: 4.5 },
-    { label: "Description", fg: "color.neutral.text.subtle.default", bg: "color.neutral.surface.raised.default", minimum: 4.5 },
-    { label: "Field boundary", fg: "color.neutral.border.strong.default", bg: "color.neutral.surface.raised.default", minimum: 3 },
+    {
+      label: "Label on brand fill",
+      fg: "color.primary.text.contrast.default",
+      bg: "color.primary.surface.solid.default",
+      minimum: 4.5,
+    },
+    {
+      label: "Field text",
+      fg: "color.neutral.text.default.default",
+      bg: "color.neutral.surface.raised.default",
+      minimum: 4.5,
+    },
+    {
+      label: "Description",
+      fg: "color.neutral.text.subtle.default",
+      bg: "ground",
+      minimum: 4.5,
+    },
+    {
+      label: "Field boundary",
+      fg: "color.neutral.border.strong.default",
+      bg: "color.neutral.surface.raised.default",
+      minimum: 3,
+    },
   ];
   const lab = Object.fromEntries(
     Object.entries(themes).map(([themeId, theme]) => {
@@ -370,11 +483,12 @@ function generate() {
         Object.fromEntries(
           theme.modes.map((mode) => {
             const value = (name) => parseColor(byName.get(name).resolved[themeId][mode]);
-            const canvas = value("color.neutral.surface.canvas.default");
+            const ground = value(GROUND[mode] ?? GROUND.light);
             return [
               mode,
               LAB_PAIRS.map((pair) => {
-                const { ratio } = contrastRatio(value(pair.fg), value(pair.bg), canvas);
+                const bg = pair.bg === "ground" ? ground : value(pair.bg);
+                const { ratio } = contrastRatio(value(pair.fg), bg, ground);
                 return { ...pair, ratio: Math.floor(ratio * 10) / 10, pass: ratio >= pair.minimum };
               }),
             ];
@@ -393,7 +507,17 @@ function generate() {
       "color.primary.text.default.default",
     ]);
   const figma = figmaFiles().map(({ content: _content, ...row }) => row);
-  const reference = { schemaVersion: 1, pin, entries, components, primitives: primitivePages, tokens, tokenList, figma, landing: { lab, swatches } };
+  const reference = {
+    schemaVersion: 1,
+    pin,
+    entries,
+    components,
+    primitives: primitivePages,
+    tokens,
+    tokenList,
+    figma,
+    landing: { lab, swatches },
+  };
 
   // The preview registry: one namespace import per styled entry.
   const styled = entries.filter((e) => e.kind === "styled");
@@ -434,12 +558,21 @@ export function figmaFiles() {
   const manifest = readJson(path.join(dir, "package.json"));
   const count = (node) =>
     Object.entries(node).reduce(
-      (n, [key, value]) => n + (key.startsWith("$") || !value || typeof value !== "object" ? 0 : "$value" in value ? 1 : count(value)),
+      (n, [key, value]) =>
+        n +
+        (key.startsWith("$") || !value || typeof value !== "object"
+          ? 0
+          : "$value" in value
+            ? 1
+            : count(value)),
       0,
     );
   const files = [];
   for (const [subpath, target] of Object.entries(manifest.exports)) {
-    const match = /^\.\/tokens\/figma\/([a-z0-9-]+)\.(?:([a-z0-9-]+)\.color|dimension)\.tokens\.json$/.exec(subpath);
+    const match =
+      /^\.\/tokens\/figma\/([a-z0-9-]+)\.(?:([a-z0-9-]+)\.color|dimension)\.tokens\.json$/.exec(
+        subpath,
+      );
     if (!match) continue;
     const content = fs.readFileSync(path.join(dir, target), "utf8");
     const file = subpath.slice("./tokens/figma/".length);
@@ -455,7 +588,10 @@ export function figmaFiles() {
   }
   // The site's theme first, colors before dimensions, light before dark.
   return files.toSorted(
-    (a, b) => themeOrder(a.theme).localeCompare(themeOrder(b.theme)) || a.kind.localeCompare(b.kind) || modeOrder(a.mode) - modeOrder(b.mode),
+    (a, b) =>
+      themeOrder(a.theme).localeCompare(themeOrder(b.theme)) ||
+      a.kind.localeCompare(b.kind) ||
+      modeOrder(a.mode) - modeOrder(b.mode),
   );
 }
 
@@ -465,7 +601,8 @@ if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) 
   for (const [file, text] of Object.entries(outputs)) fs.writeFileSync(path.join(OUT, file), text);
   fs.rmSync(DOWNLOADS, { recursive: true, force: true });
   fs.mkdirSync(DOWNLOADS, { recursive: true });
-  for (const { file, content } of figmaFiles()) fs.writeFileSync(path.join(DOWNLOADS, file), content);
+  for (const { file, content } of figmaFiles())
+    fs.writeFileSync(path.join(DOWNLOADS, file), content);
   const data = JSON.parse(outputs["reference.json"]);
   console.log(
     `Reference generated from ${data.pin.packages.map((p) => `${p.name}@${p.version}`).join(", ")} (ui-platform ${data.pin.commit.slice(0, 7)}): ${data.entries.length} entries, ${Object.keys(data.components).length} component pages, ${Object.keys(data.primitives).length} primitive pages`,

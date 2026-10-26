@@ -1,0 +1,8 @@
+// While a theme or mode switches (shared/lib/withoutTransitions.ts), nothing
+// transitions: every part takes its new colours in the same frame.
+html[data-sq-switching],
+html[data-sq-switching] *,
+html[data-sq-switching] *::before,
+html[data-sq-switching] *::after {
+  transition: none !important;
+}

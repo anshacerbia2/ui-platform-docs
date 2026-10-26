@@ -1,0 +1,265 @@
+@use "settings" as *;
+@use "tools" as *;
+
+// Sheet 02 · Modes (scnx-platform Docs-Landing.html): the copy, and the split
+// frame holding one dashboard in two theme roots.
+@layer docs.components {
+  .two {
+    @media (min-width: 981px) {
+      grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.6fr);
+    }
+  }
+
+  .copy {
+    display: grid;
+    align-content: start;
+    gap: 20px;
+    padding: 56px $sq-pad;
+
+    @media (max-width: 760px) {
+      padding: 40px $sq-pad-narrow;
+    }
+  }
+
+  .dim {
+    max-inline-size: 260px;
+  }
+
+  // The split: the dark pane is clipped from the seam to the right edge.
+  .split {
+    position: relative;
+    overflow: hidden;
+    cursor: ew-resize;
+    touch-action: pan-y;
+    user-select: none;
+  }
+
+  .pane {
+    > div {
+      position: relative;
+      block-size: 100%;
+      padding: 24px;
+      background: var(--ds-color-neutral-surface-raised-default);
+      color: var(--ds-color-neutral-text-default-default);
+    }
+  }
+
+  .dark {
+    position: absolute;
+    inset: 0;
+    clip-path: inset(0 0 0 var(--split, 50%));
+  }
+
+  .tag {
+    position: absolute;
+    inset-block-end: 14px;
+    z-index: 1;
+    color: var(--ds-color-neutral-text-subtle-default);
+    @include hud(10px, 500, 0.12em);
+
+    &[data-side="light"] {
+      inset-inline-start: 18px;
+    }
+
+    &[data-side="dark"] {
+      inset-inline-end: 18px;
+    }
+  }
+
+  .seam {
+    position: absolute;
+    inset-block: 0;
+    inset-inline-start: var(--split, 50%);
+    inline-size: 1px;
+    translate: -0.5px 0;
+    background: $sq-signal;
+    pointer-events: none;
+  }
+
+  .knob {
+    position: absolute;
+    inset-block-start: 50%;
+    inset-inline-start: clamp(18px, var(--split, 50%), calc(100% - 18px));
+    display: grid;
+    place-items: center;
+    inline-size: 36px;
+    block-size: 36px;
+    padding: 0;
+    translate: -50% -50%;
+    border: 0;
+    border-radius: 0;
+    background: $sq-signal;
+    color: var(--ds-color-primary-text-contrast-default);
+    box-shadow: 0 0 0 4px color-mix(in oklab, $sq-signal 25%, transparent);
+    cursor: ew-resize;
+    @include focus-ring(3px);
+  }
+
+  // The sample dashboard: tokens only, so each theme root restyles it.
+  .dash {
+    display: grid;
+    grid-template-columns: 44px minmax(0, 1fr);
+    gap: 8px;
+    min-block-size: 440px;
+    font-family: $font-sans;
+  }
+
+  .side {
+    display: grid;
+    align-content: start;
+    gap: 8px;
+    padding: 8px;
+    border-radius: var(--ds-dimension-radius-container);
+    background: var(--ds-color-neutral-surface-default-default);
+
+    i {
+      display: block;
+      block-size: 28px;
+      border-radius: var(--ds-dimension-radius-element);
+      background: var(--ds-color-neutral-surface-strong-default);
+    }
+
+    i:first-child {
+      background: var(--ds-color-neutral-surface-solid-default);
+    }
+  }
+
+  .dashMain {
+    display: grid;
+    align-content: start;
+    gap: 14px;
+    min-inline-size: 0;
+    padding: 18px;
+    border-radius: var(--ds-dimension-radius-container);
+    background: var(--ds-color-neutral-surface-canvas-default);
+    box-shadow: var(--ds-effect-material-flat);
+  }
+
+  .dashTop {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+
+    h3 {
+      margin: 0;
+      font-size: 16px;
+      letter-spacing: -0.01em;
+    }
+
+    p {
+      margin: 2px 0 0;
+      color: var(--ds-color-neutral-text-subtle-default);
+      font-size: 12.5px;
+    }
+  }
+
+  .range {
+    display: flex;
+    padding: 3px;
+    border-radius: var(--ds-dimension-radius-control);
+    background: var(--ds-color-neutral-surface-default-default);
+    font-size: var(--ds-typography-label-small-font-size);
+
+    span {
+      padding: 4px 10px;
+      border-radius: var(--ds-dimension-radius-element);
+      color: var(--ds-color-neutral-text-subtle-default);
+    }
+
+    span[data-on] {
+      background: var(--ds-color-neutral-surface-raised-default);
+      color: var(--ds-color-neutral-text-default-default);
+      box-shadow: var(--ds-effect-material-raised);
+      font-weight: 600;
+    }
+  }
+
+  .kpis {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 8px;
+
+    @media (max-width: 560px) {
+      grid-template-columns: 1fr 1fr;
+
+      > :last-child {
+        display: none;
+      }
+    }
+  }
+
+  .kpi {
+    padding: 12px;
+    border-radius: var(--ds-dimension-radius-control);
+    box-shadow: var(--ds-effect-material-flat);
+
+    span {
+      color: var(--ds-color-neutral-text-subtle-default);
+      font-size: 12px;
+    }
+
+    strong {
+      display: block;
+      margin: 4px 0 6px;
+      font-size: 22px;
+      font-variant-numeric: tabular-nums;
+      letter-spacing: -0.02em;
+    }
+  }
+
+  .bars {
+    display: flex;
+    align-items: flex-end;
+    gap: 6px;
+    block-size: 120px;
+    padding: 12px;
+    border-radius: var(--ds-dimension-radius-control);
+    box-shadow: var(--ds-effect-material-flat);
+
+    i {
+      flex: 1;
+      background: var(--ds-color-neutral-surface-strong-default);
+
+      @for $h from 30 through 100 {
+        &[data-h="#{$h}"] {
+          block-size: $h * 1%;
+        }
+      }
+    }
+
+    i[data-recent] {
+      background: var(--ds-color-primary-surface-solid-default);
+    }
+  }
+
+  .invoices {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    border-radius: var(--ds-dimension-radius-control);
+    box-shadow: var(--ds-effect-material-flat);
+
+    li {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      padding: 9px 12px;
+      box-shadow: inset 0 -1px 0 var(--ds-color-neutral-border-subtle-default);
+      font-size: 13px;
+    }
+
+    li:last-child {
+      box-shadow: none;
+    }
+
+    li > span:last-child {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-variant-numeric: tabular-nums;
+    }
+  }
+}

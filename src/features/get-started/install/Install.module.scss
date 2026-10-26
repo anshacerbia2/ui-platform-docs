@@ -1,0 +1,231 @@
+@use "settings" as *;
+@use "tools" as *;
+
+// Sheet 03 · Install (scnx-platform Docs-Home.html): which package, then the three
+// moves on a dark root.
+@layer docs.components {
+  .install {
+    @media (min-width: 1081px) {
+      grid-template-columns: minmax(0, 0.85fr) minmax(0, 1.4fr);
+    }
+  }
+
+  .which {
+    display: grid;
+    align-content: start;
+    gap: 14px;
+    padding: 56px $sq-pad;
+
+    @media (max-width: 760px) {
+      padding: 40px $sq-pad-narrow;
+    }
+  }
+
+  .choose {
+    display: grid;
+    gap: 10px;
+    margin: 0;
+    padding: 0;
+    border: 0;
+  }
+
+  .option {
+    display: grid;
+    grid-template-columns: 20px 1fr;
+    gap: 12px;
+    padding: 14px;
+    box-shadow: inset 0 0 0 1px $sq-line;
+    cursor: pointer;
+
+    > :not(input) {
+      grid-column: 2;
+    }
+
+    input {
+      grid-row: 1 / span 3;
+      inline-size: 16px;
+      block-size: 16px;
+      margin: 2px 0 0;
+      accent-color: $sq-signal;
+    }
+
+    &[data-checked] {
+      box-shadow: inset 0 0 0 1px $sq-signal;
+      background: color-mix(
+        in oklab,
+        var(--ds-color-primary-surface-subtle-default) 55%,
+        $sq-ground
+      );
+    }
+
+    &:has(input:focus-visible) {
+      outline: var(--ds-dimension-border-width-strong) solid $focus;
+      outline-offset: 2px;
+    }
+
+    strong {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 14px;
+    }
+
+    p {
+      margin: 4px 0 8px;
+      color: $sq-muted;
+      font-size: 12.5px;
+    }
+
+    code {
+      font: 500 11.5px/1 $sq-mono;
+    }
+  }
+
+  .deps {
+    display: flex;
+    align-items: center;
+    padding-block-start: 6px;
+    color: $sq-muted;
+    font: 500 11px/1 $sq-mono;
+
+    > :not(.pkg) {
+      flex: 1;
+      padding-inline: 6px;
+    }
+  }
+
+  .pkg {
+    padding: 6px 8px;
+    box-shadow: inset 0 0 0 1px $sq-line;
+    color: $sq-text;
+  }
+
+  .moves {
+    block-size: 100%;
+    overflow: hidden;
+    background: var(--ds-color-neutral-surface-sunken-default);
+    color: var(--ds-color-neutral-text-default-default);
+  }
+
+  .movesBar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 40px $sq-pad 24px;
+
+    h3 {
+      margin: 0;
+      font-size: 1.25rem;
+      letter-spacing: -0.02em;
+    }
+
+    p {
+      margin: 0;
+      color: $sq-muted;
+      font: 500 11px/1.4 $sq-mono;
+    }
+
+    @media (max-width: 760px) {
+      padding-inline: $sq-pad-narrow;
+    }
+  }
+
+  .steps {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    box-shadow:
+      inset 0 1px 0 $sq-line,
+      inset 0 -1px 0 $sq-line;
+
+    button {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 14px $sq-pad;
+      border: 0;
+      background: transparent;
+      box-shadow: inset -1px 0 0 $sq-line;
+      color: $sq-muted;
+      font-size: 13px;
+      font-weight: 500;
+      text-align: start;
+      cursor: pointer;
+      @include focus-ring(-2px);
+
+      &:last-child {
+        box-shadow: none;
+      }
+
+      span {
+        display: grid;
+        place-items: center;
+        inline-size: 22px;
+        block-size: 22px;
+        background: color-mix(in oklab, $sq-text 10%, transparent);
+        font: 500 11px/1 $sq-mono;
+      }
+
+      &[aria-selected="true"] {
+        box-shadow:
+          inset 0 -2px 0 $sq-signal,
+          inset -1px 0 0 $sq-line;
+        color: $sq-text;
+
+        span {
+          background: $sq-signal;
+          color: var(--ds-color-primary-text-contrast-default);
+        }
+      }
+    }
+
+    @media (max-width: 620px) {
+      grid-template-columns: minmax(0, 1fr);
+
+      button {
+        box-shadow: inset 0 -1px 0 $sq-line;
+      }
+    }
+  }
+
+  .code {
+    margin: 0;
+    padding: 24px 0 40px;
+    overflow-x: auto;
+    font: 400 12.5px/1.85 $sq-mono;
+  }
+
+  .row {
+    display: block;
+    padding-inline: $sq-pad;
+    white-space: pre;
+
+    @include motion {
+      transition:
+        background-color $duration $ease,
+        opacity $duration $ease;
+    }
+
+    &[data-kind="comment"] {
+      color: $sq-muted;
+    }
+
+    &[data-dim] {
+      opacity: 0.38;
+    }
+
+    &[data-on] {
+      background: color-mix(in oklab, $sq-signal 14%, transparent);
+    }
+  }
+
+  .ln {
+    display: inline-block;
+    inline-size: 2.2ch;
+    margin-inline-end: 2ch;
+    color: var(--ds-color-neutral-text-subtle-disabled);
+    text-align: end;
+    user-select: none;
+  }
+}

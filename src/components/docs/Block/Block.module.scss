@@ -1,0 +1,38 @@
+@use "settings" as *;
+@use "tools" as *;
+
+@layer docs.components {
+  .block {
+    display: grid;
+    // one column that never grows past its cell: a long name breaks instead of
+    // pushing the page wider than a phone
+    grid-template-columns: minmax(0, 1fr);
+    gap: 14px;
+    padding: 28px $sq-pad;
+    overflow-wrap: anywhere;
+
+    > :is(p, ol, ul) {
+      max-inline-size: 72ch;
+      margin: 0;
+      color: $sq-muted;
+      font-size: var(--ds-typography-body-small-font-size);
+      line-height: 1.6;
+    }
+
+    > :is(ol, ul) {
+      display: grid;
+      gap: 8px;
+      padding-inline-start: 1.25rem;
+    }
+
+    @media (max-width: 760px) {
+      padding-inline: $sq-pad-narrow;
+    }
+  }
+
+  .title {
+    margin: 0;
+    color: $sq-text;
+    @include hud(11px, 500, 0.15em);
+  }
+}
