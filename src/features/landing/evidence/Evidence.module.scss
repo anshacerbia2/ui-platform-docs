@@ -1,9 +1,10 @@
+@use "layers";
 @use "settings" as *;
 @use "tools" as *;
 
 // Sheet 06 · Evidence (scnx-platform Docs-Landing.html): four gauges, then the
 // check and two side cards.
-@layer docs.components {
+@layer docs.features {
   .gauges {
     display: grid;
     grid-template-columns: repeat(4, minmax(0, 1fr));

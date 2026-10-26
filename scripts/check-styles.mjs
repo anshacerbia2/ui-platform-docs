@@ -5,7 +5,10 @@
 // 2. Every color is a ui-platform token: no hex, rgb(), hsl(), oklch(), lab(),
 //    or lch() literal, except inside a mask, where only alpha matters.
 // 3. Every `--ds-*` property the site reads is published by @scnx/system.
-// 4. Every component stylesheet is a CSS Module in `@layer docs.components`.
+// 4. Every component stylesheet is a CSS Module in `@layer docs.components`, every
+//    feature's (src/features/) in `@layer docs.features`, and every one uses "layers"
+//    first, so the layer order holds whichever stylesheet a build loads first.
+//    src/styles/_layers.scss begins with ui-platform's own layers, in its order.
 // 5. No component passes a `style` prop: a style attribute in server HTML
 //    violates the site's Content-Security-Policy (TDD docs-site D5).
 // 6. Every colour mix is made in OKLab (`color-mix(in oklab, …)`): the neutral
@@ -48,9 +51,35 @@ export function styleFindings(file, text, published) {
       const line = text.slice(0, match.index).split("\n").length;
       findings.push(`${file}:${line}: color-mix in ${match[1]}; mix in oklab`);
     }
-  if (file.endsWith(".module.scss") && !/@layer docs\.components\s*\{/.test(text))
-    findings.push(`${file}: a component stylesheet must wrap its rules in @layer docs.components`);
+  if (file.endsWith(".module.scss")) {
+    const layer = /(^|[\\/])src[\\/]features[\\/]/.test(file) ? "docs.features" : "docs.components";
+    if (!new RegExp(`@layer ${layer.replace(".", "\\.")}\\s*\\{`).test(text))
+      findings.push(`${file}: wrap its rules in @layer ${layer}`);
+    if (!text.startsWith('@use "layers";'))
+      findings.push(
+        `${file}: begin with @use "layers"; so the layer order holds in any load order`,
+      );
+  }
   return findings;
+}
+
+// The names of a stylesheet's first layer statement, in order.
+const layerOrder = (text) =>
+  /@layer\s+([^{;]+);/
+    .exec(text)?.[1]
+    .split(",")
+    .map((s) => s.trim()) ?? [];
+
+/** The layer order the site writes must begin with ui-platform's, as its package declares it. */
+export function layerFindings(siteLayers, packageCss) {
+  const site = layerOrder(siteLayers);
+  const platform = layerOrder(packageCss);
+  if (!platform.length) return ["@scnx/system's components.css declares no layer order"];
+  return platform.every((name, i) => site[i] === name)
+    ? []
+    : [
+        `src/styles/_layers.scss must begin with ui-platform's layers in its order: ${platform.join(", ")}`,
+      ];
 }
 
 function walk(dir, out = []) {
@@ -75,15 +104,47 @@ function selfTest() {
       0,
     ],
     [styleFindings("x.scss", ".a { color: var(--ds-b); }", published).length, 1],
-    [styleFindings("x.module.scss", ".a { color: var(--ds-a); }", published).length, 1],
+    [
+      styleFindings("x.module.scss", '@use "layers";\n.a { color: var(--ds-a); }', published)
+        .length,
+      1,
+    ],
+    [
+      styleFindings(
+        "x.module.scss",
+        '@use "layers";\n@layer docs.components { .a { color: var(--ds-a); } }',
+        published,
+      ).length,
+      0,
+    ],
+    // a module that does not name the order first
     [
       styleFindings(
         "x.module.scss",
         "@layer docs.components { .a { color: var(--ds-a); } }",
         published,
       ).length,
+      1,
+    ],
+    // a feature's module is in docs.features, not docs.components
+    [
+      styleFindings(
+        "src/features/x/X.module.scss",
+        '@use "layers";\n@layer docs.components { .a { color: var(--ds-a); } }',
+        published,
+      ).length,
+      1,
+    ],
+    [
+      styleFindings(
+        "src\\features\\x\\X.module.scss",
+        '@use "layers";\n@layer docs.features { .a { color: var(--ds-a); } }',
+        published,
+      ).length,
       0,
     ],
+    [layerFindings("@layer reset, base, docs.components;", "@layer reset, base;").length, 0],
+    [layerFindings("@layer docs.components, reset, base;", "@layer reset, base;").length, 1],
     [
       styleFindings(
         "x.scss",
@@ -130,6 +191,12 @@ if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) 
     const files = walk(path.join(root, "src"));
     const findings = files.flatMap((f) =>
       styleFindings(path.relative(root, f), fs.readFileSync(f, "utf8"), published),
+    );
+    findings.push(
+      ...layerFindings(
+        fs.readFileSync(path.join(root, "src/styles/_layers.scss"), "utf8"),
+        fs.readFileSync(require.resolve("@scnx/system/styles/components.css"), "utf8"),
+      ),
     );
     if (findings.length) {
       console.error(findings.join("\n"));

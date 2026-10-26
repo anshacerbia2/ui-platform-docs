@@ -1,9 +1,10 @@
+@use "layers";
 @use "settings" as *;
 @use "tools" as *;
 
 // Sheet 02 · Where to start (scnx-platform Docs-Home.html): four cards as cells;
 // the last one sits on a dark root in either mode.
-@layer docs.components {
+@layer docs.features {
   .card {
     display: flex;
     flex-direction: column;

@@ -1,3 +1,4 @@
+@use "layers";
 @use "settings" as *;
 @use "tools" as *;
 
@@ -5,7 +6,7 @@
 // of stage the callouts stand in a column right of the stack, with leaders to the
 // plates; narrower, they are a list under it and the plates carry their numbers.
 // data-state: loading, live, or flat (no WebGL, or no script: the list alone).
-@layer docs.components {
+@layer docs.features {
   .asm {
     --p: 0;
 

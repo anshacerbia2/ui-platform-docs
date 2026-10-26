@@ -1,4 +1,5 @@
-@layer docs.components {
+@use "layers";
+@layer docs.features {
   .token {
     display: inline-flex;
     align-items: center;

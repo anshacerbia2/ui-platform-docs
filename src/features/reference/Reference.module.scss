@@ -1,9 +1,10 @@
+@use "layers";
 @use "settings" as *;
 @use "tools" as *;
 
 // The reference pages' own parts: values and ratios in tables, prop flags, the usage
 // prose, the index tiles, and the contents cell.
-@layer docs.components {
+@layer docs.features {
   .value {
     display: inline-flex;
     flex-wrap: wrap;

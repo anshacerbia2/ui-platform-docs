@@ -1,9 +1,10 @@
+@use "layers";
 @use "settings" as *;
 @use "tools" as *;
 
 // Sheet 07 · Contracts (scnx-platform Docs-Landing.html): four cells under their
 // measures, then the closing panel.
-@layer docs.components {
+@layer docs.features {
   .contracts {
     display: grid;
     grid-template-columns: repeat(4, minmax(0, 1fr));

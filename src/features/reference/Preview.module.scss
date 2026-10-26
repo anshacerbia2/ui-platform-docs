@@ -1,9 +1,10 @@
+@use "layers";
 @use "settings" as *;
 @use "tools" as *;
 
 // The preview (scnx-platform Docs-Button.html, "Preview"): a toolbar row, then the
 // stage and the props panel as two cells.
-@layer docs.components {
+@layer docs.features {
   .preview {
     display: grid;
   }

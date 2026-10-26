@@ -1,9 +1,10 @@
+@use "layers";
 @use "settings" as *;
 @use "tools" as *;
 
 // Sheet 02 · Modes (scnx-platform Docs-Landing.html): the copy, and the split
 // frame holding one dashboard in two theme roots.
-@layer docs.components {
+@layer docs.features {
   .two {
     @media (min-width: 981px) {
       grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.6fr);

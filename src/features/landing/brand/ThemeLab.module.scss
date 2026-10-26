@@ -1,9 +1,10 @@
+@use "layers";
 @use "settings" as *;
 @use "tools" as *;
 
 // Sheet 03 · Brand (scnx-platform Docs-Landing.html): the controls cell and the
 // preview panel.
-@layer docs.components {
+@layer docs.features {
   .grid {
     @media (min-width: 981px) {
       grid-template-columns: minmax(0, 1fr) minmax(0, 1.25fr);

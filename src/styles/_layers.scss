@@ -1,0 +1,11 @@
+// The cascade's layer order, the one place it is written (TDD docs-site D4). The order of
+// layers is fixed by the first stylesheet that names them, and a production build
+// does not keep the order the stylesheets are imported in: so main.scss and every CSS
+// Module use this file, and whichever loads first, the order is this one.
+//
+// ui-platform's layers come first, exactly as @scnx/system declares them (its
+// components.css; scripts/check-styles.mjs checks the two agree), so the site never
+// needs specificity to win. Then the site's: a feature (a page's section) comes after
+// the components it composes, so a layout it sets on one (a hero's two columns on
+// Cells) always wins over the component's own default.
+@layer reset, tokens, base, components, recipes, utilities, overrides, docs.generic, docs.elements, docs.objects, docs.components, docs.features, docs.utilities;

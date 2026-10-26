@@ -1,9 +1,10 @@
+@use "layers";
 @use "settings" as *;
 @use "tools" as *;
 
 // Sheet 03 · Install (scnx-platform Docs-Home.html): which package, then the three
 // moves on a dark root.
-@layer docs.components {
+@layer docs.features {
   .install {
     @media (min-width: 1081px) {
       grid-template-columns: minmax(0, 0.85fr) minmax(0, 1.4fr);
