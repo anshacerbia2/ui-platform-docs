@@ -31,7 +31,7 @@
       }
 
       &[aria-pressed="true"] {
-        background: color-mix(in oklch, $sq-text 10%, $sq-ground);
+        background: color-mix(in oklab, $sq-text 10%, $sq-ground);
         color: $sq-text;
       }
     }

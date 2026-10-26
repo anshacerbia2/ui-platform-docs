@@ -24,6 +24,7 @@ const TAU_WHEEL = 120;
 const TAU_DRAG = 80; // a drag glides too, closer behind the pointer
 const SPREAD = 0.55; // share of a title's move spent staggering its letters
 const DIM = 0.68; // a title not current: text at 68% still reads 4.5:1 or more in both modes
+const GLASS_MARGIN = 32; // the corner glass reaches this far past its titles, for its fade
 const DECODE_LEAD = 120;
 const DECODE_STEP = 45; // a hovered title: hash for 120ms, then a letter resolves every 45ms
 const HEX = "0123456789ABCDEF";
@@ -76,6 +77,15 @@ const ease = (t: number) => (t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 
 const blend = (a: number[], b: number[], t: number) => a.map((v, j) => mix(v, b[j] ?? v, t));
 const noop = () => {};
 const ty = (y: number) => `translate3d(0, ${y.toFixed(1)}px, 0)`;
+/**
+ * The corner glass's size for a stack of titles `width` × `height` from its corner, plus
+ * a margin for its fade: it never spreads over the page beyond the titles it keeps
+ * legible. An empty stack takes no glass.
+ */
+const glassSize = (width: number, height: number) =>
+  width > 0 && height > 0
+    ? [`${(width + GLASS_MARGIN).toFixed(0)}px`, `${(height + GLASS_MARGIN).toFixed(0)}px`]
+    : ["0px", "0px"];
 const written = new WeakMap<HTMLElement, Record<string, string>>();
 // write a style only when it changes
 const put = (node: HTMLElement, prop: string, value: string) => {
@@ -405,6 +415,11 @@ export function mountRuler(
     let check: { L: Label; y: number; s: number } | null = null;
     // the lowest point the previous title reaches on screen, letter by letter, this frame
     let tail = -Infinity;
+    // what the corner glass has to cover: the titles lying across the top and the bottom
+    let topLeft = vw;
+    let topBottom = 0;
+    let bottomLeft = vw;
+    let bottomTop = vh;
     for (const L of labels) {
       const n = L.letters.length;
       const { sBig, curY, C } = moveIn[L.i]!;
@@ -458,7 +473,7 @@ export function mountRuler(
         put(
           l.span,
           "color",
-          `color-mix(in oklch, var(--sq-text) ${(tone * 100).toFixed(0)}%, var(--sq-ground))`,
+          `color-mix(in oklab, var(--sq-text) ${(tone * 100).toFixed(0)}%, var(--sq-ground))`,
         );
         // how far the letter reaches below its centre: its width when turned upright
         lowest = Math.max(lowest, top + ((Math.abs(turn) > 45 ? l.w : big) * size) / 2);
@@ -490,6 +505,14 @@ export function mountRuler(
                   L.W * SMALL,
                   big * SMALL,
                 ];
+      const [left = 0, boxTop = 0, , boxHeight = 0] = box;
+      if (place === "past" || place === "current") {
+        topLeft = Math.min(topLeft, left);
+        topBottom = Math.max(topBottom, boxTop + boxHeight);
+      } else if (place === "stack") {
+        bottomLeft = Math.min(bottomLeft, left);
+        bottomTop = Math.min(bottomTop, boxTop);
+      }
       const key = box.map((v) => v.toFixed(0)).join(",");
       if (key !== L.box) {
         L.box = key;
@@ -498,6 +521,13 @@ export function mountRuler(
         L.link.style.setProperty("height", `${box[3]}px`);
       }
     }
+    // The corner glass covers only the stacks it sits under (glassSize).
+    const [topWidth, topHeight] = glassSize(vw - topLeft, topBottom - NAV);
+    const [bottomWidth, bottomHeight] = glassSize(vw - bottomLeft, vh - bottomTop);
+    put(glassTop, "width", topWidth!);
+    put(glassTop, "height", topHeight!);
+    put(glassBottom, "width", bottomWidth!);
+    put(glassBottom, "height", bottomHeight!);
     // the check beside the current title, once it stands whole
     if (check) {
       const size = big * check.s * 0.62;

@@ -24,11 +24,11 @@
 
     &:hover {
       color: $sq-text;
-      background: color-mix(in srgb, $sq-text 6%, transparent);
+      background: color-mix(in oklab, $sq-text 6%, transparent);
     }
 
     &[aria-pressed="true"] {
-      background: color-mix(in srgb, $sq-text 9%, transparent);
+      background: color-mix(in oklab, $sq-text 9%, transparent);
       color: $sq-text;
     }
   }

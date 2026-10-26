@@ -22,7 +22,7 @@
       text-decoration: none;
 
       &:hover {
-        background: color-mix(in oklch, $sq-text 6%, $sq-ground);
+        background: color-mix(in oklab, $sq-text 6%, $sq-ground);
       }
 
       @media (max-width: 760px) {

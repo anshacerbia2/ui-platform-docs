@@ -46,7 +46,7 @@
     }
 
     &:hover {
-      background: color-mix(in oklch, $sq-text 4%, $sq-ground);
+      background: color-mix(in oklab, $sq-text 4%, $sq-ground);
     }
 
     @media (max-width: 560px) {

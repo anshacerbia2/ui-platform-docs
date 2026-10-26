@@ -87,7 +87,7 @@
       block-size: 7px;
       translate: 0 -50%;
       background: $sq-signal;
-      box-shadow: 0 0 0 4px color-mix(in srgb, $sq-signal 22%, transparent);
+      box-shadow: 0 0 0 4px color-mix(in oklab, $sq-signal 22%, transparent);
       opacity: var(--sig-on);
     }
 
@@ -154,7 +154,7 @@
     justify-self: center;
     inline-size: 26px;
     block-size: 26px;
-    background: color-mix(in oklch, $sq-text 10%, $sq-ground);
+    background: color-mix(in oklab, $sq-text 10%, $sq-ground);
     font: 500 11px/1 $sq-mono;
   }
 

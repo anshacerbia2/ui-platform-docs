@@ -93,7 +93,7 @@
     inset: 0;
     padding: 8px;
     background: color-mix(
-      in oklch,
+      in oklab,
       var(--ds-color-neutral-surface-raised-default) 92%,
       transparent
     );

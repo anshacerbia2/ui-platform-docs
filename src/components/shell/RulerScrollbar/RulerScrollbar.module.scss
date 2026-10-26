@@ -34,7 +34,7 @@
   .glass {
     position: absolute;
     inset: 0;
-    background: color-mix(in srgb, $sq-ground 55%, transparent);
+    background: color-mix(in oklab, $sq-ground 55%, transparent);
     backdrop-filter: blur(9px);
     mask-image: linear-gradient(to left, #000 40%, transparent);
   }
@@ -178,7 +178,7 @@
     inline-size: 60px;
     top: 0;
     block-size: 0;
-    background: color-mix(in srgb, $sq-text 9%, transparent);
+    background: color-mix(in oklab, $sq-text 9%, transparent);
     opacity: 0;
     will-change: transform, opacity;
   }
@@ -266,25 +266,27 @@
     }
   }
 
+  // The corner glass under each stack of titles. ruler.ts sizes it to the stack it
+  // covers each frame, plus a margin for the fade, so it never spreads over the page
+  // beyond the titles (the reference's fixed 380 × 260px did).
   .corner {
     position: fixed;
     right: 0;
     z-index: 43;
-    inline-size: min(380px, 30vw);
+    inline-size: 0;
+    block-size: 0;
     pointer-events: none;
-    background: color-mix(in srgb, $sq-ground 80%, transparent);
+    background: color-mix(in oklab, $sq-ground 64%, transparent);
     backdrop-filter: blur(9px);
 
     &[data-at="top"] {
       top: $sq-nav;
-      block-size: 260px;
-      mask-image: radial-gradient(100% 100% at 100% 0%, #000 38%, transparent 97%);
+      mask-image: radial-gradient(100% 100% at 100% 0%, #000 55%, transparent 100%);
     }
 
     &[data-at="bottom"] {
       bottom: 0;
-      block-size: 220px;
-      mask-image: radial-gradient(100% 100% at 100% 100%, #000 38%, transparent 97%);
+      mask-image: radial-gradient(100% 100% at 100% 100%, #000 55%, transparent 100%);
     }
   }
 }

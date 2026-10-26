@@ -68,7 +68,7 @@
   .link {
     color: $sq-signal-text;
     text-decoration: underline;
-    text-decoration-color: color-mix(in srgb, currentColor 35%, transparent);
+    text-decoration-color: color-mix(in oklab, currentColor 35%, transparent);
     text-underline-offset: 3px;
 
     &:hover {
@@ -118,7 +118,7 @@
     text-decoration: none;
 
     &:hover {
-      background: color-mix(in oklch, $sq-text 5%, $sq-ground);
+      background: color-mix(in oklab, $sq-text 5%, $sq-ground);
     }
 
     code {

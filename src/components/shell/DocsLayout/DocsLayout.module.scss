@@ -142,7 +142,7 @@
 
     // The current page: a faint ink fill and a 2px signal marker (Docs-Button.html .side).
     &[aria-current="page"] {
-      background: color-mix(in srgb, $sq-text 7%, transparent);
+      background: color-mix(in oklab, $sq-text 7%, transparent);
       color: $sq-text;
       font-weight: 500;
 

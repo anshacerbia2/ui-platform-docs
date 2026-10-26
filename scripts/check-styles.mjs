@@ -8,6 +8,9 @@
 // 4. Every component stylesheet is a CSS Module in `@layer docs.components`.
 // 5. No component passes a `style` prop: a style attribute in server HTML
 //    violates the site's Content-Security-Policy (TDD docs-site D5).
+// 6. Every colour mix is made in OKLab (`color-mix(in oklab, …)`): the neutral
+//    tokens have so little chroma that their OKLCH hue is powerless, a mix in
+//    OKLCH takes hue `none` (read as 0°, red), and a grey turns warm.
 
 import fs from "node:fs";
 import { createRequire } from "node:module";
@@ -39,6 +42,12 @@ export function styleFindings(file, text, published) {
     for (const [, name] of line.matchAll(/var\((--ds-[a-z0-9-]+)/g))
       if (!published.has(name)) findings.push(`${at}: ${name} is not a published token`);
   });
+  // across lines: a formatter may break `color-mix(` from its space
+  for (const match of text.matchAll(/color-mix\(\s*in\s+([a-z-]+)/g))
+    if (match[1] !== "oklab") {
+      const line = text.slice(0, match.index).split("\n").length;
+      findings.push(`${file}:${line}: color-mix in ${match[1]}; mix in oklab`);
+    }
   if (file.endsWith(".module.scss") && !/@layer docs\.components\s*\{/.test(text))
     findings.push(`${file}: a component stylesheet must wrap its rules in @layer docs.components`);
   return findings;
@@ -74,6 +83,30 @@ function selfTest() {
         published,
       ).length,
       0,
+    ],
+    [
+      styleFindings(
+        "x.scss",
+        ".a { color: color-mix(in oklab, var(--ds-a) 5%, transparent); }",
+        published,
+      ).length,
+      0,
+    ],
+    [
+      styleFindings(
+        "x.scss",
+        ".a { color: color-mix(in oklch, var(--ds-a) 5%, transparent); }",
+        published,
+      ).length,
+      1,
+    ],
+    [
+      styleFindings(
+        "x.scss",
+        ".a { color: color-mix(\n  in srgb,\n  var(--ds-a) 5%,\n  transparent\n); }",
+        published,
+      ).length,
+      1,
     ],
     [styleFindings("x.tsx", "<div style={{ color: 'red' }} />", published).length, 1],
     [styleFindings("x.tsx", "<div className={styles.a} />", published).length, 0],
