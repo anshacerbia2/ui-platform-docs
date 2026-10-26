@@ -1,40 +1,31 @@
 @use "settings" as *;
-@use "tools" as *;
 
+// Informative MDX: the system's Heading and Text, spaced for reading on a sheet.
 @layer docs.components {
   .h2 {
-    margin-block: $space-lg $space-xs;
+    margin-block: 24px 4px;
+
+    &:first-child {
+      margin-block-start: 0;
+    }
   }
 
   .h3 {
-    margin-block: $space-md $space-2xs;
+    margin-block: 16px 2px;
   }
 
   .p {
     max-inline-size: 68ch;
-    margin-block: $space-xs;
-    color: $text-muted;
+    margin-block: 0;
+    color: $sq-muted;
   }
 
   .list {
     display: grid;
-    gap: $space-2xs;
+    gap: 6px;
     max-inline-size: 68ch;
-    margin-block: $space-xs;
+    margin-block: 0;
     padding-inline-start: 1.25rem;
-    color: $text-muted;
-  }
-
-  .link {
-    color: $text-accent;
-    text-underline-offset: 0.2em;
-  }
-
-  .code {
-    padding: 0.1em 0.35em;
-    border-radius: var(--ds-dimension-radius-element);
-    background: $surface-chip;
-    color: $text;
-    @include mono(small);
+    color: $sq-muted;
   }
 }

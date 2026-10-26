@@ -1,19 +1,8 @@
-// Role names for the site chrome. Each is a custom property defined per mode in
-// generic/_roles.scss, so a component never chooses a token per mode itself.
-$surface-page: var(--site-surface-page);
-$surface-card: var(--site-surface-card);
-$surface-inset: var(--site-surface-inset);
-$surface-chip: var(--site-surface-chip);
+// Token roles the site reads outside the Square chrome's own (settings/_square.scss).
+// Each is a published token, so a theme root restyles it.
 $text: var(--ds-color-neutral-text-default-default);
-$text-muted: var(--ds-color-neutral-text-subtle-default);
-$text-accent: var(--ds-color-primary-text-subtle-default);
 $line: var(--ds-color-neutral-border-subtle-default);
 $line-strong: var(--ds-color-neutral-border-default-default);
-$dot: var(--site-dot);
-$shadow-card: var(--ds-effect-shadow-low), var(--ds-effect-shadow-medium);
-$shadow-panel: var(--ds-effect-shadow-high);
-$accent: var(--ds-color-primary-surface-solid-default);
-$on-accent: var(--ds-color-primary-text-contrast-default);
 // Ink is the neutral solid fill: near-black in light mode and near-white in
 // dark mode (ui-platform TDD tokens PG11), with its own hover and pressed
 // tokens and the contrast label of each state.
@@ -22,15 +11,7 @@ $ink-hover: var(--ds-color-neutral-surface-solid-hover);
 $ink-pressed: var(--ds-color-neutral-surface-solid-pressed);
 $on-ink: var(--ds-color-neutral-text-contrast-default);
 $on-ink-hover: var(--ds-color-neutral-text-contrast-hover);
-$surface-chip-hover: var(--site-surface-chip-hover);
-$surface-chip-pressed: var(--site-surface-chip-pressed);
 $focus: var(--ds-color-primary-border-default-focus);
-$success-surface: var(--ds-color-success-surface-subtle-default);
-$success-text: var(--ds-color-success-text-default-default);
-$warning-surface: var(--ds-color-warning-surface-subtle-default);
-$warning-text: var(--ds-color-warning-text-default-default);
-$danger-surface: var(--ds-color-danger-surface-subtle-default);
-$danger-text: var(--ds-color-danger-text-default-default);
 $font-sans: var(--ds-typography-body-default-font-family);
 $font-mono: var(--ds-typography-code-default-font-family);
 $ease: var(--ds-motion-feedback-easing);

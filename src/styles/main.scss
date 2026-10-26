@@ -3,7 +3,7 @@
 // layers come after them, so site layout never needs specificity to win, and
 // the site never selects a ui-platform class (scripts/check-styles.mjs).
 // Settings and tools emit no CSS; components are CSS Modules in
-// @layer docs.components, next to each component.
+// @layer docs.components, next to each component (D17).
 @use "sass:meta";
 
 @layer docs.generic, docs.elements, docs.objects, docs.components, docs.utilities;
@@ -16,10 +16,6 @@
 
 @layer docs.elements {
   @include meta.load-css("elements/page");
-}
-
-@layer docs.objects {
-  @include meta.load-css("objects/container");
 }
 
 @layer docs.utilities {
