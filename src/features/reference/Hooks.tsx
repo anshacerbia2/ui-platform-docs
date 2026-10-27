@@ -3,7 +3,7 @@
 import { Block } from "@/components/docs/Block";
 import { DataTable } from "@/components/docs/DataTable";
 import { InlineCode } from "@/components/docs/InlineCode";
-import { useThemeChoice } from "./ThemeChoice";
+import { useThemeChoice } from "@/components/docs/ThemeChoice";
 import styles from "./Reference.module.scss";
 
 export type HookRow = {

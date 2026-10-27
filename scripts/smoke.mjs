@@ -34,6 +34,8 @@ const ROUTES = [
   "/components",
   "/primitives",
   "/tokens",
+  "/tokens/color",
+  "/tokens/all",
   "/tokens/figma",
   "/releases",
   ...reference.entries.filter((e) => e.page).map((e) => e.page),

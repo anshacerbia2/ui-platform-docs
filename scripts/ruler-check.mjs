@@ -35,6 +35,8 @@ const ROUTES = arg("--routes", "")
   ? arg("--routes").split(",")
   : [
       "/tokens",
+      "/tokens/color",
+      "/tokens/all",
       "/tokens/figma",
       "/releases",
       ...reference.entries.filter((e) => e.page).map((e) => e.page),

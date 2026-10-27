@@ -1,0 +1,596 @@
+@use "layers";
+@use "settings" as *;
+@use "tools" as *;
+
+// The color guide. Every live sample sits in a theme root in the page's Theme × Mode
+// choice (`.root`), on that root's own ground and lines; a sample's color comes from
+// the generated `[data-swatch]` and `[data-color-token]` rules, never a style prop.
+@layer docs.features {
+  // The Theme × Mode switch under the head.
+  .choice {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 10px 16px;
+    padding: 14px $sq-pad;
+    border-block-end: 1px solid $sq-line;
+
+    @media (max-width: 760px) {
+      padding-inline: $sq-pad-narrow;
+    }
+  }
+
+  .choiceLabel {
+    color: $sq-muted;
+    @include hud(10.5px, 500, 0.14em);
+  }
+
+  .root {
+    display: grid;
+    background: $sq-ground;
+    color: $sq-text;
+
+    [data-color-token] {
+      color: var(--token-color);
+    }
+  }
+
+  .rootLabel {
+    padding: 8px $sq-pad;
+    border-block: 1px solid $sq-line;
+    color: $sq-faint;
+    text-align: end;
+    @include hud(10px, 500, 0.14em);
+
+    @media (max-width: 760px) {
+      padding-inline: $sq-pad-narrow;
+    }
+  }
+
+  .value {
+    color: $sq-muted;
+    font: 400 11px/1.45 $sq-mono;
+    overflow-wrap: anywhere;
+  }
+
+  .ratio {
+    color: $sq-text;
+    font: 500 12.5px/1.4 $sq-mono;
+    white-space: nowrap;
+
+    span {
+      margin-inline-start: 6px;
+      color: var(--ds-color-danger-text-default-default);
+      @include hud(10px, 600, 0.12em);
+    }
+
+    &[data-pass] span {
+      color: var(--ds-color-success-text-default-default);
+    }
+  }
+
+  // A token drawn the way its role is used.
+  .sample {
+    display: grid;
+    place-items: center;
+    box-sizing: border-box;
+    inline-size: 100%;
+    block-size: 56px;
+    box-shadow: inset 0 0 0 1px $sq-line;
+
+    &[data-size="small"] {
+      inline-size: 22px;
+      block-size: 22px;
+      flex: none;
+    }
+
+    &[data-kind="edge"] {
+      box-shadow: inset 0 0 0 2px var(--token-color);
+    }
+  }
+
+  .ink {
+    display: inline-flex;
+    font-size: 26px;
+    font-weight: var(--ds-typography-weight-semibold);
+    letter-spacing: -0.02em;
+    line-height: 1;
+
+    .sample[data-size="small"] & {
+      font-size: 11px;
+    }
+  }
+
+  // Neutral: the surfaces stacked, then a tile per token.
+  .elevation {
+    display: grid;
+    margin: 0;
+    border-block-end: 1px solid $sq-line;
+
+    @media (min-width: 981px) {
+      grid-template-columns: minmax(0, 1.7fr) minmax(0, 1fr);
+
+      > * + * {
+        border-inline-start: 1px solid $sq-line;
+      }
+    }
+  }
+
+  .canvas {
+    position: relative;
+    display: grid;
+    align-content: start;
+    gap: 16px;
+    min-block-size: 320px;
+    padding: 28px $sq-pad 32px;
+    background: var(--ds-color-neutral-surface-canvas-default);
+
+    @media (max-width: 760px) {
+      padding-inline: $sq-pad-narrow;
+    }
+  }
+
+  .tag {
+    color: var(--ds-color-neutral-text-subtle-default);
+    @include hud(10px, 500, 0.14em);
+  }
+
+  .well {
+    display: grid;
+    align-content: start;
+    min-block-size: 56px;
+    padding: 12px 14px;
+    border-radius: var(--ds-dimension-radius-container);
+    background: var(--ds-color-neutral-surface-sunken-default);
+    box-shadow: inset 0 0 0 1px var(--ds-color-neutral-border-subtle-default);
+  }
+
+  .raised,
+  .floating {
+    display: grid;
+    gap: 10px;
+    padding: 14px 16px 18px;
+    border-radius: var(--ds-dimension-radius-container);
+  }
+
+  .raised {
+    inline-size: min(100%, 26rem);
+    background: var(--ds-color-neutral-surface-raised-default);
+    box-shadow: var(--ds-effect-material-raised);
+  }
+
+  .floating {
+    position: absolute;
+    inset-block-end: 28px;
+    inset-inline-end: $sq-pad;
+    inline-size: 11rem;
+    background: var(--ds-color-neutral-surface-floating-default);
+    box-shadow: var(--ds-effect-material-menu);
+
+    @media (max-width: 760px) {
+      position: static;
+      justify-self: end;
+    }
+  }
+
+  .lineLong,
+  .lineShort {
+    display: block;
+    block-size: 8px;
+    border-radius: var(--ds-dimension-radius-mark);
+    background: var(--ds-color-neutral-surface-strong-default);
+  }
+
+  .lineLong {
+    inline-size: 85%;
+  }
+
+  .lineShort {
+    inline-size: 55%;
+  }
+
+  .stage {
+    min-block-size: 200px;
+    padding: 28px $sq-pad;
+    background-color: var(--ds-color-neutral-surface-stage-default);
+    background-image: radial-gradient(
+      var(--ds-color-neutral-border-stage-default) 1px,
+      transparent 1px
+    );
+    background-size: 22px 22px;
+
+    @media (max-width: 760px) {
+      padding-inline: $sq-pad-narrow;
+    }
+  }
+
+  .group + .group {
+    border-block-start: 1px solid $sq-line;
+  }
+
+  .groupHead {
+    display: grid;
+    gap: 6px;
+    padding: 24px $sq-pad 16px;
+
+    @media (max-width: 760px) {
+      padding-inline: $sq-pad-narrow;
+    }
+  }
+
+  .groupTitle {
+    margin: 0;
+    color: $sq-text;
+    @include hud(11px, 600, 0.15em);
+  }
+
+  .groupNote {
+    max-inline-size: 72ch;
+    margin: 0;
+    color: $sq-muted;
+    font-size: var(--ds-typography-body-small-font-size);
+    line-height: 1.55;
+  }
+
+  // Tiles draw their own right and bottom lines, so a short last row leaves ground,
+  // not line colour, in the empty tracks.
+  .tiles,
+  .states {
+    display: grid;
+    margin: 0;
+    padding: 0;
+    border-block-start: 1px solid $sq-line;
+    list-style: none;
+  }
+
+  .tiles {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+
+    @media (min-width: 981px) {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+
+      &[data-columns="4"] {
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+      }
+    }
+  }
+
+  .states {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+
+    @media (min-width: 761px) {
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+    }
+  }
+
+  .stateName {
+    color: $sq-text;
+    font: 500 12px/1.3 $sq-mono;
+  }
+
+  .pair {
+    color: $sq-muted;
+    font-size: 13px;
+  }
+
+  .tile,
+  .state {
+    display: grid;
+    align-content: start;
+    gap: 8px;
+    min-inline-size: 0;
+    padding: 20px;
+    box-shadow:
+      inset -1px 0 0 $sq-line,
+      inset 0 -1px 0 $sq-line;
+  }
+
+  .tileName {
+    margin-block-start: 6px;
+    color: $sq-text;
+    font-size: 14px;
+    font-weight: var(--ds-typography-weight-semibold);
+    text-transform: capitalize;
+
+    span {
+      color: $sq-faint;
+    }
+  }
+
+  .tileNote {
+    color: $sq-muted;
+    font-size: 13px;
+    line-height: 1.5;
+  }
+
+  .tileVar {
+    color: $sq-text;
+    font: 500 11px/1.45 $sq-mono;
+    overflow-wrap: anywhere;
+  }
+
+  // Schemes: the main tokens of each, one row a scheme.
+  .matrixWrap {
+    overflow-x: auto;
+  }
+
+  .matrix {
+    inline-size: 100%;
+    min-inline-size: 640px;
+    border-collapse: collapse;
+    table-layout: fixed;
+
+    thead th:first-child {
+      inline-size: 8.5rem;
+    }
+
+    th {
+      padding: 12px 8px;
+      color: $sq-muted;
+      text-align: start;
+      @include hud(10px, 500, 0.12em);
+    }
+
+    thead th:first-child,
+    tbody th {
+      padding-inline-start: $sq-pad;
+    }
+
+    tbody th {
+      color: $sq-text;
+      font: 500 13px/1.3 $sq-mono;
+      letter-spacing: 0;
+      text-transform: none;
+    }
+
+    tr {
+      border-block-end: 1px solid $sq-line;
+    }
+
+    td {
+      padding: 10px 8px;
+
+      &:last-child {
+        padding-inline-end: $sq-pad;
+      }
+    }
+
+    .sample {
+      block-size: 44px;
+    }
+  }
+
+  .mark {
+    color: $sq-faint;
+    font: 500 12px/1 $sq-mono;
+
+    &[data-yes] {
+      color: $sq-text;
+    }
+  }
+
+  // One scheme and role: emphasis down, state across, then the picked cell's details.
+  .explorer {
+    display: grid;
+  }
+
+  .explorerBar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 10px 16px;
+    padding: 0 $sq-pad 16px;
+
+    @media (max-width: 760px) {
+      padding-inline: $sq-pad-narrow;
+    }
+  }
+
+  .gridWrap {
+    overflow-x: auto;
+  }
+
+  .grid {
+    inline-size: 100%;
+    min-inline-size: 520px;
+    border-collapse: collapse;
+    table-layout: fixed;
+
+    th {
+      padding: 12px 6px;
+      color: $sq-muted;
+      text-align: start;
+      @include hud(10px, 500, 0.12em);
+    }
+
+    thead th:first-child {
+      inline-size: 8.5rem;
+      padding-inline-start: $sq-pad;
+    }
+
+    tbody th {
+      padding-inline-start: $sq-pad;
+      color: $sq-text;
+      font: 500 13px/1.3 $sq-mono;
+      letter-spacing: 0;
+      text-transform: none;
+    }
+
+    tr {
+      border-block-end: 1px solid $sq-line;
+    }
+
+    td {
+      padding: 8px 6px;
+
+      &:last-child {
+        padding-inline-end: $sq-pad;
+      }
+    }
+  }
+
+  .cell {
+    display: block;
+    inline-size: 100%;
+    padding: 3px;
+    border: 0;
+    background: none;
+    cursor: pointer;
+    @include focus-ring(1px);
+
+    .sample {
+      block-size: 40px;
+    }
+
+    &[aria-pressed="true"] {
+      box-shadow: 0 0 0 2px $sq-text;
+    }
+  }
+
+  .none {
+    display: block;
+    color: $sq-faint;
+    font: 500 12px/40px $sq-mono;
+    text-align: center;
+  }
+
+  .detail {
+    display: grid;
+    grid-template-columns: 96px minmax(0, 1fr);
+    align-items: center;
+    gap: 20px;
+    padding: 20px $sq-pad 24px;
+
+    .sample {
+      block-size: 72px;
+    }
+
+    @media (max-width: 760px) {
+      padding-inline: $sq-pad-narrow;
+    }
+  }
+
+  .detailText {
+    display: grid;
+    gap: 8px;
+    min-inline-size: 0;
+  }
+
+  .detailPath {
+    color: $sq-text;
+    font: 600 14px/1.3 $sq-mono;
+    overflow-wrap: anywhere;
+  }
+
+  .detailVar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+  }
+  // Emphasis, done and not done.
+  .rules {
+    border-block-start: 1px solid $sq-line;
+  }
+
+  .rule {
+    display: grid;
+    grid-template-rows: 1fr auto;
+    margin: 0;
+
+    figcaption {
+      min-block-size: 7.5rem;
+      box-sizing: border-box;
+      padding: 16px $sq-pad 24px;
+      border-block-start: 1px solid $sq-line;
+      color: $sq-muted;
+      font-size: var(--ds-typography-body-small-font-size);
+      line-height: 1.55;
+
+      @media (max-width: 760px) {
+        padding-inline: $sq-pad-narrow;
+      }
+    }
+  }
+
+  .ruleArt {
+    display: grid;
+    align-content: center;
+    justify-items: start;
+    gap: 14px;
+    min-block-size: 160px;
+    padding: 28px $sq-pad;
+
+    &[data-ground="canvas"] {
+      background: var(--ds-color-neutral-surface-canvas-default);
+    }
+
+    &[data-ground="stage"] {
+      background-color: var(--ds-color-neutral-surface-stage-default);
+      background-image: radial-gradient(
+        var(--ds-color-neutral-border-stage-default) 1px,
+        transparent 1px
+      );
+      background-size: 22px 22px;
+    }
+
+    @media (max-width: 760px) {
+      padding-inline: $sq-pad-narrow;
+    }
+  }
+
+  .button {
+    display: inline-flex;
+    align-items: center;
+    block-size: var(--ds-dimension-size-control-default);
+    padding-inline: var(--ds-dimension-spacing-control-default);
+    border-radius: var(--ds-dimension-radius-control);
+    font-family: var(--ds-typography-label-default-font-family);
+    font-size: var(--ds-typography-label-default-font-size);
+    font-weight: var(--ds-typography-weight-semibold);
+  }
+
+  .copy {
+    margin: 0;
+    font-family: var(--ds-typography-body-default-font-family);
+    font-size: var(--ds-typography-body-default-font-size);
+    line-height: var(--ds-typography-body-default-line-height);
+  }
+
+  .row {
+    display: block;
+    inline-size: min(100%, 22rem);
+    box-sizing: border-box;
+    padding: 10px 12px;
+    color: var(--ds-color-neutral-text-default-default);
+    font-family: var(--ds-typography-data-compact-font-family);
+    font-size: var(--ds-typography-data-compact-font-size);
+    box-shadow: inset 0 -1px 0 var(--ds-color-neutral-border-subtle-default);
+  }
+
+  .do,
+  .dont {
+    display: block;
+    margin-block-end: 6px;
+    @include hud(10.5px, 600, 0.14em);
+  }
+
+  .do {
+    color: var(--ds-color-success-text-default-default);
+  }
+
+  .dont {
+    color: var(--ds-color-danger-text-default-default);
+  }
+
+  // States: the primary solid fill in each.
+  .stateFill {
+    display: grid;
+    place-items: center;
+    block-size: var(--ds-dimension-size-control-comfortable);
+    border-radius: var(--ds-dimension-radius-control);
+    font-family: var(--ds-typography-label-default-font-family);
+    font-size: var(--ds-typography-label-default-font-size);
+    font-weight: var(--ds-typography-weight-semibold);
+  }
+}

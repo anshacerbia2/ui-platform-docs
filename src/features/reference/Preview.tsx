@@ -16,7 +16,7 @@ import { withoutTransitions } from "@/shared/lib/withoutTransitions";
 import { registry } from "@/generated/registry";
 import { defaultsOf, effective, tokensIn } from "@/shared/lib/bindings";
 import type { FixtureNode, StyledSpec } from "@/shared/lib/reference";
-import { useThemeChoice } from "./ThemeChoice";
+import { useThemeChoice } from "@/components/docs/ThemeChoice";
 import styles from "./Preview.module.scss";
 
 const MODES = [

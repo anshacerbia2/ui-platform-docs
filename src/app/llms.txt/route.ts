@@ -43,7 +43,9 @@ export function GET() {
     "",
     "## Optional",
     "",
-    "- [Tokens](/tokens): every canonical token per theme and mode",
+    "- [Tokens](/tokens): what a token is, its tiers, names, themes and modes",
+    "- [Colour](/tokens/color): the colour roles, schemes, emphasis, states and contrast",
+    "- [All tokens](/tokens/all): every canonical token per theme and mode",
     `- [Releases](/releases): stability of all ${entries.length} entries and provenance verification`,
     "",
   ];

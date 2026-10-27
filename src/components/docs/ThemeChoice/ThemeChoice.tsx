@@ -27,8 +27,9 @@ function useChoice(themes: string[]): Choice {
 }
 
 /**
- * The page's Theme × Mode choice: the preview renders in it, and the hooks table
- * shows each hook's value in it, so both answer for the same theme and mode.
+ * The page's Theme × Mode choice, shared by everything on the page that shows a
+ * value: a component page's preview and hooks table, the color page's swatches and
+ * values. All of them answer for the same theme and mode.
  */
 export function ThemeChoice({ themes, children }: { themes: string[]; children: ReactNode }) {
   const choice = useChoice(themes);

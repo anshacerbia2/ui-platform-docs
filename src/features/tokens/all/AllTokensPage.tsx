@@ -7,27 +7,25 @@ import { TextLink } from "@/components/docs/TextLink";
 import { DocsLayout } from "@/components/shell/DocsLayout";
 import { PageToc } from "@/components/shell/PageToc";
 import { tokenList, tokenThemes } from "@/shared/lib/reference";
-import { SITE_THEME } from "@/shared/lib/themes";
-import styles from "./Tokens.module.scss";
+import { GROUPS, groupId } from "../tokens";
+import styles from "./AllTokens.module.scss";
 
-const GROUPS = [...new Set(tokenList.map((t) => t.name.split(".").slice(0, 2).join(".")))];
-const idOf = (group: string) => group.replaceAll(".", "-");
-
-/** Every canonical token, grouped by its first two segments, with its value per theme and mode. */
-export function TokensPage() {
+/**
+ * Every canonical token, grouped by its first two segments, with its value per theme
+ * and mode: the lookup table behind the category pages.
+ */
+export function AllTokensPage() {
   const themes = Object.keys(tokenThemes);
-  const standard = tokenThemes[themes[0] ?? SITE_THEME]?.standard;
   return (
-    <DocsLayout aside={<PageToc items={GROUPS.map((g) => ({ id: idOf(g), title: g }))} />}>
+    <DocsLayout aside={<PageToc items={GROUPS.map((g) => ({ id: groupId(g), title: g }))} />}>
       <PageHead
-        title="Tokens"
+        crumbs={[{ label: "Tokens", href: "/tokens" }, { label: "All tokens" }]}
+        title="All tokens"
         lead={
           <>
-            {tokenList.length} canonical tokens in {themes.length} themes, each in light and dark,
-            generated from the published JSON. Names follow {standard?.id} {standard?.version}:
-            scheme, role, emphasis, and state. Use the CSS custom property; a value may change in a
-            minor release, a name may not. Designers get the same tokens from the build:{" "}
-            <TextLink href="/tokens/figma">Tokens in Figma</TextLink>.
+            All {tokenList.length} canonical tokens with their value in every theme and mode, for
+            looking one up. To choose a token, start from its category:{" "}
+            <TextLink href="/tokens/color">Color</TextLink> explains the roles and when to use each.
           </>
         }
       />
@@ -36,7 +34,7 @@ export function TokensPage() {
         return (
           <Sheet
             key={group}
-            id={idOf(group)}
+            id={groupId(group)}
             title={group}
             meta={[{ term: "Tokens", value: String(rows.length) }]}
           >
