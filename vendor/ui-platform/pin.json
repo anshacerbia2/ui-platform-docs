@@ -1,9 +1,9 @@
 {
   "$comment": "The ui-platform release this site documents (TDD docs-site D2). Written by scripts/ui-platform.mjs pin; verified in CI by scripts/ui-platform.mjs verify.",
   "repository": "anshacerbia2/ui-platform",
-  "commit": "93f31c00d39871fdad4c1421fdf3f41000a8f279",
+  "commit": "bea4f77377f29847e52e7a97ea74ac508d686912",
   "ref": "refs/heads/main",
-  "run": "https://github.com/anshacerbia2/ui-platform/actions/runs/40380097113",
+  "run": "https://github.com/anshacerbia2/ui-platform/actions/runs/40492962853",
   "signerWorkflow": "anshacerbia2/ui-platform/.github/workflows/ci.yml",
   "packages": [
     {
@@ -16,7 +16,7 @@
       "name": "@scnx/system",
       "version": "2.0.0-beta.0",
       "tarball": "scnx-system-2.0.0-beta.0.tgz",
-      "sha256": "650e3268e9bda9ef0cfb657ee7ff8119b7f998e49a5c7c7af8663a377152ff1c"
+      "sha256": "801d1e5b84735b43146fc13d5bb5b1b9f5ba4ae49fd2cf77ac5342b7277a5f1c"
     }
   ]
 }

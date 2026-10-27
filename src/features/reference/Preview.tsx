@@ -3,6 +3,7 @@
 import {
   createElement,
   useEffect,
+  useLayoutEffect,
   useRef,
   useState,
   type ElementType,
@@ -37,17 +38,28 @@ function resolve(mod: Record<string, unknown>, type: string | null): ElementType
   return found as ElementType;
 }
 
+// The site's Content-Security-Policy allows no style attribute in server HTML
+// (TDD docs-site D5), so a fixture's `style` (Skeleton's width) is held back from
+// the markup, its node marked, and the style set through the CSSOM after render.
+function withoutStyle(props: Record<string, unknown> | undefined, held: object[]) {
+  if (!props || !("style" in props)) return props;
+  const { style, ...rest } = props;
+  held.push(style as object);
+  return { ...rest, "data-fixture-style": held.length - 1 };
+}
+
 function build(
   mod: Record<string, unknown>,
   node: FixtureNode | string,
+  held: object[],
   extra?: Record<string, unknown>,
   key?: number,
 ): ReactNode {
   if (typeof node === "string") return node;
   return createElement(
     resolve(mod, node.type),
-    { key, ...node.props, ...extra },
-    ...(node.children ?? []).map((child, i) => build(mod, child, undefined, i)),
+    { key, ...withoutStyle(node.props, held), ...extra },
+    ...(node.children ?? []).map((child, i) => build(mod, child, held, undefined, i)),
   );
 }
 
@@ -93,6 +105,21 @@ export function Preview({ slug, spec, themes }: Props) {
     return () => dialog?.close();
   }, [spec.fixture.activate]);
 
+  const held: object[] = [];
+  const specimen = spec.fixture.tree
+    ? build(mod, spec.fixture.tree, held, rootProps)
+    : createElement(resolve(mod, null), {
+        ...withoutStyle(spec.fixture.props, held),
+        ...rootProps,
+      });
+  // Every render: a theme or option change may remount the specimen.
+  useLayoutEffect(() => {
+    held.forEach((style, i) => {
+      const node = stage.current?.querySelector<HTMLElement>(`[data-fixture-style="${i}"]`);
+      if (node) Object.assign(node.style, style);
+    });
+  });
+
   const root = spec.anatomy[0]?.name ?? "root";
   const lineage = Object.entries(effective(spec, root, option, state));
 
@@ -124,11 +151,7 @@ export function Preview({ slug, spec, themes }: Props) {
             <span className={styles.stageLabel}>
               live · the specification&apos;s fixture · {theme} {mode}
             </span>
-            <div className={styles.stageContent}>
-              {spec.fixture.tree
-                ? build(mod, spec.fixture.tree, rootProps)
-                : createElement(resolve(mod, null), { ...spec.fixture.props, ...rootProps })}
-            </div>
+            <div className={styles.stageContent}>{specimen}</div>
           </div>
         </ThemeRoot>
         <div className={styles.controls}>
