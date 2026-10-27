@@ -9,7 +9,7 @@ import { Badge } from "@/components/system/Badge";
 import { Button } from "@/components/system/Button";
 import { Tabs } from "@/components/system/Tabs";
 import { TextField } from "@/components/system/TextField";
-import { ThemeRoot } from "@/components/system/Theme";
+import { ThemeRoot, useTheme } from "@/components/system/Theme";
 import { withoutTransitions } from "@/shared/lib/withoutTransitions";
 import type { Lab } from "@/shared/lib/reference";
 import { SITE_THEME } from "@/shared/lib/themes";
@@ -23,12 +23,15 @@ const MODES = [
 /**
  * Sheet 03's two cells: pick a published theme and a mode; the form is the real
  * Tabs, TextField and Button inside a real theme root, and the pairs are the token
- * gate's numbers for that root (TDD docs-site D3, D8).
+ * gate's numbers for that root (TDD docs-site D3, D8). The mode follows the page's
+ * own until the reader picks one, so the lab opens in the mode the reader is in.
  */
 export function ThemeLab({ lab, swatches }: { lab: Lab; swatches: string[] }) {
   const themes = Object.keys(lab);
+  const page = useTheme();
   const [theme, setTheme] = useState(themes[0] ?? SITE_THEME);
-  const [mode, setMode] = useState<"light" | "dark">("light");
+  const [picked, setMode] = useState<"light" | "dark" | null>(null);
+  const mode = picked ?? page.resolvedMode;
   const checks = lab[theme]?.[mode] ?? [];
   return (
     <Cells className={styles.grid}>
