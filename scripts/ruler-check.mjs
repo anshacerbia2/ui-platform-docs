@@ -129,7 +129,6 @@ const layout = () => ({
 // What each indicator says is here, as a section index (-1 when it says nothing).
 const indicators = () => {
   const sheets = [...document.querySelectorAll("main [data-sheet]")];
-  const names = sheets.map((s) => s.dataset.sheet);
   const bar = sheets.findIndex((s) => s.hasAttribute("data-here"));
   const nav = Number(document.querySelector("header [aria-hidden='true'] b")?.textContent ?? 0) - 1;
   // the ruler's readout under its now line: "05 · 042%" (the scale's tick numbers are spans too)
@@ -137,10 +136,10 @@ const indicators = () => {
     / · /.test(s.textContent ?? ""),
   );
   const ruler = Number((readout?.textContent ?? "").slice(0, 2)) - 1;
-  // the page's own contents, in the aside (a TableOfContents specimen in a preview is not it)
-  const toc = names.indexOf(
-    document.querySelector("aside a[aria-current='location']")?.textContent?.trim() ?? "",
-  );
+  // the page's own contents, in the aside (a TableOfContents specimen in a preview is not
+  // it), matched by the section its link points at: its text also holds the sheet's number
+  const current = document.querySelector("aside a[aria-current='location']");
+  const toc = current ? sheets.findIndex((s) => current.getAttribute("href") === `#${s.id}`) : -1;
   return { bar, nav, ruler, toc };
 };
 // annex A 6.9: the last section whose line has reached the nav, or, where the page ends
