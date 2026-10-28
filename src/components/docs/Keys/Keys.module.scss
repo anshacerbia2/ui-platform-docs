@@ -9,7 +9,7 @@
 
   .key {
     padding: 3px 7px;
-    box-shadow: inset 0 0 0 1px $sq-edge;
+    border: 1px solid $sq-edge;
     color: $sq-text;
     font: 500 11px/1 $sq-mono;
     white-space: nowrap;

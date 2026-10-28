@@ -1,5 +1,29 @@
 import type { Route } from "next";
-import { tokenList, type TokenRow } from "@/shared/lib/reference";
+import { colorPage, tokenList, type TokenRow } from "@/shared/lib/reference";
+import { SITE_THEME } from "@/shared/lib/themes";
+
+/** A token's values in the example: the site's own theme, light and dark. */
+export type ModeValues = Partial<Record<"light" | "dark", string>>;
+
+// The token pages document names, so they show one set of values, the site's
+// own, as the example, and never name or offer a theme. Only these values reach
+// the client.
+export const exampleValues = (token: TokenRow): ModeValues =>
+  (token.values[SITE_THEME] ?? {}) as ModeValues;
+
+const byName = new Map(tokenList.map((t) => [t.name, t]));
+/** A token by its path; every path the pages name is a published token. */
+export const tokenOf = (name: string) => byName.get(name) as TokenRow;
+/** A token's example value in light mode, for a domain whose values do not change with the mode. */
+export const valueOf = (name: string) => exampleValues(tokenOf(name)).light ?? "";
+
+/** Each scheme's `contrast` text on its `solid` surface, in the example, per mode. */
+export const onSolid = colorPage.onSolid.map((row) => ({
+  ...row,
+  results: row.results
+    .filter((r) => r.theme === SITE_THEME)
+    .map(({ mode, ratio, pass }) => ({ mode, ratio, pass })),
+}));
 
 /** The token groups of the All tokens page: a token's first two segments. */
 export const GROUPS = [...new Set(tokenList.map((t) => t.name.split(".").slice(0, 2).join(".")))];
@@ -24,24 +48,28 @@ const DOMAINS: { domain: string; title: string; pattern: string; use: string; pa
     title: "Effect",
     pattern: "effect.shadow.{level}, effect.material.{material}",
     use: "Shadows and the materials a surface is drawn in.",
+    page: "/tokens/effect",
   },
   {
     domain: "dimension",
     title: "Dimension",
     pattern: "dimension.{property}.{intent}",
     use: "Spacing, control sizes, radius, border width and stacking.",
+    page: "/tokens/dimension",
   },
   {
     domain: "typography",
     title: "Typography",
     pattern: "typography.{context}.{variant}",
     use: "Type set by reading context: body, label, heading, code, data.",
+    page: "/tokens/typography",
   },
   {
     domain: "motion",
     title: "Motion",
     pattern: "motion.{action}.{duration|easing}",
     use: "How long a change takes and how it moves.",
+    page: "/tokens/motion",
   },
 ];
 

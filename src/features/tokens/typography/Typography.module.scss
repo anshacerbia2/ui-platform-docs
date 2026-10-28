@@ -1,0 +1,25 @@
+@use "layers";
+@use "settings" as *;
+@use "tools" as *;
+
+// Type specimens: each line is set by its composite's five members (`[data-type-token]`,
+// src/generated/swatches.css), so it reads exactly as a product sets it.
+@layer docs.features {
+  .specimen {
+    display: block;
+    min-inline-size: 0;
+    color: $sq-text;
+    overflow-wrap: anywhere;
+  }
+
+  .line {
+    display: block;
+  }
+
+  .weight {
+    color: $sq-text;
+    font-size: 1.75rem;
+    font-weight: var(--token-value);
+    line-height: 1;
+  }
+}

@@ -8,7 +8,7 @@
     grid-template-columns: 1fr 1fr;
     gap: 1px;
     background: $sq-line;
-    box-shadow: inset 0 1px 0 $sq-line;
+    border-block-start: 1px solid $sq-line;
     padding-block-start: 1px;
 
     > * {
@@ -26,7 +26,7 @@
         background: color-mix(in oklab, $sq-text 6%, $sq-ground);
       }
 
-      @media (max-width: 760px) {
+      @include until(md) {
         padding-inline: $sq-pad-narrow;
       }
     }

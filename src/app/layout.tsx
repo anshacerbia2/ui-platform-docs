@@ -4,6 +4,7 @@ import "@/generated/swatches.css";
 import type { Metadata, Viewport } from "next";
 import { cookies, headers } from "next/headers";
 import type { ReactNode } from "react";
+import { preload } from "react-dom";
 import { Reveal } from "@/components/shell/Reveal";
 import { MODE_COOKIE, SiteTheme } from "@/components/shell/SiteTheme";
 
@@ -34,6 +35,14 @@ export default async function RootLayout({ children }: { children: ReactNode }) 
   const mode = isMode(stored) ? stored : "system";
   const system = headerStore.get("sec-ch-prefers-color-scheme") === "dark" ? "dark" : "light";
   const resolvedMode = mode === "system" ? system : mode;
+  // The HUD voice is on the first screen of every page: fetched with the HTML, so the
+  // page is not held waiting for it (Reveal waits for the fonts; annex A 1.1).
+  for (const weight of ["regular", "medium", "semibold"])
+    preload(`/fonts/ibmplexmono-${weight}.woff2`, {
+      as: "font",
+      type: "font/woff2",
+      crossOrigin: "anonymous",
+    });
   // `sq-boot` holds the page hidden below the nav until Reveal has marked its
   // blocks (TDD docs-site D14; annex A 1.1); a CSS failsafe shows it after 2.5s.
   return (

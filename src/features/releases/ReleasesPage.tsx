@@ -7,7 +7,6 @@ import { Sheet } from "@/components/docs/Sheet";
 import { StabilityBadge } from "@/components/docs/StabilityBadge";
 import { TextLink } from "@/components/docs/TextLink";
 import { DocsLayout } from "@/components/shell/DocsLayout";
-import { PageToc } from "@/components/shell/PageToc";
 import { entries, pin } from "@/shared/lib/reference";
 
 /** The build this site documents, how to verify it, and the stability of every public entry. */
@@ -25,15 +24,11 @@ export function ReleasesPage() {
     .join("\n\n");
   return (
     <DocsLayout
-      aside={
-        <PageToc
-          items={[
-            { id: "build", title: "Pinned build" },
-            { id: "verify", title: "Verify" },
-            { id: "status", title: "Status matrix" },
-          ]}
-        />
-      }
+      toc={[
+        { id: "build", title: "Pinned build" },
+        { id: "verify", title: "Verify" },
+        { id: "status", title: "Status matrix" },
+      ]}
     >
       <PageHead
         title="Releases"

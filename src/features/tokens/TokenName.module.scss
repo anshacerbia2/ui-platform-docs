@@ -19,8 +19,10 @@
     padding: 0;
     background: $sq-line;
     list-style: none;
+    // the cells' lines end on a line of their own, never in the open
+    border-block-end: 1px solid $sq-line;
 
-    @media (max-width: 760px) {
+    @include until(md) {
       grid-auto-flow: row;
     }
   }

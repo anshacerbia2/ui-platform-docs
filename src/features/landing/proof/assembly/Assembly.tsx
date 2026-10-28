@@ -59,7 +59,9 @@ export function Assembly({ swatches, version }: { swatches: string[]; version: s
   }, []);
 
   return (
-    <figure ref={figure} className={styles.asm}>
+    // Rendered loading, so the stage holds its place from the first paint and the hero
+    // keeps its height when the script takes over; without a script, CSS shows the list.
+    <figure ref={figure} className={styles.asm} data-state="loading">
       <div className={styles.hud} aria-hidden="true">
         <span>
           Assembly <b data-readout>00%</b>

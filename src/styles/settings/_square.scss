@@ -31,3 +31,5 @@ $sq-pad-narrow: 20px;
 $sq-draw-easing: cubic-bezier(0.65, 0, 0.35, 1);
 $sq-settle-easing: cubic-bezier(0.16, 1, 0.3, 1);
 $sq-settle-duration: 420ms;
+// A sheet leaving: slow off the mark, gone at speed.
+$sq-exit-easing: cubic-bezier(0.7, 0, 0.84, 0);

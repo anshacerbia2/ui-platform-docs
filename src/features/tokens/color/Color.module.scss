@@ -6,69 +6,6 @@
 // choice (`.root`), on that root's own ground and lines; a sample's color comes from
 // the generated `[data-swatch]` and `[data-color-token]` rules, never a style prop.
 @layer docs.features {
-  // The Theme × Mode switch under the head.
-  .choice {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    gap: 10px 16px;
-    padding: 14px $sq-pad;
-    border-block-end: 1px solid $sq-line;
-
-    @media (max-width: 760px) {
-      padding-inline: $sq-pad-narrow;
-    }
-  }
-
-  .choiceLabel {
-    color: $sq-muted;
-    @include hud(10.5px, 500, 0.14em);
-  }
-
-  .root {
-    display: grid;
-    background: $sq-ground;
-    color: $sq-text;
-
-    [data-color-token] {
-      color: var(--token-color);
-    }
-  }
-
-  .rootLabel {
-    padding: 8px $sq-pad;
-    border-block: 1px solid $sq-line;
-    color: $sq-faint;
-    text-align: end;
-    @include hud(10px, 500, 0.14em);
-
-    @media (max-width: 760px) {
-      padding-inline: $sq-pad-narrow;
-    }
-  }
-
-  .value {
-    color: $sq-muted;
-    font: 400 11px/1.45 $sq-mono;
-    overflow-wrap: anywhere;
-  }
-
-  .ratio {
-    color: $sq-text;
-    font: 500 12.5px/1.4 $sq-mono;
-    white-space: nowrap;
-
-    span {
-      margin-inline-start: 6px;
-      color: var(--ds-color-danger-text-default-default);
-      @include hud(10px, 600, 0.12em);
-    }
-
-    &[data-pass] span {
-      color: var(--ds-color-success-text-default-default);
-    }
-  }
-
   // A token drawn the way its role is used.
   .sample {
     display: grid;
@@ -76,7 +13,7 @@
     box-sizing: border-box;
     inline-size: 100%;
     block-size: 56px;
-    box-shadow: inset 0 0 0 1px $sq-line;
+    border: 1px solid $sq-line;
 
     &[data-size="small"] {
       inline-size: 22px;
@@ -84,8 +21,9 @@
       flex: none;
     }
 
+    // a border token at the width a border is drawn
     &[data-kind="edge"] {
-      box-shadow: inset 0 0 0 2px var(--token-color);
+      border: var(--ds-dimension-border-width-default) solid var(--token-color);
     }
   }
 
@@ -107,7 +45,7 @@
     margin: 0;
     border-block-end: 1px solid $sq-line;
 
-    @media (min-width: 981px) {
+    @include from(lg) {
       grid-template-columns: minmax(0, 1.7fr) minmax(0, 1fr);
 
       > * + * {
@@ -125,7 +63,7 @@
     padding: 28px $sq-pad 32px;
     background: var(--ds-color-neutral-surface-canvas-default);
 
-    @media (max-width: 760px) {
+    @include until(md) {
       padding-inline: $sq-pad-narrow;
     }
   }
@@ -142,7 +80,7 @@
     padding: 12px 14px;
     border-radius: var(--ds-dimension-radius-container);
     background: var(--ds-color-neutral-surface-sunken-default);
-    box-shadow: inset 0 0 0 1px var(--ds-color-neutral-border-subtle-default);
+    border: 1px solid var(--ds-color-neutral-border-subtle-default);
   }
 
   .raised,
@@ -167,7 +105,7 @@
     background: var(--ds-color-neutral-surface-floating-default);
     box-shadow: var(--ds-effect-material-menu);
 
-    @media (max-width: 760px) {
+    @include until(md) {
       position: static;
       justify-self: end;
     }
@@ -199,13 +137,9 @@
     );
     background-size: 22px 22px;
 
-    @media (max-width: 760px) {
+    @include until(md) {
       padding-inline: $sq-pad-narrow;
     }
-  }
-
-  .group + .group {
-    border-block-start: 1px solid $sq-line;
   }
 
   .groupHead {
@@ -213,7 +147,7 @@
     gap: 6px;
     padding: 24px $sq-pad 16px;
 
-    @media (max-width: 760px) {
+    @include until(md) {
       padding-inline: $sq-pad-narrow;
     }
   }
@@ -246,7 +180,7 @@
   .tiles {
     grid-template-columns: repeat(2, minmax(0, 1fr));
 
-    @media (min-width: 981px) {
+    @include from(lg) {
       grid-template-columns: repeat(3, minmax(0, 1fr));
 
       &[data-columns="4"] {
@@ -258,8 +192,20 @@
   .states {
     grid-template-columns: repeat(2, minmax(0, 1fr));
 
-    @media (min-width: 761px) {
+    @include from(md) {
       grid-template-columns: repeat(5, minmax(0, 1fr));
+    }
+  }
+
+  // One row of five on a wide screen, so a state draws only its right line and the
+  // table below draws the bottom one; on a narrow screen each later row draws its top.
+  .states .state {
+    border-block-end: 0;
+
+    @include until(md) {
+      &:nth-child(n + 3) {
+        border-block-start: 1px solid $sq-line;
+      }
     }
   }
 
@@ -280,9 +226,35 @@
     gap: 8px;
     min-inline-size: 0;
     padding: 20px;
-    box-shadow:
-      inset -1px 0 0 $sq-line,
-      inset 0 -1px 0 $sq-line;
+    border-inline-end: 1px solid $sq-line;
+    border-block-end: 1px solid $sq-line;
+  }
+
+  // The last tile of a row draws no right line: the column's own border is there.
+  .tiles > :nth-child(2n),
+  .states > :nth-child(2n) {
+    border-inline-end: 0;
+  }
+
+  @include from(md) {
+    .states > :nth-child(2n) {
+      border-inline-end: 1px solid $sq-line;
+    }
+
+    .states > :nth-child(5n) {
+      border-inline-end: 0;
+    }
+  }
+
+  @include from(lg) {
+    .tiles > :nth-child(2n) {
+      border-inline-end: 1px solid $sq-line;
+    }
+
+    .tiles:not([data-columns="4"]) > :nth-child(3n),
+    .tiles[data-columns="4"] > :nth-child(4n) {
+      border-inline-end: 0;
+    }
   }
 
   .tileName {
@@ -381,7 +353,7 @@
     gap: 10px 16px;
     padding: 0 $sq-pad 16px;
 
-    @media (max-width: 760px) {
+    @include until(md) {
       padding-inline: $sq-pad-narrow;
     }
   }
@@ -443,7 +415,7 @@
     }
 
     &[aria-pressed="true"] {
-      box-shadow: 0 0 0 2px $sq-text;
+      outline: 2px solid $sq-text;
     }
   }
 
@@ -465,7 +437,7 @@
       block-size: 72px;
     }
 
-    @media (max-width: 760px) {
+    @include until(md) {
       padding-inline: $sq-pad-narrow;
     }
   }
@@ -507,7 +479,7 @@
       font-size: var(--ds-typography-body-small-font-size);
       line-height: 1.55;
 
-      @media (max-width: 760px) {
+      @include until(md) {
         padding-inline: $sq-pad-narrow;
       }
     }
@@ -534,7 +506,7 @@
       background-size: 22px 22px;
     }
 
-    @media (max-width: 760px) {
+    @include until(md) {
       padding-inline: $sq-pad-narrow;
     }
   }
@@ -565,7 +537,7 @@
     color: var(--ds-color-neutral-text-default-default);
     font-family: var(--ds-typography-data-compact-font-family);
     font-size: var(--ds-typography-data-compact-font-size);
-    box-shadow: inset 0 -1px 0 var(--ds-color-neutral-border-subtle-default);
+    border-block-end: 1px solid var(--ds-color-neutral-border-subtle-default);
   }
 
   .do,

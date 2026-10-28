@@ -88,7 +88,7 @@
     overflow-wrap: anywhere;
     padding: 28px $sq-pad 40px;
 
-    @media (max-width: 760px) {
+    @include until(md) {
       padding-inline: $sq-pad-narrow;
     }
   }
@@ -100,7 +100,7 @@
     gap: 8px;
     margin: 0;
     padding: 16px $sq-pad;
-    box-shadow: inset 0 1px 0 $sq-line;
+    border-block-start: 1px solid $sq-line;
     color: $sq-muted;
     font: 500 11px/1.5 $sq-mono;
 
@@ -110,7 +110,7 @@
   }
 
   .index {
-    box-shadow: inset 0 1px 0 $sq-line;
+    border-block-start: 1px solid $sq-line;
   }
 
   .tile {
@@ -132,7 +132,7 @@
       overflow-wrap: anywhere;
     }
 
-    @media (max-width: 760px) {
+    @include until(md) {
       padding-inline: $sq-pad-narrow;
     }
   }

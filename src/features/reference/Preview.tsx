@@ -1,21 +1,13 @@
 "use client";
 
-import {
-  createElement,
-  useEffect,
-  useLayoutEffect,
-  useRef,
-  useState,
-  type ElementType,
-  type ReactNode,
-} from "react";
+import { useState } from "react";
 import { Swatch } from "@/components/docs/Swatch";
 import { ToggleGroup } from "@/components/docs/ToggleGroup";
 import { ThemeRoot } from "@/components/system/Theme";
 import { withoutTransitions } from "@/shared/lib/withoutTransitions";
-import { registry } from "@/generated/registry";
+import { specimens } from "@/generated/specimens";
 import { defaultsOf, effective, tokensIn } from "@/shared/lib/bindings";
-import type { FixtureNode, StyledSpec } from "@/shared/lib/reference";
+import type { StyledSpec } from "@/shared/lib/reference";
 import { useThemeChoice } from "@/components/docs/ThemeChoice";
 import styles from "./Preview.module.scss";
 
@@ -23,45 +15,6 @@ const MODES = [
   { value: "light", label: "Light" },
   { value: "dark", label: "Dark" },
 ] as const;
-
-// The specification's own fixture (TDD styled CS7), rendered the way the
-// conformance check renders it: a node type is an export ("Tabs"), a
-// sub-component ("Tabs.List"), or an element ("span"); option values and
-// prop-entered states are props of the root node.
-function resolve(mod: Record<string, unknown>, type: string | null): ElementType {
-  if (type === null) return Object.values(mod).find((v) => typeof v === "function") as ElementType;
-  if (/^[a-z]/.test(type)) return type as ElementType;
-  const found = type
-    .split(".")
-    .reduce<unknown>((value, key) => (value as Record<string, unknown> | undefined)?.[key], mod);
-  if (!found) throw new Error(`no export ${type}`);
-  return found as ElementType;
-}
-
-// The site's Content-Security-Policy allows no style attribute in server HTML
-// (TDD docs-site D5), so a fixture's `style` (Skeleton's width) is held back from
-// the markup, its node marked, and the style set through the CSSOM after render.
-function withoutStyle(props: Record<string, unknown> | undefined, held: object[]) {
-  if (!props || !("style" in props)) return props;
-  const { style, ...rest } = props;
-  held.push(style as object);
-  return { ...rest, "data-fixture-style": held.length - 1 };
-}
-
-function build(
-  mod: Record<string, unknown>,
-  node: FixtureNode | string,
-  held: object[],
-  extra?: Record<string, unknown>,
-  key?: number,
-): ReactNode {
-  if (typeof node === "string") return node;
-  return createElement(
-    resolve(mod, node.type),
-    { key, ...withoutStyle(node.props, held), ...extra },
-    ...(node.children ?? []).map((child, i) => build(mod, child, held, undefined, i)),
-  );
-}
 
 type Props = {
   slug: string;
@@ -75,12 +28,12 @@ type Props = {
  * states beside it, and the root's token lineage for that combination.
  */
 export function Preview({ slug, spec, themes }: Props) {
-  const mod = registry[slug] ?? {};
+  const Specimen = specimens[slug];
   const [option, setOption] = useState(() => defaultsOf(spec));
   const [state, setState] = useState("");
   // Shared with the hooks table, so it shows values for the theme and mode the preview shows.
   const { theme, setTheme, mode, setMode } = useThemeChoice(themes);
-  const stage = useRef<HTMLDivElement>(null);
+
   const propStates = spec.states.filter((s) => "props" in s.enter);
   const enter = (propStates.find((s) => s.name === state)?.enter.props ?? {}) as Record<
     string,
@@ -95,30 +48,6 @@ export function Preview({ slug, spec, themes }: Props) {
     ),
     ...enter,
   };
-
-  // The conformance check opens a dialog fixture with showModal(); on a page that would
-  // make the rest of the document inert, so the preview shows it non-modally in the stage.
-  useEffect(() => {
-    if (spec.fixture.activate !== "showModal") return;
-    const dialog = stage.current?.querySelector("dialog");
-    if (dialog && !dialog.open) dialog.show();
-    return () => dialog?.close();
-  }, [spec.fixture.activate]);
-
-  const held: object[] = [];
-  const specimen = spec.fixture.tree
-    ? build(mod, spec.fixture.tree, held, rootProps)
-    : createElement(resolve(mod, null), {
-        ...withoutStyle(spec.fixture.props, held),
-        ...rootProps,
-      });
-  // Every render: a theme or option change may remount the specimen.
-  useLayoutEffect(() => {
-    held.forEach((style, i) => {
-      const node = stage.current?.querySelector<HTMLElement>(`[data-fixture-style="${i}"]`);
-      if (node) Object.assign(node.style, style);
-    });
-  });
 
   const root = spec.anatomy[0]?.name ?? "root";
   const lineage = Object.entries(effective(spec, root, option, state));
@@ -143,15 +72,13 @@ export function Preview({ slug, spec, themes }: Props) {
       </div>
       <div className={styles.body}>
         <ThemeRoot theme={theme} mode={mode}>
-          <div
-            ref={stage}
-            className={styles.stage}
-            data-dialog={spec.fixture.activate ? "" : undefined}
-          >
+          <div className={styles.stage} data-dialog={spec.fixture.activate ? "" : undefined}>
             <span className={styles.stageLabel}>
               live · the specification&apos;s fixture · {theme} {mode}
             </span>
-            <div className={styles.stageContent}>{specimen}</div>
+            <div className={styles.stageContent}>
+              {Specimen ? <Specimen fixture={spec.fixture} rootProps={rootProps} /> : null}
+            </div>
           </div>
         </ThemeRoot>
         <div className={styles.controls}>

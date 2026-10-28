@@ -6,16 +6,25 @@
 // full-width strip of 48px cells, one line between any two, sticky above
 // everything, the ruler included (z 50 over the ruler's 45: the reference's
 // stacking order, expression-local).
+//
+// Cells leave by the strip's own width, a container query, not the viewport's: a page
+// without the ruler keeps the native scrollbar, which the viewport's width counts and
+// the strip cannot use. Each width is what the cells still shown need, measured on
+// 2026-10-29, plus about 6px; the strip needs 1080px with every cell.
 @layer docs.components {
   .header {
+    container: strip / inline-size;
     position: sticky;
     inset-block-start: 0;
     z-index: 50;
     display: flex;
     align-items: stretch;
     block-size: $sq-nav;
+    // the last guard: a cell the widths below missed is cut at the strip's end, and
+    // never widens the page (the owner, 2026-10-29)
+    overflow-x: clip;
     background: $sq-ground;
-    box-shadow: inset 0 -1px 0 $sq-line;
+    border-block-end: 1px solid $sq-line;
 
     > * {
       flex: none;
@@ -27,7 +36,7 @@
     align-items: center;
     gap: 10px;
     padding-inline: 20px 24px;
-    box-shadow: inset -1px 0 0 $sq-line;
+    border-inline-end: 1px solid $sq-line;
     color: $sq-text;
     font-size: var(--ds-typography-body-small-font-size);
     font-weight: 600;
@@ -36,7 +45,7 @@
     @include focus-ring(-2px);
 
     // on a phone the mark alone; the name stays the link's accessible name
-    @media (max-width: 480px) {
+    @container strip (max-width: 480px) {
       padding-inline: 16px;
 
       span {
@@ -45,39 +54,27 @@
     }
   }
 
-  // A tag cell beside the brand; the Badge it holds is the component, as it ships.
-  // It leaves at 640px and below (the hero and the footer carry the version).
-  .tag {
-    display: inline-flex;
-    align-items: center;
-    padding-inline: 16px;
-
-    @media (max-width: 640px) {
-      display: none;
-    }
-  }
-
-  // One line between two cells, never two: the brand draws the line after it, the
-  // links take one before them after the tag, and the spacer draws the line after
-  // the links, so with no room left it has no width and the next cell's line stands.
+  // One line between two cells, never two: the brand draws the line after it and the
+  // spacer the line after the links, so with no room left it has no width and the next
+  // cell's line stands.
   .nav {
     display: flex;
     align-items: stretch;
     padding-inline: 4px;
 
-    .tag + & {
-      box-shadow: inset 1px 0 0 $sq-line;
-    }
-
-    @media (max-width: 980px) {
+    // the menu cell stands in for them (TDD docs-site D22), as for the sidebar below 1024px
+    @container strip (max-width: 1023px) {
       display: none;
     }
   }
 
+  // 20px between two labels (the owner, 2026-10-29). The start takes 1.25px more than
+  // the end: the tracking leaves room after the last letter, so the letters' ink sits
+  // in the middle of the box, and of its ink bar (measured on 2026-10-29).
   .navLink {
     display: flex;
     align-items: center;
-    padding-inline: 16px;
+    padding-inline: 10.625px 9.375px;
     color: $sq-muted;
     text-decoration: none;
     @include hud;
@@ -88,23 +85,25 @@
       color: $sq-text;
     }
 
-    // A link the call to action repeats leaves first (the strip needs 1076px with it).
-    &[data-echo] {
-      @media (max-width: 1080px) {
-        display: none;
-      }
-    }
-
-    // The current area: the label in ground on a 22px ink bar.
+    // The current area: the label in ground on a 22px ink bar, 6px past it each side.
+    // The bar stands 1px above the box's middle: the capitals stand above their line's
+    // middle, and the bar centres on them (measured on 2026-10-29; the owner saw the
+    // label off centre).
     &[aria-current="page"] {
       color: $sq-ground;
-      background: linear-gradient($sq-text, $sq-text) center / calc(100% - 20px) 22px no-repeat;
+      background: linear-gradient($sq-text, $sq-text) center calc(50% - 1px) / calc(100% - 8px) 22px
+        no-repeat;
     }
   }
 
   .spacer {
     flex: 1;
-    box-shadow: inset 1px 0 0 $sq-line;
+    border-inline-start: 1px solid $sq-line;
+
+    // with the links gone the spacer follows the brand, whose own line stands
+    @container strip (max-width: 1023px) {
+      border-inline-start: 0;
+    }
   }
 
   // Every cell after the spacer takes the line before it as its only edge.
@@ -113,11 +112,19 @@
   .header > a:not(.brand) {
     display: inline-flex;
     align-items: center;
-    box-shadow: inset 1px 0 0 $sq-line;
+    border-inline-start: 1px solid $sq-line;
   }
 
-  .header > a[data-variant="primary"] {
-    box-shadow: none;
+  // a square cell holding an icon alone (GitHub); its name is its label
+  .iconCell {
+    justify-content: center;
+    inline-size: $sq-nav;
+    color: $sq-muted;
+    @include focus-ring(-4px);
+
+    &:hover {
+      color: $sq-text;
+    }
   }
 
   .readout {
@@ -138,8 +145,8 @@
       color: $sq-text;
     }
 
-    // The ruler repeats it; the strip needs 1314px with it.
-    @media (max-width: 1320px) {
+    // the first to leave: the ruler repeats it
+    @container strip (max-width: 1085px) {
       display: none;
     }
   }
@@ -148,8 +155,16 @@
     padding-inline: 6px;
   }
 
-  .optional {
-    @media (max-width: 1180px) {
+  // the mode leaves with the links: the menu holds it (the owner, 2026-10-29)
+  .withLinks {
+    @container strip (max-width: 1023px) {
+      display: none !important;
+    }
+  }
+
+  // on a phone the menu holds GitHub too
+  .wide {
+    @container strip (max-width: 640px) {
       display: none !important;
     }
   }

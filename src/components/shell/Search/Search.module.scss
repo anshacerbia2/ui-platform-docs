@@ -1,0 +1,550 @@
+@use "layers";
+@use "settings" as *;
+@use "tools" as *;
+
+// The search (TDD docs-site D22): a full-screen sheet of the line drawing. A bar of
+// 48px cells, one large field, results as rows of a table, the one in hand marked as
+// the contents mark a current link, and, on a wide screen, described beside them. It
+// moves only by opacity and translate, never a blur.
+@layer docs.components {
+  // the trigger in the nav strip: a cell, the icon and the shortcut; the word is its
+  // accessible name, not shown, as the shortcut says what it is (the owner, 2026-10-29)
+  .trigger {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    padding-inline: 16px 14px;
+    border: 0;
+    border-inline-start: 1px solid $sq-line;
+    background: none;
+    color: $sq-muted;
+    cursor: pointer;
+    @include hud(11px, 500, 0.12em);
+    line-height: 1;
+    @include focus-ring(-4px);
+
+    &:hover {
+      color: $sq-text;
+    }
+
+    .label {
+      @include visually-hidden;
+    }
+
+    kbd {
+      padding: 3px 5px;
+      border: 1px solid $sq-line;
+      color: $sq-muted;
+      font: 500 10px/1 $sq-mono;
+      letter-spacing: 0.04em;
+    }
+
+    // on a phone's strip the icon alone (widths by the strip, SiteHeader.module.scss)
+    @container strip (max-width: 640px) {
+      padding-inline: 16px;
+
+      kbd {
+        display: none;
+      }
+    }
+  }
+
+  @keyframes search-rise {
+    from {
+      opacity: 0;
+      translate: 0 12px;
+    }
+  }
+
+  // the scan line rides the sheet's lower edge down the screen, then goes
+  @keyframes search-scan {
+    from {
+      translate: 0 -100%;
+    }
+
+    80% {
+      opacity: 1;
+    }
+
+    to {
+      opacity: 0;
+      translate: 0 calc(100dvh - 100%);
+    }
+  }
+
+  .dialog {
+    inline-size: 100%;
+    max-inline-size: none;
+    block-size: 100%;
+    max-block-size: none;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    // a modal dialog scrolls by default, and the frame rising into it overflows it for
+    // the rise: the dialog clips, its regions scroll themselves
+    overflow: clip;
+    background: $sq-ground;
+    color: $sq-text;
+
+    &::backdrop {
+      background: transparent;
+    }
+
+    // The sheet drops from the nav strip as a shutter does, a scan line on its edge, and
+    // goes back up on close: a clip, a translate and an opacity, nothing laid out again.
+    // The close waits for the way back (afterExit), and display and the top layer stay
+    // for it.
+    @include motion {
+      clip-path: inset(0 0 100% 0);
+      transition:
+        clip-path 240ms $sq-exit-easing,
+        display 240ms allow-discrete,
+        overlay 240ms allow-discrete;
+
+      &[open] {
+        clip-path: inset(0);
+        transition-duration: 560ms;
+        transition-timing-function: $sq-settle-easing;
+      }
+
+      @starting-style {
+        &[open] {
+          clip-path: inset(0 0 100% 0);
+        }
+      }
+
+      &::after {
+        content: "";
+        position: absolute;
+        inset: 0 0 auto;
+        block-size: 72px;
+        border-block-end: 1px solid $sq-signal;
+        background: linear-gradient(transparent, color-mix(in oklab, $sq-signal 12%, transparent));
+        opacity: 0;
+        pointer-events: none;
+        animation: search-scan 560ms $sq-settle-easing;
+      }
+    }
+
+    kbd {
+      display: inline-block;
+      min-inline-size: 18px;
+      padding: 2px 5px;
+      border: 1px solid $sq-line;
+      color: $sq-text;
+      font: 500 10px/1.2 $sq-mono;
+      letter-spacing: 0.04em;
+      text-align: center;
+      text-transform: none;
+    }
+  }
+
+  // the column of the site, between its own lines, the height of the screen
+  .frame {
+    @include column;
+
+    display: grid;
+    grid-template-rows: $sq-nav auto minmax(0, 1fr) auto;
+    block-size: 100%;
+
+    // the bar, the field, the results and the keys arrive in turn behind the scan line
+    @include motion {
+      > * {
+        animation: search-rise 520ms $sq-settle-easing both;
+
+        @for $i from 1 through 4 {
+          &:nth-child(#{$i}) {
+            animation-delay: #{20 + $i * 50}ms;
+          }
+        }
+      }
+    }
+  }
+
+  .bar {
+    display: flex;
+    align-items: stretch;
+    justify-content: space-between;
+    border-block-end: 1px solid $sq-line;
+  }
+
+  .barLabel {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    padding-inline: $sq-pad;
+    color: $sq-text;
+    @include hud(11px, 500, 0.12em);
+
+    i {
+      inline-size: 6px;
+      block-size: 6px;
+      background: $sq-signal;
+    }
+
+    b {
+      margin-inline-start: 6px;
+      color: $sq-muted;
+      font-weight: 500;
+    }
+
+    @include until(md) {
+      padding-inline: $sq-pad-narrow;
+    }
+  }
+
+  .close {
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+    padding-inline: 18px;
+    border: 0;
+    border-inline-start: 1px solid $sq-line;
+    background: none;
+    color: $sq-text;
+    cursor: pointer;
+    @include focus-ring(-4px);
+
+    &:hover {
+      background: color-mix(in oklab, $sq-text 6%, transparent);
+    }
+
+    // where the strip's search is its icon alone, so is this: a square, the cross
+    // without its key, as the menu's close (the owner, 2026-10-29)
+    @container strip (max-width: 640px) {
+      justify-content: center;
+      inline-size: $sq-nav;
+      padding: 0;
+
+      kbd {
+        display: none;
+      }
+    }
+  }
+
+  // the field: the page's largest type, its line turning signal blue while it is in use
+  .form {
+    display: grid;
+    gap: 10px;
+    padding: 36px $sq-pad 20px;
+    border-block-end: 1px solid $sq-line;
+
+    &:focus-within {
+      border-block-end-color: $sq-signal;
+    }
+
+    @include until(md) {
+      padding: 28px $sq-pad-narrow 16px;
+    }
+  }
+
+  .label {
+    color: $sq-muted;
+    @include hud(10.5px, 500, 0.14em);
+  }
+
+  .field {
+    inline-size: 100%;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    outline: 0;
+    background: none;
+    color: $sq-text;
+    font-size: clamp(2.25rem, 7vw, 5.5rem);
+    font-weight: var(--ds-typography-weight-medium);
+    letter-spacing: -0.045em;
+    // a field clips its text to its line, so the line holds the descenders (the owner,
+    // 2026-10-29: the foot of a "g" was cut)
+    line-height: 1.25;
+    caret-color: $sq-signal;
+
+    &::placeholder {
+      color: $sq-faint;
+    }
+
+    &::-webkit-search-cancel-button {
+      display: none;
+    }
+  }
+
+  // results, and the preview beside them on a wide screen
+  .body {
+    display: grid;
+    min-block-size: 0;
+
+    @include from(lg) {
+      grid-template-columns: minmax(0, 1fr) 340px;
+    }
+  }
+
+  // the results scroll in the site's scroll area, under its own bar (annex B 3)
+  .results {
+    min-block-size: 0;
+  }
+
+  .resultsView {
+    padding-block-end: 24px;
+  }
+
+  .groupTitle {
+    display: flex;
+    gap: 10px;
+    margin: 0;
+    padding: 22px $sq-pad 8px;
+    color: $sq-muted;
+    @include hud(10px, 500, 0.14em);
+
+    b {
+      color: $sq-text;
+      font-weight: 500;
+    }
+
+    @include until(md) {
+      padding-inline: $sq-pad-narrow;
+    }
+  }
+
+  .option {
+    position: relative;
+    display: grid;
+    grid-template-columns: 6.5rem minmax(0, 1fr) auto;
+    grid-template-rows: auto auto;
+    column-gap: 16px;
+    align-items: center;
+    padding: 12px $sq-pad;
+    border-block-start: 1px solid $sq-line;
+    color: $sq-text;
+    text-decoration: none;
+    @include focus-ring(-2px);
+
+    > svg {
+      grid-column: 3;
+      grid-row: 1 / span 2;
+      color: $sq-faint;
+
+      @include motion {
+        transition:
+          translate 160ms $sq-settle-easing,
+          color 160ms $sq-settle-easing;
+      }
+    }
+
+    &[aria-selected="true"] {
+      background: color-mix(in oklab, $sq-text 5%, transparent);
+
+      &::before {
+        content: "";
+        position: absolute;
+        inset-block: 0;
+        inset-inline-start: 0;
+        inline-size: 2px;
+        background: $sq-signal;
+      }
+
+      > svg {
+        color: $sq-signal-text;
+        translate: 3px 0;
+      }
+
+      .kind {
+        color: $sq-signal-text;
+      }
+    }
+
+    @include until(md) {
+      grid-template-columns: minmax(0, 1fr) auto;
+      padding-inline: $sq-pad-narrow;
+
+      .kind {
+        grid-column: 1;
+      }
+
+      > svg {
+        grid-column: 2;
+        grid-row: 1 / span 3;
+      }
+    }
+  }
+
+  .kind {
+    grid-row: 1 / span 2;
+    color: $sq-muted;
+    @include hud(10px, 500, 0.14em);
+
+    @include until(md) {
+      grid-row: auto;
+    }
+  }
+
+  .title {
+    min-inline-size: 0;
+    font-size: 15px;
+    font-weight: var(--ds-typography-weight-medium);
+    line-height: 1.4;
+    overflow-wrap: anywhere;
+
+    mark {
+      background: color-mix(in oklab, $sq-signal 20%, transparent);
+      color: inherit;
+    }
+  }
+
+  .desc {
+    grid-column: 2;
+    min-inline-size: 0;
+    overflow: hidden;
+    color: $sq-muted;
+    font-size: 13px;
+    line-height: 1.45;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+
+    @include until(md) {
+      grid-column: 1;
+    }
+  }
+
+  .note {
+    margin: 0;
+    padding: 28px $sq-pad;
+    color: $sq-muted;
+    font-size: 14px;
+
+    @include until(md) {
+      padding-inline: $sq-pad-narrow;
+    }
+  }
+
+  // no query yet: the areas, then a few things to try
+  .jumps {
+    margin: 0 0 12px;
+    padding: 0;
+    list-style: none;
+  }
+
+  .jump {
+    display: grid;
+    grid-template-columns: 3rem minmax(0, 1fr) auto;
+    align-items: baseline;
+    padding: 14px $sq-pad;
+    border-block-start: 1px solid $sq-line;
+    color: $sq-text;
+    font-size: clamp(1.25rem, 2.4vw, 1.75rem);
+    font-weight: var(--ds-typography-weight-medium);
+    letter-spacing: -0.03em;
+    text-decoration: none;
+    @include focus-ring(-2px);
+
+    > svg {
+      color: $sq-faint;
+    }
+
+    &:hover {
+      background: color-mix(in oklab, $sq-text 5%, transparent);
+
+      > svg {
+        color: $sq-signal-text;
+      }
+    }
+
+    @include until(md) {
+      padding-inline: $sq-pad-narrow;
+    }
+  }
+
+  .jumpNo {
+    color: $sq-muted;
+    font: 500 11px/1 $sq-mono;
+    letter-spacing: 0.08em;
+  }
+
+  .tries {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    padding: 4px $sq-pad 8px;
+
+    @include until(md) {
+      padding-inline: $sq-pad-narrow;
+    }
+  }
+
+  .try {
+    padding: 6px 10px;
+    border: 1px solid $sq-line;
+    background: none;
+    color: $sq-text;
+    font: 500 12px/1.2 $sq-mono;
+    cursor: pointer;
+    @include focus-ring(2px);
+
+    &:hover {
+      border-color: $sq-edge;
+    }
+  }
+
+  .preview {
+    display: none;
+
+    @include from(lg) {
+      display: grid;
+      align-content: start;
+      gap: 14px;
+      padding: 32px 28px;
+      border-inline-start: 1px solid $sq-line;
+    }
+  }
+
+  .previewTitle {
+    font-size: 2rem;
+    font-weight: var(--ds-typography-weight-medium);
+    letter-spacing: -0.035em;
+    line-height: 1.1;
+    overflow-wrap: anywhere;
+  }
+
+  .previewDesc,
+  .previewEmpty {
+    color: $sq-muted;
+    font-size: 14px;
+    line-height: 1.55;
+  }
+
+  .previewPath {
+    justify-self: start;
+    padding: 4px 8px;
+    border: 1px solid $sq-line;
+    color: $sq-text;
+    font: 500 12px/1.3 $sq-mono;
+    overflow-wrap: anywhere;
+  }
+
+  .previewOpen {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    color: $sq-muted;
+    @include hud(10px, 500, 0.14em);
+  }
+
+  .foot {
+    display: flex;
+    gap: 22px;
+    padding: 12px $sq-pad;
+    border-block-start: 1px solid $sq-line;
+    color: $sq-muted;
+    @include hud(10px, 500, 0.12em);
+
+    span {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    // a touch screen has no arrows to press
+    @include until(md) {
+      display: none;
+    }
+  }
+}

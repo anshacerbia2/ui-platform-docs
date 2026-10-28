@@ -6,27 +6,8 @@
     flex: none;
   }
 
-  .tile {
+  // the ink role: dark in light mode, light in dark, in whatever theme root holds it
+  .mark {
     fill: $ink;
-  }
-
-  .line {
-    fill: none;
-    stroke: $on-ink;
-    stroke-width: 1.4;
-  }
-
-  .fill {
-    fill: $on-ink;
-  }
-
-  // The check's colour is artwork, Scnx Blue in every theme (scnehaux-design
-  // brand/Brand.html, "Name and mark"): Logo.tsx draws it as a presentation
-  // attribute, so no theme's primary token can recolour it.
-  .check {
-    fill: none;
-    stroke-width: 1.8;
-    stroke-linecap: round;
-    stroke-linejoin: round;
   }
 }

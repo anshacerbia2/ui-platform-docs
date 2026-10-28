@@ -1,15 +1,17 @@
 "use client";
 
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { CopyButton } from "@/components/docs/CopyButton";
 import { InlineCode } from "@/components/docs/InlineCode";
 import { ToggleGroup } from "@/components/docs/ToggleGroup";
-import type { TokenRow } from "@/shared/lib/reference";
-import { ColorRoot, TokenValue } from "./Choice";
+import type { ModeValues } from "../tokens";
+import { ColorRoot, TokenValue } from "../Choice";
 import { Sample } from "./Sample";
 import styles from "./Color.module.scss";
 
-type Row = Pick<TokenRow, "name" | "cssName" | "values">;
+/** A token as the page sends it, compact: its path, then its light and dark values. */
+export type TokenTuple = [name: string, light: string | undefined, dark: string | undefined];
+type Cell = { name: string; cssName: string; values: ModeValues };
 
 type Props = {
   schemes: readonly string[];
@@ -17,7 +19,7 @@ type Props = {
   /** The vocabularies in the standard's order, so rows and columns read the same everywhere. */
   emphases: readonly string[];
   states: readonly string[];
-  tokens: Row[];
+  tokens: TokenTuple[];
 };
 
 /**
@@ -29,7 +31,19 @@ export function SchemeExplorer({ schemes, roles, emphases, states, tokens }: Pro
   const [role, setRole] = useState(roles[0] ?? "surface");
   const [picked, setPicked] = useState<string | null>(null);
   const prefix = `color.${scheme}.${role}.`;
-  const cells = new Map(tokens.filter((t) => t.name.startsWith(prefix)).map((t) => [t.name, t]));
+  // the custom property is the path with hyphens, so only the path and values are sent
+  const cells = useMemo(
+    () =>
+      new Map<string, Cell>(
+        tokens
+          .filter(([name]) => name.startsWith(prefix))
+          .map(([name, light, dark]) => [
+            name,
+            { name, cssName: `--ds-${name.replaceAll(".", "-")}`, values: { light, dark } },
+          ]),
+      ),
+    [tokens, prefix],
+  );
   const has = (e: string, s: string) => cells.has(`${prefix}${e}.${s}`);
   const rows = emphases.filter((e) => states.some((s) => has(e, s)));
   const columns = states.filter((s) => rows.some((e) => has(e, s)));

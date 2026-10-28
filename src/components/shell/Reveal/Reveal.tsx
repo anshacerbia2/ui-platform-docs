@@ -5,12 +5,17 @@ import { useEffect, useLayoutEffect } from "react";
 import { installGlide } from "@/shared/lib/glide";
 
 // The finest blocks of a documentation page (annex A 3.2): the page head's
-// parts and every block of a sheet's body. Sticky elements never rise.
-const BLOCKS = "main > header > *, main [data-sheet-body] > *, main > nav, main > p";
-const SHEETS = "main [data-sheet]";
+// parts, each sheet's bar, and every block of a sheet's body. Other sticky
+// elements never rise; a sheet's bar rises with its content (the owner, 2026-10-28).
+const BLOCKS =
+  "main > header > *, main [data-sheet-bar], main [data-sheet-body] > *, main > nav, main > p";
 const STAGGER = 80;
 const MAX_STEPS = 8;
 const REST = 1100;
+// The page shows once its fonts have loaded, so no line reflows while it rises (a
+// fallback face is narrower: the hero's lede took one more line when Inter arrived),
+// but never waits longer than this (the owner, 2026-10-28).
+const FONT_WAIT = 800;
 
 /** One page's reveal: before paint, mark its blocks, then let the page show. */
 function PageReveal() {
@@ -18,17 +23,16 @@ function PageReveal() {
     const doc = document.documentElement;
     const booted = () => doc.setAttribute("data-sq-booted", "");
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
-      doc.removeAttribute("data-sq-draw");
       booted();
       return;
     }
-    doc.setAttribute("data-sq-draw", "");
     let found = [...document.querySelectorAll<HTMLElement>(BLOCKS)];
     // keep the finest blocks: drop any block that holds another
     found = found.filter((a) => !found.some((b) => b !== a && a.contains(b)));
-    found = found.filter((n) => getComputedStyle(n).position !== "sticky");
+    found = found.filter(
+      (n) => n.hasAttribute("data-sheet-bar") || getComputedStyle(n).position !== "sticky",
+    );
     for (const n of found) n.setAttribute("data-sq-reveal", "");
-    booted();
 
     const timers: number[] = [];
     const rise = new IntersectionObserver(
@@ -56,24 +60,19 @@ function PageReveal() {
       },
       { rootMargin: "0px 0px -6% 0px", threshold: 0.12 },
     );
-    found.forEach((n) => rise.observe(n));
-
-    // Each sheet's rule draws in once, when 12% of the sheet shows above the bottom 18%.
-    const draw = new IntersectionObserver(
-      (entries) => {
-        for (const e of entries) {
-          if (!e.isIntersecting) continue;
-          e.target.setAttribute("data-drawn", "");
-          draw.unobserve(e.target);
-        }
-      },
-      { rootMargin: "0px 0px -18% 0px", threshold: 0.12 },
-    );
-    document.querySelectorAll(SHEETS).forEach((s) => draw.observe(s));
+    let live = true;
+    void Promise.race([
+      document.fonts.ready,
+      new Promise((done) => timers.push(window.setTimeout(done, FONT_WAIT))),
+    ]).then(() => {
+      if (!live) return;
+      booted();
+      found.forEach((n) => rise.observe(n));
+    });
 
     return () => {
+      live = false;
       rise.disconnect();
-      draw.disconnect();
       for (const t of timers) window.clearTimeout(t);
       for (const n of found) {
         n.removeAttribute("data-sq-reveal");
@@ -88,9 +87,9 @@ function PageReveal() {
 /**
  * The chrome's motion on every route (TDD docs-site D14): the wheel glide
  * (installed once), the page's blocks rising into place as they first enter the
- * view (annex A 3.1-3.4), and each sheet's rule drawing in once (2.2). It runs
- * again after each App Router navigation. Under reduced motion nothing rises or
- * draws, and the page is never held hidden.
+ * view (annex A 3.1-3.4). The rules are drawn from the first paint, never
+ * animated (2.2). It runs again after each App Router navigation. Under reduced
+ * motion nothing rises, and the page is never held hidden.
  */
 export function Reveal() {
   useEffect(() => {

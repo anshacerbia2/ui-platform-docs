@@ -10,14 +10,13 @@ import { Sheet } from "@/components/docs/Sheet";
 import { TextLink } from "@/components/docs/TextLink";
 import { ThemeChoice } from "@/components/docs/ThemeChoice";
 import { DocsLayout } from "@/components/shell/DocsLayout";
-import { PageToc } from "@/components/shell/PageToc";
-import { colorPage, type TokenRow } from "@/shared/lib/reference";
-import { THEME_IDS } from "@/shared/lib/themes";
+import type { TokenRow } from "@/shared/lib/reference";
+import { SITE_THEME } from "@/shared/lib/themes";
 import { TokenName } from "../TokenName";
-import { colorTokens, EMPHASES, ROLES, SCHEMES, STATES } from "../tokens";
-import { ChoiceBar, ChoiceRatio, ColorRoot, TokenValue } from "./Choice";
+import { colorTokens, EMPHASES, exampleValues, onSolid, ROLES, SCHEMES, STATES } from "../tokens";
+import { ChoiceBar, ChoiceRatio, ColorRoot, TokenValue } from "../Choice";
 import { Sample } from "./Sample";
-import { SchemeExplorer } from "./SchemeExplorer";
+import { SchemeExplorer, type TokenTuple } from "./SchemeExplorer";
 import styles from "./Color.module.scss";
 
 const SECTIONS = [
@@ -195,21 +194,25 @@ function Tile({ name, note }: { name: string; note: string }) {
       </span>
       <span className={styles.tileNote}>{note}</span>
       <code className={styles.tileVar}>{t.cssName}</code>
-      <TokenValue values={t.values} />
+      <TokenValue values={exampleValues(t)} />
     </li>
   );
 }
 
 /** The color guide: the grammar, the neutral ground, the schemes, and when to use each emphasis and state. */
 export function ColorPage() {
-  const explorer = colorTokens.map(({ name, cssName, values }) => ({ name, cssName, values }));
+  const explorer = colorTokens.map((t): TokenTuple => {
+    const v = exampleValues(t);
+    return [t.name, v.light, v.dark];
+  });
+  const pairs = onSolid.flatMap((r) => r.results);
   return (
-    <ThemeChoice themes={THEME_IDS}>
-      <DocsLayout aside={<PageToc items={SECTIONS} />}>
+    <ThemeChoice themes={[SITE_THEME]}>
+      <DocsLayout toc={SECTIONS}>
         <PageHead
           crumbs={[{ label: "Tokens", href: "/tokens" }, { label: "Colour" }]}
           title="Colour"
-          lead="Pick a colour by the role it plays, never by how it looks. Six schemes share one grammar, so a warning border and a primary border are found the same way, and every theme fills in the values for light and dark."
+          lead="Pick a colour by the role it plays, never by how it looks. Six schemes share one grammar, so a warning border and a primary border are found the same way. Every token has a value for light and for dark."
         />
         <Facts
           label="Colour tokens"
@@ -219,8 +222,8 @@ export function ColorPage() {
             { term: "Roles", value: String(ROLES.length) },
             {
               term: "On-solid contrast",
-              value: `${colorPage.onSolid.flatMap((r) => r.results).filter((r) => r.pass).length} of ${colorPage.onSolid.flatMap((r) => r.results).length} pass`,
-              ok: colorPage.onSolid.every((r) => r.results.every((x) => x.pass)),
+              value: `${pairs.filter((r) => r.pass).length} of ${pairs.length} pass`,
+              ok: pairs.every((r) => r.pass),
             },
           ]}
         />
@@ -513,7 +516,7 @@ export function ColorPage() {
                 term: "On solid",
                 aside: "4.5 : 1",
                 value:
-                  "Every contrast token against the solid surface of its scheme, in each theme and state.",
+                  "Every contrast token against the solid surface of its scheme, in each mode and state.",
               },
               {
                 term: "Text and icons",
@@ -535,12 +538,12 @@ export function ColorPage() {
               },
             ]}
           />
-          <Block title="Contrast on solid, in the theme and mode shown" />
+          <Block title="Contrast on solid, in the mode shown" />
           <ColorRoot>
             <DataTable
               caption="Each scheme's contrast text on its solid surface"
               head={["Scheme", "Sample", "Pair", "Ratio"]}
-              rows={colorPage.onSolid.map((row) => [
+              rows={onSolid.map((row) => [
                 row.scheme,
                 <Sample key="s" token={row.fg} />,
                 <span key="p" className={styles.pair}>

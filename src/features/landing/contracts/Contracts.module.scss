@@ -9,11 +9,11 @@
     display: grid;
     grid-template-columns: repeat(4, minmax(0, 1fr));
 
-    @media (max-width: 980px) {
+    @include until(lg) {
       grid-template-columns: 1fr 1fr;
     }
 
-    @media (max-width: 560px) {
+    @include until(sm) {
       grid-template-columns: minmax(0, 1fr);
     }
   }
@@ -28,7 +28,7 @@
       padding-inline: $sq-pad;
     }
 
-    @media (max-width: 980px) {
+    @include until(lg) {
       display: none;
     }
   }
@@ -39,20 +39,27 @@
     align-content: start;
     gap: 12px;
     padding: 36px $sq-pad 40px;
-    box-shadow: inset -1px 0 0 $sq-line;
+    border-inline-end: 1px solid $sq-line;
     text-decoration: none;
 
     &:last-child {
-      box-shadow: none;
+      border-inline-end: 0;
     }
 
     &:hover {
       background: color-mix(in oklab, $sq-text 4%, $sq-ground);
     }
 
-    @media (max-width: 560px) {
+    // stacked: a line under each contract, none beside it
+    @include until(sm) {
       padding-inline: $sq-pad-narrow;
-      box-shadow: inset 0 -1px 0 $sq-line;
+      border-inline-end: 0;
+      border-block-end: 1px solid $sq-line;
+
+      // the closing block's own top line closes the last one
+      &:last-child {
+        border-block-end: 0;
+      }
     }
   }
 
@@ -65,7 +72,7 @@
   .package {
     justify-self: start;
     padding: 6px 8px;
-    box-shadow: inset 0 0 0 1px $sq-line;
+    border: 1px solid $sq-line;
     color: $sq-text;
     font: 500 11.5px/1 $sq-mono;
   }
@@ -75,10 +82,10 @@
     justify-items: center;
     gap: 24px;
     padding: 112px $sq-pad 120px;
-    box-shadow: inset 0 1px 0 $sq-line;
+    border-block-start: 1px solid $sq-line;
     text-align: center;
 
-    @media (max-width: 760px) {
+    @include until(md) {
       padding: 72px $sq-pad-narrow 80px;
     }
   }

@@ -7,6 +7,7 @@
 
 import { readPalette } from "./palette";
 import type { AssemblyScene, Point } from "./scene";
+import { schedule, unschedule } from "@/shared/lib/frame";
 
 /** The callouts' column, the room their leaders take, and the width it needs. */
 const CALLOUT_W = 176;
@@ -260,6 +261,12 @@ export function mountAssembly(
       if (dropStart < 0) dropStart = t;
       drop = clamp((t - dropStart) / DROP_MS, 0, 1);
       moving = true;
+      // Once the plates have landed, the stack turns on its own (the owner, 2026-10-28),
+      // unless the reader has already taken it in hand; any drag, turn or reset stops it.
+      if (drop === 1 && !reduce && !dragging && aim === null && !spin) {
+        turntable = true;
+        tell();
+      }
     }
     // eased toward where the scroll and the controls put it (at once under reduced motion)
     const to = target();
@@ -300,8 +307,12 @@ export function mountAssembly(
     if (moving) request();
     else last = 0;
   };
+  // drawn in the write phase of the site's one frame (shared/lib/frame.ts), after its reads
   const request = () => {
-    if (!raf && !disposed) raf = requestAnimationFrame(frame);
+    if (!raf && !disposed) {
+      raf = 1;
+      schedule("write", frame);
+    }
   };
 
   const light = (i: number | null) => {
@@ -324,7 +335,7 @@ export function mountAssembly(
       window,
       "scroll",
       () => {
-        measure();
+        schedule("read", measure);
         request();
       },
       { passive: true },
@@ -461,7 +472,8 @@ export function mountAssembly(
     },
     dispose() {
       disposed = true;
-      cancelAnimationFrame(raf);
+      unschedule("write", frame);
+      unschedule("read", measure);
       for (const fn of off) fn();
       scene?.dispose();
       scene = null;

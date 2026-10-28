@@ -5,7 +5,7 @@
 // Sheet 05 · Color and agents (scnx-platform Docs-Home.html).
 @layer docs.features {
   .last {
-    @media (min-width: 1081px) {
+    @include from(lg) {
       grid-template-columns: minmax(0, 1.6fr) minmax(0, 1fr);
     }
   }
@@ -16,11 +16,11 @@
     gap: 32px;
     padding: 56px $sq-pad;
 
-    @media (min-width: 1081px) {
+    @include from(lg) {
       grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.2fr);
     }
 
-    @media (max-width: 760px) {
+    @include until(md) {
       padding: 40px $sq-pad-narrow;
     }
   }
@@ -48,7 +48,7 @@
       display: block;
       block-size: 56px;
       border-radius: var(--ds-dimension-radius-mark);
-      box-shadow: inset 0 0 0 1px $sq-line;
+      border: 1px solid $sq-line;
     }
   }
 
@@ -73,7 +73,7 @@
     background: var(--ds-color-neutral-surface-sunken-default);
     color: var(--ds-color-neutral-text-default-default);
 
-    @media (max-width: 760px) {
+    @include until(md) {
       padding: 40px $sq-pad-narrow;
     }
   }
@@ -81,7 +81,7 @@
   .chip {
     justify-self: start;
     padding: 6px 8px;
-    box-shadow: inset 0 0 0 1px $sq-line;
+    border: 1px solid $sq-line;
     color: $sq-text;
     font: 500 11.5px/1 $sq-mono;
     text-decoration: none;

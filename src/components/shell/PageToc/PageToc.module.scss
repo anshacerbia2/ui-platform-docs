@@ -1,7 +1,145 @@
 @use "layers";
+@use "settings" as *;
+@use "tools" as *;
+
+// The contents (scnx-platform Docs-Button.html): the label in the HUD voice, the links,
+// each with its sheet's number; the current link is semibold with a 2px signal bar at its
+// edge, and its number turns signal blue. No rail of its own: the column's divider is
+// the one vertical line beside it, and a second read as a double (the owner,
+// 2026-10-28). A sheet's parts nest under it, unnumbered, in line with its title. The
+// label's look is set through the system's own hooks; the parts the docs compose take
+// the docs' classes.
 @layer docs.components {
-  // the column's right cell, unframed (the TableOfContents as it ships)
   .toc {
+    display: grid;
+    gap: 20px;
     padding: 24px 20px;
+
+    --scnx-table-of-contents-label-font-family: #{$sq-mono};
+    --scnx-table-of-contents-label-font-size: 10px;
+    --scnx-table-of-contents-label-font-weight: 500;
+    --scnx-table-of-contents-label-letter-spacing: 0.12em;
+    --scnx-table-of-contents-label-color: #{$sq-muted};
+    --scnx-table-of-contents-label-margin-bottom: 10px;
+    --scnx-table-of-contents-list-margin-top: 0;
+    --scnx-table-of-contents-item-margin-bottom: 0;
+
+    // the label is the TableOfContents' first child, set in capitals like every HUD label
+    :global(nav) > :first-child {
+      text-transform: uppercase;
+    }
+  }
+
+  .list,
+  .sub {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  // in line with the parent's title, after its number
+  .sub {
+    margin-block: 2px 8px;
+    padding-inline-start: 40px;
+  }
+
+  .subLink {
+    display: block;
+    padding-block: 3px;
+    color: $sq-muted;
+    font-size: 12.5px;
+    line-height: 1.45;
+    text-decoration: none;
+    @include focus-ring(2px);
+
+    &:hover,
+    &[aria-current] {
+      color: $sq-text;
+    }
+  }
+
+  .item {
+    margin: 0;
+  }
+
+  // the number and the title share a baseline, whatever their sizes and line heights
+  .link {
+    position: relative;
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+    padding: 6px 0 6px 14px;
+    color: $sq-muted;
+    font-size: 13px;
+    line-height: 1.5;
+    text-decoration: none;
+    @include focus-ring(-2px);
+
+    &:hover {
+      color: $sq-text;
+    }
+
+    &[aria-current] {
+      color: $sq-text;
+      font-weight: var(--ds-typography-weight-semibold);
+
+      // a 2px signal bar at the link's edge
+      &::before {
+        content: "";
+        position: absolute;
+        inset-block: 4px;
+        inset-inline-start: 0;
+        inline-size: 2px;
+        background: $sq-signal;
+      }
+    }
+  }
+
+  .no {
+    flex: none;
+    color: $sq-muted;
+    font: 500 10.5px/1.6 $sq-mono;
+    font-variant-numeric: tabular-nums;
+
+    .link[aria-current] & {
+      color: $sq-signal-text;
+    }
+  }
+
+  // Agent-ready: a dark terminal cell, in either mode
+  .agents {
+    display: grid;
+    gap: 8px;
+    padding: 16px;
+    border: 1px solid $sq-line;
+    background: $sq-ground;
+    color: $sq-text;
+  }
+
+  .eyebrow {
+    margin: 0;
+    color: $sq-muted;
+    @include hud(10.5px, 500, 0.12em);
+  }
+
+  .body {
+    margin: 0;
+    color: $sq-text;
+    font-size: 13px;
+    line-height: 1.55;
+  }
+
+  .code {
+    justify-self: start;
+    padding: 4px 8px;
+    border: 1px solid $sq-line;
+    color: $sq-text;
+    font: 500 11.5px/1.3 $sq-mono;
+    text-decoration: none;
+    @include focus-ring(2px);
+
+    &:hover {
+      border-color: $sq-edge;
+    }
   }
 }

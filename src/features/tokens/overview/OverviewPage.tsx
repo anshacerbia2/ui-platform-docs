@@ -12,10 +12,9 @@ import { Sheet } from "@/components/docs/Sheet";
 import { TextLink } from "@/components/docs/TextLink";
 import { Body, Eyebrow, Subtitle } from "@/components/docs/Type";
 import { DocsLayout } from "@/components/shell/DocsLayout";
-import { PageToc } from "@/components/shell/PageToc";
 import { ThemeRoot } from "@/components/system/Theme";
 import { tokenList, tokenThemes } from "@/shared/lib/reference";
-import { SITE_THEME, THEME_IDS } from "@/shared/lib/themes";
+
 import { TokenName } from "../TokenName";
 import { CATEGORIES } from "../tokens";
 import styles from "./Overview.module.scss";
@@ -23,7 +22,7 @@ import styles from "./Overview.module.scss";
 const SECTIONS = [
   { id: "tiers", title: "Three tiers" },
   { id: "names", title: "Names" },
-  { id: "themes", title: "Themes and modes" },
+  { id: "modes", title: "Light and dark" },
   { id: "use", title: "Using tokens" },
   { id: "categories", title: "Categories" },
 ];
@@ -33,14 +32,14 @@ const TIERS = [
     tier: "Tier 1",
     name: "Core primitives",
     pattern: "color.{hue}.{axis}.{step}",
-    text: "The raw scales a theme is built from. Internal: never published, never used by a component or a product.",
+    text: "The raw scales the values are built from. Internal: never published, never used by a component or a product.",
     tag: "Internal",
   },
   {
     tier: "Tier 2",
     name: "Semantic tokens",
     pattern: "--ds-color-primary-surface-solid-default",
-    text: "The public contract. A name says what a value is for, and every theme supplies the same names. This is what you use.",
+    text: "The public contract. A name says what a value is for, and it stays when the value changes. This is what you use.",
     tag: "Use these",
     current: true,
   },
@@ -52,21 +51,6 @@ const TIERS = [
     tag: "Per component",
   },
 ];
-
-// STD-UIP-TKN-001, "Theme naming": the shipped themes, their owners and their looks.
-const THEME_ROWS: Record<string, { owner: string; look: string }> = {
-  "scnx-platform": {
-    owner: "The Scnehaux platform: IAM, AI runtime, organisation, and this site",
-    look: "Scnx Blue, square corners, ring materials",
-  },
-  "scnx-saas": {
-    owner: "The SaaS products",
-    look: "Ink, the concentric radius ladder, soft shadows",
-  },
-};
-
-const ROOT = (theme: string, mode: string) =>
-  `<div data-scnx-theme="${theme}" data-scnx-resolved-mode="${mode}">\n  …\n</div>`;
 
 const USE = `.invoice {
   padding: var(--ds-dimension-spacing-inset-default);
@@ -80,11 +64,11 @@ const USE = `.invoice {
   color: var(--ds-color-neutral-text-strong-default);
 }`;
 
-/** One name, every theme and mode: the same markup in four theme roots. */
-function Specimen({ theme, mode }: { theme: string; mode: "light" | "dark" }) {
+/** One name, both modes: the same markup in a light root and a dark one. */
+function Specimen({ mode }: { mode: "light" | "dark" }) {
   return (
     <figure className={styles.specimenCell}>
-      <ThemeRoot theme={theme} mode={mode}>
+      <ThemeRoot mode={mode}>
         <div className={styles.specimen}>
           <div className={styles.card}>
             <p className={styles.cardTitle}>Invoice 2041</p>
@@ -93,28 +77,24 @@ function Specimen({ theme, mode }: { theme: string; mode: "light" | "dark" }) {
           </div>
         </div>
       </ThemeRoot>
-      <figcaption className={styles.caption}>
-        {theme} <span>·</span> {mode}
-      </figcaption>
+      <figcaption className={styles.caption}>{mode} mode</figcaption>
     </figure>
   );
 }
 
-/** The tokens' front page: what a token is, how it is named, themed and used, and the categories. */
+/** The tokens' front page: what a token is, how it is named and used, and the categories. */
 export function OverviewPage() {
-  const themes = Object.keys(tokenThemes);
-  const standard = tokenThemes[SITE_THEME]?.standard;
+  const standard = Object.values(tokenThemes)[0]?.standard;
   return (
-    <DocsLayout aside={<PageToc items={SECTIONS} />}>
+    <DocsLayout toc={SECTIONS}>
       <PageHead
         title="Tokens"
-        lead="A token is a design decision with a name. Use the name and the theme supplies the value, in light and in dark, so a product follows every theme without a change to its code."
+        lead="A token is a design decision with a name. Use the name, never the value: the value changes in dark mode or in a later release, and your product follows without a change to its code."
       />
       <Facts
         label="Tokens"
         items={[
           { term: "Public tokens", value: String(tokenList.length) },
-          { term: "Themes", value: String(themes.length) },
           { term: "Modes", value: "light, dark" },
           { term: standard?.id ?? "Standard", value: `version ${standard?.version}` },
         ]}
@@ -166,67 +146,31 @@ export function OverviewPage() {
         />
       </Sheet>
 
-      <Sheet
-        id="themes"
-        title="Themes and modes"
-        meta={[
-          { term: "Default", value: SITE_THEME },
-          { term: "Modes", value: "light, dark" },
-        ]}
-      >
+      <Sheet id="modes" title="Light and dark" meta={[{ term: "Modes", value: "light, dark" }]}>
         <Block>
           <p>
-            A theme root sets the theme and the mode for everything inside it. The names never
-            change; the values do. Below, the same card reads the same tokens in four roots.
+            Every token has a value for light and one for dark. The names never change between them;
+            the values do. Below, the same card reads the same tokens in both.
           </p>
         </Block>
-        <Cells
-          columns={2}
-          className={styles.specimens}
-          aria-label="One card in every theme and mode"
-        >
-          {THEME_IDS.flatMap((theme) =>
-            (["light", "dark"] as const).map((mode) => (
-              <Specimen key={`${theme}-${mode}`} theme={theme} mode={mode} />
-            )),
-          )}
+        <Cells columns={2} className={styles.specimens} aria-label="One card in light and dark">
+          <Specimen mode="light" />
+          <Specimen mode="dark" />
         </Cells>
-        <div className={styles.split}>
-          <Block title="The root">
-            <p>
-              <InlineCode>data-scnx-theme</InlineCode> names the theme and{" "}
-              <InlineCode>data-scnx-resolved-mode</InlineCode> the mode. A preference such as
-              &ldquo;system&rdquo; is resolved to light or dark before it is set. Roots can nest: a
-              dark panel on a light page is a root of its own.
-            </p>
-          </Block>
-          <Block title="The default">
-            <p>
-              <InlineCode>{SITE_THEME}</InlineCode> is the default theme and the one this site uses.
-              A product picks the theme that owns its look; a client theme maps the same Tier-2
-              names under its own id, never a <InlineCode>scnx-</InlineCode> one.
-            </p>
-          </Block>
-        </div>
-        <Block>
-          <CodeBlock code={ROOT(SITE_THEME, "light")} title="index.html" language="html" />
+        <Block title="The mode">
+          <p>
+            <InlineCode>data-scnx-resolved-mode</InlineCode> on a root sets light or dark for
+            everything inside it. A preference such as &ldquo;system&rdquo; is resolved to light or
+            dark before it is set. Roots can nest: a dark panel on a light page is a root of its
+            own.
+          </p>
         </Block>
-        <DataTable
-          caption="Shipped themes"
-          head={["Theme", "Owner", "Look"]}
-          rows={THEME_IDS.map((id) => [
-            <InlineCode key="i">{id}</InlineCode>,
-            THEME_ROWS[id]?.owner ?? "",
-            THEME_ROWS[id]?.look ?? "",
-          ])}
-        />
       </Sheet>
-
       <Sheet id="use" title="Using tokens" meta={[{ term: "In", value: "CSS custom properties" }]}>
         <Block title="In your CSS">
           <p>
             Reach for the role the value plays: a raised card, its body text, the gap inside it. The
-            theme root above it decides what each resolves to.
+            root above it decides what each resolves to.
           </p>
           <CodeBlock code={USE} title="invoice.css" language="css" />
         </Block>
@@ -241,8 +185,7 @@ export function OverviewPage() {
             },
             {
               term: "Never type a value",
-              value:
-                "A hex code or a pixel size skips every theme and mode, and every contrast check.",
+              value: "A hex code or a pixel size skips dark mode and every contrast check.",
             },
             {
               term: "Names are stable",
@@ -278,7 +221,7 @@ export function OverviewPage() {
             {
               term: "Component geometry",
               value:
-                "A sidebar width or an avatar size belongs to its component until a theme needs to change it.",
+                "A sidebar width or an avatar size belongs to its component, until it needs to vary.",
             },
             {
               term: "Transitions",

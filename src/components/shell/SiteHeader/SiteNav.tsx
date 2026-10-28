@@ -11,14 +11,13 @@ export function SiteNav() {
   const pathname = usePathname();
   return (
     <nav aria-label="Documentation" className={styles.nav}>
-      {NAV_LINKS.map(({ href, label, echo }) => {
+      {NAV_LINKS.map(({ href, label }) => {
         const current = pathname === href || pathname.startsWith(`${href}/`);
         return (
           <Link
             key={href}
             href={href}
             className={styles.navLink}
-            data-echo={echo}
             aria-current={current ? "page" : undefined}
           >
             <Shuffle>{label}</Shuffle>

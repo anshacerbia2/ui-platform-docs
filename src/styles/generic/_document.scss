@@ -12,13 +12,18 @@ html {
   // the full width where the ruler is not shown
   --sq-col: min(1280px, calc(100vw - 2 * #{$sq-margin}));
 
-  @media (max-width: $sq-ruler-min - 0.02px) {
+  @media (width < #{$sq-ruler-min}) {
     --sq-col: 100%;
   }
 }
 
 body {
   margin: 0;
+}
+
+// While a full-screen dialog is open (the search, the menu), the page under it holds still.
+html:has(dialog[data-lock][open]) {
+  overflow: hidden;
 }
 
 // The ruler scrollbar replaces the native one from 1024px up (annex A 1.4;
@@ -30,6 +35,21 @@ html[data-ruler="on"] {
     display: none;
     inline-size: 0;
     block-size: 0;
+  }
+}
+
+// Every other scroll area (the sidebar, the contents, code, wide tables) keeps the
+// browser's own scrollbar, so keys, touch, momentum and assistive technology work as
+// they do anywhere, drawn thin in the chrome's line colour: quiet at rest, the faint
+// role while the reader is on it. Chromium and Firefox draw these; a browser without
+// them keeps its own, which on macOS already hides at rest (annex A 1.6).
+:where(body *) {
+  scrollbar-width: thin;
+  scrollbar-color: var(--sq-line) transparent;
+
+  &:hover,
+  &:focus-within {
+    scrollbar-color: var(--sq-faint) transparent;
   }
 }
 

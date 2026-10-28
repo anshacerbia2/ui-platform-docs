@@ -34,7 +34,7 @@
     &[data-variant="cell"] {
       inline-size: 48px;
       block-size: 100%;
-      box-shadow: inset 1px 0 0 $sq-line;
+      border-inline-start: 1px solid $sq-line;
     }
   }
 }

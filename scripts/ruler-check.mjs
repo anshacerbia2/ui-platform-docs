@@ -36,6 +36,10 @@ const ROUTES = arg("--routes", "")
   : [
       "/tokens",
       "/tokens/color",
+      "/tokens/typography",
+      "/tokens/dimension",
+      "/tokens/effect",
+      "/tokens/motion",
       "/tokens/all",
       "/tokens/figma",
       "/releases",

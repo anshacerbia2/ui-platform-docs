@@ -12,10 +12,10 @@
     padding: 32px $sq-pad 28px;
 
     &[data-current] {
-      box-shadow: inset 0 2px 0 $sq-signal;
+      border-block-start: 2px solid $sq-signal;
     }
 
-    @media (max-width: 760px) {
+    @include until(md) {
       padding-inline: $sq-pad-narrow;
     }
   }
@@ -115,7 +115,7 @@
     align-items: start;
     border-block-start: 1px solid $sq-line;
 
-    @media (min-width: 981px) {
+    @include from(lg) {
       grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
 
       > * + * {
@@ -149,7 +149,7 @@
       background: color-mix(in oklab, $sq-text 6%, transparent);
     }
 
-    @media (max-width: 760px) {
+    @include until(md) {
       grid-template-columns: 4.5rem minmax(0, 1fr);
       padding-inline: $sq-pad-narrow;
     }
@@ -191,7 +191,7 @@
       color: $sq-signal-text;
     }
 
-    @media (max-width: 760px) {
+    @include until(md) {
       grid-column: 2;
     }
   }

@@ -24,6 +24,11 @@
         grid-template-columns: 248px minmax(0, 1fr) 232px;
       }
     }
+
+    // no sidebar (the not-found page): the page takes the column, between its own lines
+    &[data-bare] {
+      grid-template-columns: minmax(0, 1fr);
+    }
   }
 
   .main {
@@ -33,69 +38,60 @@
     min-block-size: calc(100vh - #{$sq-nav});
     counter-reset: sheet;
 
+    // The dividers are borders, outside the page's content box, so nothing the page
+    // holds (a held bar, a cell, a live sample) can paint over them; an inset shadow
+    // here was covered wherever a child had a background (the owner, 2026-10-28).
     @include from(lg) {
-      box-shadow: inset 1px 0 0 $sq-line;
+      border-inline-start: 1px solid $sq-line;
+
+      .columns[data-bare] & {
+        border-inline-start: 0;
+      }
     }
 
     @include from(xl) {
       .columns[data-aside] & {
-        box-shadow:
-          inset 1px 0 0 $sq-line,
-          inset -1px 0 0 $sq-line;
+        border-inline-end: 1px solid $sq-line;
       }
     }
   }
 
-  .sidebar,
+  // The sidebar and the contents hold under the nav and scroll on their own, in the
+  // site's scroll area (ScrollArea, annex A 1.6).
+  .sidebarFrame,
   .aside {
     position: sticky;
     inset-block-start: $sq-nav;
+    align-self: start;
     max-block-size: calc(100vh - #{$sq-nav});
-    overflow-y: auto;
   }
 
-  .sidebar {
+  .sidebarFrame {
     display: none;
-    flex-direction: column;
-    gap: 4px;
-    padding: 24px 12px;
 
     @include from(lg) {
       display: flex;
     }
   }
 
+  .sidebar {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    padding: 24px 12px;
+  }
+
   .aside {
     display: none;
 
     @include from(xl) {
-      display: block;
+      display: flex;
+      flex-direction: column;
     }
   }
 
-  .mobileNav {
-    box-shadow: inset 0 -1px 0 $sq-line;
-
-    @include from(lg) {
-      display: none;
-    }
-  }
-
-  .mobileSummary {
-    display: flex;
-    align-items: center;
-    min-block-size: $sq-nav;
-    padding-inline: $sq-pad-narrow;
-    color: $sq-text;
-    cursor: pointer;
-    @include hud;
-    @include focus-ring(-2px);
-  }
-
-  .compactNav {
-    display: grid;
-    gap: $space-md;
-    padding: $space-xs 12px $space-md;
+  .asideScroll {
+    flex: 1 1 auto;
   }
 
   .group {
@@ -113,8 +109,11 @@
     margin-block-start: 0;
   }
 
+  // 2px between items, so two hovered or current backgrounds never touch (the owner,
+  // 2026-10-28)
   .groupList {
     display: grid;
+    gap: 2px;
     margin: 0;
     padding: 0;
     list-style: none;

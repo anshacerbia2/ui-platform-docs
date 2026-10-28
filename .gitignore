@@ -12,3 +12,4 @@ next-env.d.ts
 artifacts/
 src/generated/
 public/downloads/
+public/search.json
