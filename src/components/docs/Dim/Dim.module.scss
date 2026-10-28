@@ -21,11 +21,11 @@
     }
 
     &::before {
-      box-shadow: inset 1px 0 0 $sq-cross;
+      border-inline-start: 1px solid $sq-cross;
     }
 
     &::after {
-      box-shadow: inset -1px 0 0 $sq-cross;
+      border-inline-end: 1px solid $sq-cross;
     }
 
     &[data-signal] {
@@ -34,7 +34,7 @@
       &::before,
       &::after {
         background-image: linear-gradient($sq-signal, $sq-signal);
-        box-shadow: none;
+        border: 0;
       }
     }
   }

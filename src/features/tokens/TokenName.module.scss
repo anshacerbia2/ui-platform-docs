@@ -1,0 +1,77 @@
+@use "layers";
+@use "settings" as *;
+@use "tools" as *;
+
+// A token name taken apart: segments in a row of cells that share their lines, the
+// segment large in the mono voice, what it is below in the HUD voice, then the
+// closed vocabulary it is drawn from with the shown value marked.
+@layer docs.features {
+  .name {
+    margin: 0;
+  }
+
+  .segments {
+    display: grid;
+    grid-auto-columns: minmax(0, 1fr);
+    grid-auto-flow: column;
+    gap: 1px;
+    margin: 0;
+    padding: 0;
+    background: $sq-line;
+    list-style: none;
+    // the cells' lines end on a line of their own, never in the open
+    border-block-end: 1px solid $sq-line;
+
+    @include until(md) {
+      grid-auto-flow: row;
+    }
+  }
+
+  .segment {
+    display: grid;
+    align-content: start;
+    gap: 10px;
+    min-inline-size: 0;
+    padding: 24px 18px 20px;
+    background: $sq-ground;
+  }
+
+  // Sized to fit the longest segment ("default", "surface") in a fifth of the
+  // documentation column, so a segment never breaks inside a word.
+  .code {
+    color: $sq-text;
+    font: 500 1.25rem / 1.1 $sq-mono;
+    letter-spacing: -0.02em;
+    white-space: nowrap;
+
+    .segment[data-last] & {
+      color: $sq-signal-text;
+    }
+  }
+
+  .dot {
+    color: $sq-faint;
+  }
+
+  .part {
+    color: $sq-muted;
+    @include hud(10.5px, 500, 0.14em);
+  }
+
+  .values {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px 10px;
+    margin: 6px 0 0;
+    padding: 12px 0 0;
+    border-block-start: 1px solid $sq-line;
+    list-style: none;
+    color: $sq-muted;
+    font: 400 12px/1.5 $sq-mono;
+
+    [data-current] {
+      color: $sq-text;
+      font-weight: 600;
+    }
+  }
+}

@@ -6,7 +6,6 @@ import { DocsLayout } from "@/components/shell/DocsLayout";
 import { titleOf, type EntryRow, type PrimitiveReference } from "@/shared/lib/reference";
 import { Accessibility } from "./Accessibility";
 import { Api } from "./Api";
-import { PageToc } from "@/components/shell/PageToc";
 import { Status } from "./Status";
 
 const SECTIONS = [
@@ -28,7 +27,7 @@ export function PrimitivePage({
   const main = reference.api.find((a) => a.kind === "component");
   const { spec } = reference;
   return (
-    <DocsLayout aside={<PageToc items={SECTIONS} />}>
+    <DocsLayout toc={SECTIONS}>
       <PageHead
         crumbs={[
           { label: "Primitives", href: "/primitives" as Route },

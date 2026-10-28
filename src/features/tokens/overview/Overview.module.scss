@@ -1,0 +1,198 @@
+@use "layers";
+@use "settings" as *;
+@use "tools" as *;
+
+// The tokens' front page. Every value the specimen card draws is a published token,
+// read inside a theme root, so the four cells differ only by their root.
+@layer docs.features {
+  .tier {
+    display: grid;
+    grid-template-rows: auto auto 1fr auto auto;
+    gap: 12px;
+    padding: 32px $sq-pad 28px;
+
+    &[data-current] {
+      border-block-start: 2px solid $sq-signal;
+    }
+
+    @include until(md) {
+      padding-inline: $sq-pad-narrow;
+    }
+  }
+
+  .pattern {
+    padding-block-start: 12px;
+    border-block-start: 1px solid $sq-line;
+    color: $sq-text;
+    font: 500 12.5px/1.5 $sq-mono;
+    overflow-wrap: anywhere;
+  }
+
+  .tag {
+    color: $sq-muted;
+    @include hud(10.5px, 500, 0.14em);
+
+    .tier[data-current] & {
+      color: $sq-signal-text;
+    }
+  }
+
+  // One name, four values.
+  .specimens {
+    border-block: 1px solid $sq-line;
+  }
+
+  .specimenCell {
+    display: grid;
+    margin: 0;
+  }
+
+  .specimen {
+    display: grid;
+    place-items: center;
+    min-block-size: 220px;
+    padding: 32px 24px;
+    background: $sq-ground;
+  }
+
+  .card {
+    display: grid;
+    justify-items: start;
+    gap: var(--ds-dimension-spacing-stack-compact);
+    inline-size: min(100%, 15rem);
+    box-sizing: border-box;
+    padding: var(--ds-dimension-spacing-inset-default);
+    border-radius: var(--ds-dimension-radius-container);
+    background: var(--ds-color-neutral-surface-raised-default);
+    box-shadow: var(--ds-effect-material-raised);
+  }
+
+  .cardTitle {
+    margin: 0;
+    color: var(--ds-color-neutral-text-strong-default);
+    font-family: var(--ds-typography-heading-xsmall-font-family);
+    font-size: var(--ds-typography-heading-xsmall-font-size);
+    font-weight: var(--ds-typography-heading-xsmall-font-weight);
+    line-height: var(--ds-typography-heading-xsmall-line-height);
+    letter-spacing: var(--ds-typography-heading-xsmall-letter-spacing);
+  }
+
+  .cardBody {
+    margin: 0;
+    color: var(--ds-color-neutral-text-subtle-default);
+    font-family: var(--ds-typography-body-small-font-family);
+    font-size: var(--ds-typography-body-small-font-size);
+    line-height: var(--ds-typography-body-small-line-height);
+  }
+
+  .cardAction {
+    display: inline-flex;
+    align-items: center;
+    block-size: var(--ds-dimension-size-control-default);
+    margin-block-start: var(--ds-dimension-spacing-stack-compact);
+    padding-inline: var(--ds-dimension-spacing-control-default);
+    border-radius: var(--ds-dimension-radius-control);
+    background: var(--ds-color-primary-surface-solid-default);
+    color: var(--ds-color-primary-text-contrast-default);
+    font-family: var(--ds-typography-label-default-font-family);
+    font-size: var(--ds-typography-label-default-font-size);
+    font-weight: var(--ds-typography-weight-semibold);
+  }
+
+  .caption {
+    padding: 12px 16px;
+    border-block-start: 1px solid $sq-line;
+    color: $sq-text;
+    @include hud(10.5px, 500, 0.12em);
+
+    span {
+      color: $sq-faint;
+    }
+  }
+
+  .split {
+    display: grid;
+    align-items: start;
+    border-block-start: 1px solid $sq-line;
+
+    @include from(lg) {
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+
+      > * + * {
+        border-inline-start: 1px solid $sq-line;
+      }
+    }
+  }
+
+  // The five domains as rows: a large count, the name and what it is for, where it leads.
+  .categories {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+
+    li + li {
+      border-block-start: 1px solid $sq-line;
+    }
+  }
+
+  .category {
+    display: grid;
+    grid-template-columns: 7.5rem minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 24px;
+    padding: 22px $sq-pad;
+    color: $sq-text;
+    text-decoration: none;
+    @include focus-ring(-2px);
+
+    &:hover {
+      background: color-mix(in oklab, $sq-text 6%, transparent);
+    }
+
+    @include until(md) {
+      grid-template-columns: 4.5rem minmax(0, 1fr);
+      padding-inline: $sq-pad-narrow;
+    }
+  }
+
+  .count {
+    font-size: clamp(2.25rem, 3.4vw, 3rem);
+    font-weight: var(--ds-typography-weight-medium);
+    letter-spacing: -0.04em;
+    line-height: 1;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .categoryText {
+    display: grid;
+    gap: 4px;
+  }
+
+  .categoryName {
+    font-size: 1.125rem;
+    font-weight: var(--ds-typography-weight-semibold);
+    letter-spacing: -0.012em;
+  }
+
+  .categoryUse {
+    color: $sq-muted;
+    font-size: var(--ds-typography-body-small-font-size);
+    line-height: 1.55;
+  }
+
+  .categoryLink {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    color: $sq-muted;
+    @include hud(10.5px, 500, 0.12em);
+
+    .category[data-page] & {
+      color: $sq-signal-text;
+    }
+
+    @include until(md) {
+      grid-column: 2;
+    }
+  }
+}

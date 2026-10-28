@@ -149,6 +149,15 @@ type Reference = {
   landing: { lab: Lab; swatches: string[] };
   tokenList: TokenRow[];
   figma: FigmaFile[];
+  color: { onSolid: OnSolid[] };
+};
+
+/** A scheme's `contrast` text on its `solid` surface at rest, per theme and mode (STD-UIP-TKN-001). */
+export type OnSolid = {
+  scheme: string;
+  fg: string;
+  bg: string;
+  results: { theme: string; mode: string; ratio: number; pass: boolean }[];
 };
 
 /** A Figma profile file of the pinned @scnx/system (ui-platform TDD tokens FG1-FG6). */
@@ -178,6 +187,7 @@ export const tokenThemes = reference.tokens;
 export const landing = reference.landing;
 export const tokenList = reference.tokenList;
 export const figmaFiles = reference.figma;
+export const colorPage = reference.color;
 export const componentSlugs = Object.keys(reference.components);
 export const primitiveSlugs = Object.keys(reference.primitives);
 export const getComponent = (slug: string): ComponentReference | undefined =>

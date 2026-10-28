@@ -20,11 +20,10 @@ import {
 import { Accessibility } from "./Accessibility";
 import { Api } from "./Api";
 import { Hooks, type HookRow } from "./Hooks";
-import { PageToc } from "@/components/shell/PageToc";
 import { Preview } from "./Preview";
 import { ContrastTable, Specification } from "./Specification";
 import { Status } from "./Status";
-import { ThemeChoice } from "./ThemeChoice";
+import { ThemeChoice } from "@/components/docs/ThemeChoice";
 import styles from "./Reference.module.scss";
 
 // The page order of ADR-UIP-CMP-001 item 9 (TDD docs-site R3); Hooks follow Anatomy (D11).
@@ -102,7 +101,7 @@ export function ComponentPage({
   const title = titleOf(row.slug);
   return (
     <ThemeChoice themes={themes}>
-      <DocsLayout aside={<PageToc items={sections} />}>
+      <DocsLayout toc={sections}>
         <PageHead
           crumbs={[{ label: "Components", href: "/components" }, { label: title }]}
           title={main?.name ?? title}

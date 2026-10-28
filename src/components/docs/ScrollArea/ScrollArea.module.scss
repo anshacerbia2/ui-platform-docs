@@ -1,0 +1,96 @@
+@use "layers";
+@use "settings" as *;
+@use "tools" as *;
+
+// A scroll area with no native scrollbar (annex A 1.6): the viewport scrolls natively
+// with its scrollbar hidden, and edge fades show there is more above or below. With a
+// bar (annex B 3), a square-cornered thumb on the area's end stands in for it.
+@layer docs.components {
+  .area {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    min-block-size: 0;
+  }
+
+  .viewport {
+    flex: 1 1 auto;
+    min-block-size: 0;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    scrollbar-width: none;
+
+    &::-webkit-scrollbar {
+      display: none;
+    }
+
+    // Edge fades: more above, more below. Only alpha matters in a mask.
+    .area[data-more-above] & {
+      mask-image: linear-gradient(to bottom, transparent, black 32px);
+    }
+
+    .area[data-more-below] & {
+      mask-image: linear-gradient(to top, transparent, black 32px);
+    }
+
+    .area[data-more-above][data-more-below] & {
+      mask-image: linear-gradient(
+        to bottom,
+        transparent,
+        black 32px,
+        black calc(100% - 32px),
+        transparent
+      );
+    }
+  }
+
+  // the rail: the area's end, there only while the content overflows, and wider than
+  // the thumb so the thumb is easy to take. It draws no line of its own: the line it
+  // runs along is the frame's (a column side, a divider), and a second would double it.
+  .rail {
+    position: absolute;
+    inset-block: 0;
+    inset-inline-end: 0;
+    display: none;
+    inline-size: 12px;
+    cursor: default;
+
+    .area[data-overflow] & {
+      display: block;
+    }
+  }
+
+  // the thumb: a bar with square corners, moved by translate and sized only when the
+  // content changes; it thickens toward the pointer and takes the signal while dragged
+  .thumb {
+    position: absolute;
+    inset-block-start: 0;
+    inset-inline-end: 0;
+    display: block;
+    inline-size: 6px;
+    background: $sq-faint;
+    touch-action: none;
+    // 3px at rest: thickened by scale, so nothing is laid out again
+    scale: 0.5 1;
+    transform-origin: right;
+
+    @include motion {
+      transition:
+        scale 160ms $sq-settle-easing,
+        background-color 160ms $sq-settle-easing;
+    }
+
+    .area:hover & {
+      background: $sq-muted;
+    }
+
+    .rail:hover &,
+    .area[data-dragging] & {
+      scale: 1;
+    }
+
+    .area[data-dragging] & {
+      background: $sq-signal;
+    }
+  }
+}

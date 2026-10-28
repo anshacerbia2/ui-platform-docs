@@ -19,7 +19,7 @@
     padding: 24px $sq-pad 28px;
     container-type: inline-size;
 
-    @media (max-width: 760px) {
+    @include until(md) {
       padding-inline: $sq-pad-narrow;
     }
   }
@@ -148,7 +148,7 @@
     padding: 0;
     list-style: none;
     background: $sq-line;
-    box-shadow: 0 0 0 1px $sq-line;
+    border: 1px solid $sq-line;
 
     @container (min-width: 480px) {
       grid-template-columns: repeat(4, minmax(0, 1fr));
@@ -161,13 +161,18 @@
       display: block;
       margin: 0;
       background: none;
-      box-shadow: none;
+      border: 0;
       pointer-events: none;
     }
 
-    // until the scene is up, a wide figure keeps its callouts back, so nothing jumps
+    // Until the scene is up, a wide figure keeps its callouts back and out of the flow,
+    // where the live callouts will stand, so the figure is the height it will be and
+    // the hero does not change height when the scene starts (the owner, 2026-10-28).
     .asm[data-state="loading"] & {
       @container (min-width: 480px) {
+        position: absolute;
+        inset: 0;
+        margin: 0;
         visibility: hidden;
       }
     }
@@ -221,8 +226,10 @@
     }
   }
 
-  // Without WebGL or a script, the figure is its text: the list, and the caption.
-  .asm:not([data-state="live"], [data-state="loading"]) {
+  // Without WebGL or a script, the figure is its text: the list, and the caption. The
+  // server renders it loading, so a browser that runs no script is told by the media
+  // query, not by a state the script would set.
+  @mixin as-text {
     justify-content: center;
 
     .hud,
@@ -232,7 +239,19 @@
     }
 
     .parts {
+      position: static;
       margin: 0;
+      visibility: visible;
+    }
+  }
+
+  .asm:not([data-state="live"], [data-state="loading"]) {
+    @include as-text;
+  }
+
+  @media (scripting: none) {
+    .asm {
+      @include as-text;
     }
   }
 

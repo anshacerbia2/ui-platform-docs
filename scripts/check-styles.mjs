@@ -14,6 +14,10 @@
 // 6. Every colour mix is made in OKLab (`color-mix(in oklab, …)`): the neutral
 //    tokens have so little chroma that their OKLCH hue is powerless, a mix in
 //    OKLCH takes hue `none` (read as 0°, red), and a grey turns warm.
+// 7. A line is a border, never an inset box-shadow: an inset shadow is painted
+//    inside the box, under its children, so any child with a background covers
+//    the line (the owner, 2026-10-28). Shadows are for depth: the effect tokens
+//    and focus halos.
 
 import fs from "node:fs";
 import { createRequire } from "node:module";
@@ -44,6 +48,8 @@ export function styleFindings(file, text, published) {
       findings.push(`${at}: color literal; use a token`);
     for (const [, name] of line.matchAll(/var\((--ds-[a-z0-9-]+)/g))
       if (!published.has(name)) findings.push(`${at}: ${name} is not a published token`);
+    if (/(^|[\s:,])inset\s+-?[\d.]+(px)?\s+-?[\d.]+(px)?\s+0(px)?\b/.test(line))
+      findings.push(`${at}: a line drawn as an inset box-shadow; use a border`);
   });
   // across lines: a formatter may break `color-mix(` from its space
   for (const match of text.matchAll(/color-mix\(\s*in\s+([a-z-]+)/g))
@@ -169,6 +175,21 @@ function selfTest() {
       ).length,
       1,
     ],
+    // a line is a border; an inset shadow line, on one line or a layer of its own, is not
+    [
+      styleFindings("x.scss", ".a { box-shadow: inset 0 -1px 0 var(--ds-a); }", published).length,
+      1,
+    ],
+    [
+      styleFindings("x.scss", ".a {\n  box-shadow:\n    inset 1px 0 0 var(--ds-a);\n}", published)
+        .length,
+      1,
+    ],
+    [
+      styleFindings("x.scss", ".a { border-block-end: 1px solid var(--ds-a); }", published).length,
+      0,
+    ],
+    [styleFindings("x.scss", ".a { box-shadow: var(--ds-a); }", published).length, 0],
     [styleFindings("x.tsx", "<div style={{ color: 'red' }} />", published).length, 1],
     [styleFindings("x.tsx", "<div className={styles.a} />", published).length, 0],
   ];

@@ -8,16 +8,16 @@
     position: relative;
     @include column;
 
+    // the rule: the column's box, painted out to the viewport's edges by a border-image
+    // outset, ink that never widens the page (as a sheet's rule, Sheet.module.scss)
     &::before {
       content: "";
       position: absolute;
       z-index: 31;
       inset-block-start: 0;
-      inset-inline-start: 50%;
-      inline-size: 100vw;
+      inset-inline: 0;
       block-size: 1px;
-      translate: -50% 0;
-      background: $sq-line;
+      border-image: linear-gradient($sq-line 0 0) fill 0 / /0 100vw;
       pointer-events: none;
     }
 
@@ -49,15 +49,15 @@
       background: $sq-ground;
     }
 
-    @media (min-width: 761px) {
+    @include from(md) {
       grid-template-columns: repeat(2, minmax(0, 1fr));
     }
 
-    @media (min-width: 981px) {
+    @include from(lg) {
       grid-template-columns: minmax(0, 1.4fr) repeat(3, minmax(0, 1fr));
     }
 
-    @media (max-width: 760px) {
+    @include until(md) {
       > * {
         padding-inline: $sq-pad-narrow;
       }
@@ -118,17 +118,17 @@
     display: grid;
     grid-template-columns: 1fr 1fr;
     margin: 0;
-    box-shadow: inset 0 1px 0 $sq-line;
+    border-block-start: 1px solid $sq-line;
 
     > div {
       min-inline-size: 0;
       padding: 16px 20px;
-      box-shadow: inset 1px 0 0 $sq-line;
+      border-inline-start: 1px solid $sq-line;
     }
 
     > div:first-child {
       padding-inline-start: $sq-pad;
-      box-shadow: none;
+      border-inline-start: 0;
     }
 
     dt {
@@ -150,13 +150,18 @@
       }
     }
 
-    @media (min-width: 981px) {
+    @include from(lg) {
       grid-template-columns: repeat(5, minmax(0, 1fr));
     }
 
-    @media (max-width: 980px) {
+    @include until(lg) {
       > div {
-        box-shadow: inset 0 1px 0 $sq-line;
+        border-inline-start: 0;
+        border-block-start: 1px solid $sq-line;
+      }
+
+      > div:nth-child(-n + 2) {
+        border-block-start: 0;
       }
     }
   }

@@ -1,0 +1,447 @@
+@use "layers";
+@use "settings" as *;
+@use "tools" as *;
+
+// The menu that stands in for the nav strip on a narrow screen (TDD docs-site D22): a
+// full-screen sheet on the stage's dot grid, the areas set as large as the hero's
+// headline, numbered, the current one closed by a signal square as the hero's line is by
+// its check. It moves only by opacity, translate and a grid row; nothing blurs.
+@layer docs.components {
+  // the strip's menu cell: a square holding a drawer's two lines, its name hidden, only
+  // where the strip's links have left (the owner, 2026-10-29)
+  .trigger {
+    display: none;
+    align-items: center;
+    justify-content: center;
+    inline-size: $sq-nav;
+    padding: 0;
+    border: 0;
+    border-inline-start: 1px solid $sq-line;
+    background: none;
+    color: $sq-text;
+    cursor: pointer;
+    @include focus-ring(-4px);
+
+    // where the strip's links leave (SiteHeader.module.scss)
+    @container strip (max-width: 1023px) {
+      display: inline-flex;
+    }
+  }
+
+  .lines {
+    display: grid;
+    justify-items: end;
+    gap: 5px;
+    inline-size: 18px;
+
+    i {
+      display: block;
+      inline-size: 18px;
+      block-size: 1.5px;
+      background: currentColor;
+    }
+
+    // the shorter line grows to the longer on hover, by a scale, nothing laid out
+    i + i {
+      scale: 0.61 1;
+      transform-origin: right;
+
+      @include motion {
+        transition: scale 200ms $sq-settle-easing;
+      }
+    }
+
+    .trigger:hover & i + i {
+      scale: 1;
+    }
+  }
+
+  // the areas come in from the side the sheet opens from
+  @keyframes menu-slide {
+    from {
+      opacity: 0;
+      translate: 32px 0;
+    }
+  }
+
+  // the scan line rides the sheet's leading edge across the screen, then goes
+  @keyframes menu-scan {
+    from {
+      translate: 100vw 0;
+    }
+
+    80% {
+      opacity: 1;
+    }
+
+    to {
+      opacity: 0;
+      translate: 0 0;
+    }
+  }
+
+  @keyframes menu-turn {
+    from {
+      rotate: -90deg;
+    }
+  }
+
+  .dialog {
+    inline-size: 100%;
+    max-inline-size: none;
+    block-size: 100%;
+    max-block-size: none;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    // a modal dialog scrolls by default: this one clips, its list scrolls itself
+    overflow: clip;
+    background: $sq-ground;
+    color: $sq-text;
+
+    &::backdrop {
+      background: transparent;
+    }
+
+    // The sheet wipes in from the menu cell's side, a scan line on its edge, and goes back
+    // on close: a clip, a translate and an opacity, nothing laid out again. The close
+    // waits for the way back (afterExit), and display and the top layer stay for it.
+    @include motion {
+      clip-path: inset(0 0 0 100%);
+      transition:
+        clip-path 240ms $sq-exit-easing,
+        display 240ms allow-discrete,
+        overlay 240ms allow-discrete;
+
+      &[open] {
+        clip-path: inset(0);
+        transition-duration: 560ms;
+        transition-timing-function: $sq-settle-easing;
+      }
+
+      @starting-style {
+        &[open] {
+          clip-path: inset(0 0 0 100%);
+        }
+      }
+
+      &::after {
+        content: "";
+        position: absolute;
+        inset: 0 auto 0 0;
+        inline-size: 72px;
+        border-inline-start: 1px solid $sq-signal;
+        background: linear-gradient(
+          to left,
+          transparent,
+          color-mix(in oklab, $sq-signal 12%, transparent)
+        );
+        opacity: 0;
+        pointer-events: none;
+        animation: menu-scan 560ms $sq-settle-easing;
+      }
+    }
+  }
+
+  // The sheet is the screen's height, and the list takes all of it that the bar, the
+  // search and the foot leave, scrolling past that: the foot rests on the bottom because
+  // the list fills the rest, not because it sticks (the owner, 2026-10-29).
+  .frame {
+    display: grid;
+    grid-template-rows: $sq-nav auto minmax(0, 1fr) auto;
+    block-size: 100%;
+  }
+
+  .bar {
+    display: flex;
+    align-items: stretch;
+    border-block-end: 1px solid $sq-line;
+  }
+
+  .brand {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding-inline: 16px 20px;
+    border-inline-end: 1px solid $sq-line;
+    color: $sq-text;
+    font-size: var(--ds-typography-body-small-font-size);
+    font-weight: 600;
+    letter-spacing: -0.01em;
+    text-decoration: none;
+    @include focus-ring(-2px);
+  }
+
+  .version {
+    display: inline-flex;
+    flex: 1;
+    align-items: center;
+    padding-inline: 16px;
+    color: $sq-muted;
+    @include hud(10.5px, 500, 0.12em);
+  }
+
+  // a square in the place of the menu cell that opened it, the cross alone; its name
+  // is hidden (the owner, 2026-10-29)
+  .close {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    inline-size: $sq-nav;
+    padding: 0;
+    border: 0;
+    border-inline-start: 1px solid $sq-line;
+    background: none;
+    color: $sq-text;
+    cursor: pointer;
+    @include focus-ring(-4px);
+
+    svg {
+      @include motion {
+        animation: menu-turn 360ms $sq-settle-easing;
+      }
+    }
+  }
+
+  // a wide row that opens the search
+  .search {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr);
+    align-items: center;
+    column-gap: 14px;
+    row-gap: 4px;
+    padding: 20px $sq-pad-narrow;
+    border: 0;
+    border-block-end: 1px solid $sq-line;
+    background: none;
+    color: $sq-muted;
+    font-size: 1.125rem;
+    font-weight: var(--ds-typography-weight-medium);
+    letter-spacing: -0.02em;
+    text-align: start;
+    cursor: pointer;
+    @include focus-ring(-2px);
+
+    &:hover {
+      color: $sq-text;
+    }
+
+    @include motion {
+      animation: menu-slide 560ms 60ms $sq-settle-easing both;
+    }
+  }
+
+  .searchHint {
+    grid-column: 2;
+    color: $sq-faint;
+    @include hud(10px, 500, 0.12em);
+  }
+
+  // the areas, on the stage's dot grid, which shows in the list's room below them
+  .nav {
+    min-block-size: 0;
+    // across, the areas sliding in never make a scrollbar
+    overflow: hidden auto;
+    overscroll-behavior: contain;
+    background-image: radial-gradient($sq-line 1px, transparent 1px);
+    background-size: 22px 22px;
+  }
+
+  .areas {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .area {
+    border-block-end: 1px solid $sq-line;
+    background: $sq-ground;
+
+    @include motion {
+      animation: menu-slide 560ms $sq-settle-easing both;
+
+      @for $i from 1 through 5 {
+        &:nth-child(#{$i}) {
+          animation-delay: #{40 + $i * 50}ms;
+        }
+      }
+    }
+  }
+
+  .row {
+    // the label's size, as large as the row allows beside its count
+    --area-size: clamp(1.75rem, 8vw, 3.25rem);
+
+    display: grid;
+    grid-template-columns: 2.25rem minmax(0, 1fr) auto;
+    align-items: center;
+    padding: 18px $sq-pad-narrow 18px;
+  }
+
+  // The number's line is the label's: its font, size and line height, so the two share a
+  // baseline at any size. The digits sit on it by vertical-align, centred on the
+  // label's lowercase.
+  .no {
+    align-self: start;
+    font-size: var(--area-size);
+    line-height: 1;
+
+    span {
+      color: $sq-muted;
+      font: 500 11px/1 $sq-mono;
+      letter-spacing: 0.08em;
+      vertical-align: middle;
+    }
+
+    .area[data-current] & span {
+      color: $sq-signal-text;
+    }
+  }
+
+  .areaLink {
+    align-self: start;
+    color: $sq-text;
+    // the label and its square never parted
+    font-size: var(--area-size);
+    white-space: nowrap;
+    font-weight: var(--ds-typography-weight-medium);
+    letter-spacing: -0.045em;
+    line-height: 1;
+    text-decoration: none;
+    @include focus-ring(2px);
+
+    // the current area closes on a signal square, as the hero's line closes on its check
+    .area[data-current] &::after {
+      content: "";
+      display: inline-block;
+      inline-size: 0.16em;
+      block-size: 0.16em;
+      margin-inline-start: 0.12em;
+      background: $sq-signal;
+    }
+  }
+
+  .toggle {
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+    block-size: 44px;
+    padding: 0 0 0 12px;
+    border: 0;
+    background: none;
+    color: $sq-muted;
+    cursor: pointer;
+    @include focus-ring(2px);
+  }
+
+  .count {
+    @include hud(10.5px, 500, 0.12em);
+  }
+
+  // a plus whose upright turns flat as the area opens
+  .plus {
+    position: relative;
+    inline-size: 14px;
+    block-size: 14px;
+
+    &::before,
+    &::after {
+      content: "";
+      position: absolute;
+      inset: 50% 0 auto;
+      block-size: 1.5px;
+      margin-block-start: -0.75px;
+      background: $sq-text;
+    }
+
+    &::after {
+      rotate: 90deg;
+
+      @include motion {
+        transition: rotate 240ms $sq-settle-easing;
+      }
+    }
+
+    .toggle[aria-expanded="true"] &::after {
+      rotate: 0deg;
+    }
+  }
+
+  // an area's pages, opening by a grid row from nothing to their height
+  .pages {
+    display: grid;
+    grid-template-rows: 0fr;
+
+    @include motion {
+      transition: grid-template-rows 320ms $sq-settle-easing;
+    }
+
+    .area[data-open] & {
+      grid-template-rows: 1fr;
+    }
+
+    ul {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 2px 16px;
+      min-block-size: 0;
+      margin: 0;
+      padding: 0 $sq-pad-narrow 0 calc(#{$sq-pad-narrow} + 2.25rem);
+      overflow: hidden;
+      list-style: none;
+    }
+
+    li:nth-last-child(-n + 2) {
+      padding-block-end: 18px;
+    }
+  }
+
+  .page {
+    display: block;
+    padding: 8px 0 8px 10px;
+    border-inline-start: 2px solid transparent;
+    color: $sq-muted;
+    font-size: 15px;
+    text-decoration: none;
+    @include focus-ring(2px);
+
+    &:hover {
+      color: $sq-text;
+    }
+
+    &[aria-current="page"] {
+      border-inline-start-color: $sq-signal;
+      color: $sq-text;
+      font-weight: var(--ds-typography-weight-semibold);
+    }
+  }
+
+  // the repository and the mode, at either end, on the sheet's own ground with no line
+  // of their own (the owner, 2026-10-29)
+  .foot {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    min-block-size: 56px;
+    padding-inline: calc(#{$sq-pad-narrow} - 12px) calc(#{$sq-pad-narrow} - 6px);
+
+    @include motion {
+      animation: menu-slide 560ms 340ms $sq-settle-easing both;
+    }
+  }
+
+  // GitHub's mark alone, its name its label
+  .footIcon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    inline-size: 44px;
+    block-size: 44px;
+    color: $sq-muted;
+    @include focus-ring(-4px);
+
+    &:hover {
+      color: $sq-text;
+    }
+  }
+}

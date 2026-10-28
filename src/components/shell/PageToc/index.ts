@@ -1,1 +1,1 @@
-export { PageToc } from "./PageToc";
+export { PageToc, type TocItem } from "./PageToc";

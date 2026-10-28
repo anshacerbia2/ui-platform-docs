@@ -8,11 +8,11 @@
     background: $sq-ground;
 
     &[data-framed] {
-      box-shadow: 0 0 0 1px $sq-line;
+      border: 1px solid $sq-line;
     }
 
     > * + * {
-      box-shadow: inset 0 1px 0 $sq-line;
+      border-block-start: 1px solid $sq-line;
     }
   }
 }

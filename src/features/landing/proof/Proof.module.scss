@@ -6,7 +6,7 @@
 // contracts (assembly/, TDD docs-site D19).
 @layer docs.features {
   .hero {
-    @media (min-width: 1081px) {
+    @include from(lg) {
       grid-template-columns: minmax(0, 1.08fr) minmax(0, 1fr);
     }
   }
@@ -18,7 +18,7 @@
     gap: 28px;
     padding: 72px $sq-pad 64px;
 
-    @media (max-width: 760px) {
+    @include until(md) {
       padding: 48px $sq-pad-narrow;
     }
   }

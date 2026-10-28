@@ -4,6 +4,10 @@
 
 // A sheet (TDD docs-site D14; scnx-platform square.css "Sheets", annex A 2.2-2.7).
 // The page counts the sheets (`counter-reset: sheet` on its main).
+
+// the rule's colour: the line colour made opaque (below)
+$rule: color-mix(in oklab, $sq-text 16%, $sq-ground);
+
 @layer docs.components {
   .sheet {
     // A jump lands the section's line on the nav's own line: the document's
@@ -12,7 +16,16 @@
     position: relative;
     counter-increment: sheet;
 
-    // the rule: across the page column, drawn in from the left once (Reveal sets data-drawn)
+    // A sheet starts 1px up, so its rule lands on the last line of the sheet before it
+    // (a table's last row, a row of tiles) and the two are one line, never a double
+    // border. The rule is the line colour made opaque, so where it covers a line it
+    // does not darken it.
+    & + & {
+      margin-block-start: -1px;
+    }
+
+    // the rule: across the page column, there from the first paint, never animated
+    // (the owner, 2026-10-28)
     &::before {
       content: "";
       position: absolute;
@@ -20,24 +33,26 @@
       inset-block-start: 0;
       inset-inline: 0;
       block-size: 1px;
-      background: $sq-line;
+      background: $rule;
       pointer-events: none;
-      transform-origin: left;
-
-      @include motion {
-        transition: scale 1100ms $sq-draw-easing;
-      }
     }
 
-    // a cross where the rule meets each column line
+    // A documentation page's rule ends on the column lines, a T, not a crossing: each
+    // joint is marked by the cross without its outer arm, an 11px stroke on the column
+    // line and a 6px arm along the rule (the owner, 2026-10-28). A page of sheets, whose
+    // rule crosses the column lines, marks them with the whole cross (below).
     &::after {
       content: "";
       position: absolute;
       z-index: 32;
       inset-block-start: -5px;
-      inset-inline: -6px;
+      inset-inline: -5px;
       block-size: 11px;
-      background: $sq-plus;
+      background:
+        linear-gradient($sq-cross, $sq-cross) 5px 0 / 1px 11px no-repeat,
+        linear-gradient($sq-cross, $sq-cross) 5px 5px / 6px 1px no-repeat,
+        linear-gradient($sq-cross, $sq-cross) right 5px top 0 / 1px 11px no-repeat,
+        linear-gradient($sq-cross, $sq-cross) right 5px top 5px / 6px 1px no-repeat;
       pointer-events: none;
 
       // where the column takes the full width it has no lines for a cross to mark,
@@ -47,20 +62,24 @@
       }
     }
 
-    :global(html[data-sq-draw]) &:not([data-drawn])::before {
-      scale: 0 1;
-    }
-
     // A page of sheets (SheetLayout): the rule crosses the whole viewport, and the
     // first sheet starts under the nav, whose line is its top line.
     :where([data-layout="sheets"]) > & {
       @include column;
 
+      // The rule's box stays the column's; a border-image outset paints it out to the
+      // viewport's edges. That is ink, not layout, so it never widens the page: a 100vw
+      // box did, by half the native scrollbar wherever one shows (the owner, 2026-10-29).
       &::before {
-        inset-inline: auto;
-        inset-inline-start: 50%;
-        inline-size: 100vw;
-        translate: -50% 0;
+        border-image: linear-gradient($rule 0 0) fill 0 / /0 100vw;
+      }
+
+      // a cross where the rule crosses each column line
+      &::after {
+        inset-block-start: -5px;
+        inset-inline: -6px;
+        block-size: 11px;
+        background: $sq-plus;
       }
 
       &:first-child::before,
@@ -89,11 +108,11 @@
     padding: 14px $sq-pad;
     background: $sq-glass;
     backdrop-filter: blur(12px);
-    box-shadow: inset 0 -1px 0 $sq-line;
+    border-block-end: 1px solid $sq-line;
     color: $sq-muted;
     @include hud;
 
-    @media (max-width: 760px) {
+    @include until(md) {
       padding-inline: $sq-pad-narrow;
     }
   }
@@ -159,7 +178,7 @@
       white-space: nowrap;
     }
 
-    @media (max-width: 760px) {
+    @include until(md) {
       display: none;
     }
   }
@@ -170,7 +189,7 @@
     gap: $space-md;
     padding: 24px $sq-pad 48px;
 
-    @media (max-width: 760px) {
+    @include until(md) {
       padding-inline: $sq-pad-narrow;
     }
   }

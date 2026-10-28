@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { schedule, scrollTop, unschedule } from "./frame";
 
 /**
  * The page's one "here" (TDD docs-site annex A 6.9): the last
@@ -26,35 +27,55 @@ export function currentSection(
   return here;
 }
 
-/** The id of the section that is here, following scroll, resize, and the URL hash. */
+/**
+ * The id of the section that is here, following scroll, resize, and the URL hash.
+ * The sections' places in the document are measured only when the layout can have
+ * changed (a resize of the page, a font, a block that finished rising); a scroll
+ * reads nothing from the DOM and decides from those places and the frame's scroll
+ * position, in the read phase of the site's one frame (shared/lib/frame.ts).
+ */
 export function useHere(ids: string[], line: number): string | null {
   const [here, setHere] = useState<string | null>(ids[0] ?? null);
   const key = ids.join(" ");
   useEffect(() => {
     const list = key ? key.split(" ") : [];
-    let frame = 0;
+    let tops: number[] | null = null;
+    let maxScroll = 0;
     const measure = () => {
-      frame = 0;
       const elements = list.map((id) => document.getElementById(id));
-      if (elements.some((e) => !e)) return;
-      const tops = elements.map(
-        (e) => (e as HTMLElement).getBoundingClientRect().top + window.scrollY,
-      );
-      const maxScroll = Math.max(0, document.documentElement.scrollHeight - window.innerHeight);
-      setHere(list[currentSection(tops, window.scrollY, maxScroll, line)] ?? null);
+      if (elements.some((e) => !e)) {
+        tops = null;
+        return;
+      }
+      const y = scrollTop();
+      tops = elements.map((e) => (e as HTMLElement).getBoundingClientRect().top + y);
+      maxScroll = Math.max(0, document.documentElement.scrollHeight - window.innerHeight);
     };
-    const schedule = () => {
-      if (!frame) frame = requestAnimationFrame(measure);
+    const decide = () => {
+      if (!tops) measure();
+      if (!tops) return;
+      setHere(list[currentSection(tops, scrollTop(), maxScroll, line)] ?? null);
     };
-    measure();
-    window.addEventListener("scroll", schedule, { passive: true });
-    window.addEventListener("resize", schedule);
-    window.addEventListener("hashchange", schedule);
+    const onScroll = () => schedule("read", decide);
+    const onLayout = () => {
+      tops = null;
+      schedule("read", decide);
+    };
+    decide();
+    const resize = new ResizeObserver(onLayout);
+    resize.observe(document.body);
+    window.addEventListener("scroll", onScroll, { passive: true });
+    window.addEventListener("resize", onLayout);
+    window.addEventListener("hashchange", onScroll);
+    window.addEventListener("sq:layout", onLayout);
+    void document.fonts?.ready.then(onLayout);
     return () => {
-      if (frame) cancelAnimationFrame(frame);
-      window.removeEventListener("scroll", schedule);
-      window.removeEventListener("resize", schedule);
-      window.removeEventListener("hashchange", schedule);
+      unschedule("read", decide);
+      resize.disconnect();
+      window.removeEventListener("scroll", onScroll);
+      window.removeEventListener("resize", onLayout);
+      window.removeEventListener("hashchange", onScroll);
+      window.removeEventListener("sq:layout", onLayout);
     };
   }, [key, line]);
   return here;

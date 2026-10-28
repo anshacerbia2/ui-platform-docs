@@ -1,22 +1,25 @@
-import { SCNX_BLUE } from "@/shared/lib/brand";
 import styles from "./Logo.module.scss";
 
-/** The Scnehaux UI mark: a primitive, a component, and a verified check. Tile in ink, parts in its contrast label. */
+// The mark: two slanted bars, the upper one set right (scnehaux-horizontal-open-black.svg,
+// the owner, 2026-10-29), drawn in its own 21 × 9 box.
+const MARK = "M23 8L20 12L9 12L12 8ZM16 13L13 17L2 17L5 13Z";
+
+/**
+ * The Scnehaux UI mark in the ink role, so it is dark on a light page and light on a
+ * dark one. It is wider than tall: `size` sets its height to 0.6 of it and its width
+ * to 1.4, the mark's 21:9.
+ */
 export function Logo({ size = 28 }: { size?: number }) {
   return (
     <svg
       className={styles.logo}
-      width={size}
-      height={size}
-      viewBox="0 0 28 28"
+      width={size * 1.4}
+      height={size * 0.6}
+      viewBox="2 8 21 9"
       aria-hidden="true"
       focusable="false"
     >
-      <rect className={styles.tile} x="2" y="2" width="24" height="24" rx="8" />
-      <rect className={styles.line} x="7.5" y="7.5" width="6" height="6" rx="1.5" />
-      <rect className={styles.fill} x="14.5" y="7.5" width="6" height="6" rx="1.5" />
-      <circle className={styles.line} cx="10.5" cy="17.5" r="3" />
-      <path className={styles.check} stroke={SCNX_BLUE} d="M15 17.5l2 2 3.5-4" />
+      <path className={styles.mark} d={MARK} />
     </svg>
   );
 }

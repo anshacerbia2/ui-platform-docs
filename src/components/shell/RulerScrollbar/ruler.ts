@@ -10,6 +10,7 @@
 // site's Content-Security-Policy allows no style attribute in HTML).
 
 import { JUMP_LINE, NAV_LINE, RULER_MIN_WIDTH } from "@/shared/lib/chrome";
+import { schedule, scrollTop, unschedule } from "@/shared/lib/frame";
 import { glideTo, onGlideWrite } from "@/shared/lib/glide";
 import { currentSection } from "@/shared/lib/useHere";
 
@@ -279,7 +280,7 @@ export function mountRuler(
     maxScroll = Math.max(1, docH - vh);
     H = Math.max(1, vh - TOP - BOTTOM);
     for (const L of labels) {
-      L.top = L.sheet.getBoundingClientRect().top + window.scrollY;
+      L.top = L.sheet.getBoundingClientRect().top + scrollTop();
       // a jump lands the section's line on the nav's own line (JUMP_LINE), less the
       // sheet's scroll-margin: the stylesheet's, so the ruler, the contents and a #hash
       // land alike (a first sheet with no rule of its own takes 1px and lands at the top)
@@ -337,9 +338,9 @@ export function mountRuler(
   let lastY = -1;
   let lastMode = -1;
   const hoverY = (v: number) => TOP + (v / 100) * H;
-  const progress = () => clamp((window.scrollY / maxScroll) * 100, 0, 100);
+  const progress = () => clamp((scrollTop() / maxScroll) * 100, 0, 100);
   // the page's one "here" (annex A 6.9), with the same rule and line as the HereProvider
-  const currentIndex = () => currentSection(tops, window.scrollY, maxScroll, NAV);
+  const currentIndex = () => currentSection(tops, scrollTop(), maxScroll, NAV);
 
   /* Where letter k of a title sits in each place it can be: [x, y, rotation, scale, tone]. */
   const across = (L: Label, k: number, y: number, s: number, t: number) => [
@@ -370,7 +371,7 @@ export function mountRuler(
     lastT = t;
     const kMode = reduce.matches ? 1 : 1 - Math.exp(-dt / TAU_MODE);
     mode = Math.abs(modeTarget - mode) < 0.002 ? modeTarget : mix(mode, modeTarget, kMode);
-    const y = window.scrollY;
+    const y = scrollTop();
     const decoding = labels.some((L) => L.decode);
     if (y === lastY && mode === lastMode && !decoding) return mode !== modeTarget;
     lastY = y;
@@ -497,9 +498,14 @@ export function mountRuler(
       tail = lowest;
       L.settled = settled;
       if (whole && mode < 0.05) check = { L, y: curY, s: sBig };
-      // the jump link covers the title where it mostly is
+      // The jump link covers the title where it mostly is. Folding open, it goes at once
+      // to where the title is going: the reader aims at a title in flight, and a press
+      // made before the fold was half done found no link and reached the page (the owner,
+      // 2026-10-28). Unfolding, it stays until the fold is half undone, so a pointer that
+      // crosses a gap between the ruler and a title still finds the link and holds the
+      // ruler open (7.8).
       const place =
-        mode > 0.5
+        modeTarget === 1 || mode > 0.5
           ? "hover"
           : Q > 0.5
             ? "past"
@@ -548,9 +554,10 @@ export function mountRuler(
     else if (!check && verified.hasAttribute("data-on")) verified.removeAttribute("data-on");
     return mode !== modeTarget || labels.some((L) => L.decode);
   };
-  // one loop, only while the fold animates; scrolling redraws in the frame it moves
+  // One loop, only while the fold animates; scrolling redraws in the frame it moves. It
+  // draws in the write phase of the site's one frame (shared/lib/frame.ts), after every
+  // measurement, so its writes never force a layout.
   let looping = false;
-  let raf = 0;
   const loop = (t: number) => {
     looping = false;
     if (frame(t)) request();
@@ -558,10 +565,10 @@ export function mountRuler(
   request = () => {
     if (!looping) {
       looping = true;
-      raf = requestAnimationFrame(loop);
+      schedule("write", loop);
     }
   };
-  cleanups.push(onGlideWrite((t) => wide.matches && frame(t)));
+  cleanups.push(onGlideWrite(() => wide.matches && request()));
   const invalidate = () => {
     lastY = -1;
     request();
@@ -668,16 +675,14 @@ export function mountRuler(
   });
   resize.observe(document.body);
   cleanups.push(() => resize.disconnect());
-  let relayout = 0;
-  listen(window, "sq:layout", () => {
-    cancelAnimationFrame(relayout);
-    relayout = requestAnimationFrame(() => {
-      if (wide.matches) {
-        measureLayout();
-        invalidate();
-      }
-    });
-  });
+  // measured in the read phase, before the frame's writes
+  const relayout = () => {
+    if (wide.matches) {
+      measureLayout();
+      invalidate();
+    }
+  };
+  listen(window, "sq:layout", () => schedule("read", relayout));
   // `sq:draw` draws the current scroll position now, in this task: the overlap check
   // (scripts/ruler-check.mjs) scrolls and reads the titles without waiting for frames.
   listen(window, "sq:draw", () => {
@@ -691,8 +696,8 @@ export function mountRuler(
   });
 
   return () => {
-    cancelAnimationFrame(raf);
-    cancelAnimationFrame(relayout);
+    unschedule("write", loop);
+    unschedule("read", relayout);
     for (const fn of cleanups) fn();
     host.replaceChildren();
     delete doc.dataset.ruler;

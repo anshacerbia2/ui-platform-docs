@@ -6,7 +6,7 @@
 // moves on a dark root.
 @layer docs.features {
   .install {
-    @media (min-width: 1081px) {
+    @include from(lg) {
       grid-template-columns: minmax(0, 0.85fr) minmax(0, 1.4fr);
     }
   }
@@ -17,7 +17,7 @@
     gap: 14px;
     padding: 56px $sq-pad;
 
-    @media (max-width: 760px) {
+    @include until(md) {
       padding: 40px $sq-pad-narrow;
     }
   }
@@ -35,7 +35,7 @@
     grid-template-columns: 20px 1fr;
     gap: 12px;
     padding: 14px;
-    box-shadow: inset 0 0 0 1px $sq-line;
+    border: 1px solid $sq-line;
     cursor: pointer;
 
     > :not(input) {
@@ -51,7 +51,7 @@
     }
 
     &[data-checked] {
-      box-shadow: inset 0 0 0 1px $sq-signal;
+      border: 1px solid $sq-signal;
       background: color-mix(
         in oklab,
         var(--ds-color-primary-surface-subtle-default) 55%,
@@ -97,7 +97,7 @@
 
   .pkg {
     padding: 6px 8px;
-    box-shadow: inset 0 0 0 1px $sq-line;
+    border: 1px solid $sq-line;
     color: $sq-text;
   }
 
@@ -128,7 +128,7 @@
       font: 500 11px/1.4 $sq-mono;
     }
 
-    @media (max-width: 760px) {
+    @include until(md) {
       padding-inline: $sq-pad-narrow;
     }
   }
@@ -136,9 +136,8 @@
   .steps {
     display: grid;
     grid-template-columns: repeat(3, minmax(0, 1fr));
-    box-shadow:
-      inset 0 1px 0 $sq-line,
-      inset 0 -1px 0 $sq-line;
+    border-block-start: 1px solid $sq-line;
+    border-block-end: 1px solid $sq-line;
 
     button {
       display: flex;
@@ -147,7 +146,7 @@
       padding: 14px $sq-pad;
       border: 0;
       background: transparent;
-      box-shadow: inset -1px 0 0 $sq-line;
+      border-inline-end: 1px solid $sq-line;
       color: $sq-muted;
       font-size: 13px;
       font-weight: 500;
@@ -156,7 +155,7 @@
       @include focus-ring(-2px);
 
       &:last-child {
-        box-shadow: none;
+        border-inline-end: 0;
       }
 
       span {
@@ -169,9 +168,8 @@
       }
 
       &[aria-selected="true"] {
-        box-shadow:
-          inset 0 -2px 0 $sq-signal,
-          inset -1px 0 0 $sq-line;
+        border-block-end: 2px solid $sq-signal;
+        border-inline-end: 1px solid $sq-line;
         color: $sq-text;
 
         span {
@@ -181,11 +179,17 @@
       }
     }
 
-    @media (max-width: 620px) {
+    // stacked: a line between steps, none beside them; the list's own line closes it
+    @include until(sm) {
       grid-template-columns: minmax(0, 1fr);
 
-      button {
-        box-shadow: inset 0 -1px 0 $sq-line;
+      button,
+      button[aria-selected="true"] {
+        border-inline-end: 0;
+      }
+
+      button:not(:last-child, [aria-selected="true"]) {
+        border-block-end: 1px solid $sq-line;
       }
     }
   }

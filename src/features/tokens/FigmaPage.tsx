@@ -6,7 +6,6 @@ import { PageHead } from "@/components/docs/PageHead";
 import { Sheet } from "@/components/docs/Sheet";
 import { TextLink } from "@/components/docs/TextLink";
 import { DocsLayout } from "@/components/shell/DocsLayout";
-import { PageToc } from "@/components/shell/PageToc";
 import { figmaFiles, pin, sourceUrl } from "@/shared/lib/reference";
 import { SITE_THEME } from "@/shared/lib/themes";
 
@@ -27,16 +26,12 @@ export function FigmaPage() {
   ];
   return (
     <DocsLayout
-      aside={
-        <PageToc
-          items={[
-            { id: "files", title: "Files" },
-            { id: "import", title: "Native import" },
-            { id: "plugin", title: "Plugin" },
-            { id: "rules", title: "Rules" },
-          ]}
-        />
-      }
+      toc={[
+        { id: "files", title: "Files" },
+        { id: "import", title: "Native import" },
+        { id: "plugin", title: "Plugin" },
+        { id: "rules", title: "Rules" },
+      ]}
     >
       <PageHead
         crumbs={[{ label: "Tokens", href: "/tokens" }, { label: "Tokens in Figma" }]}

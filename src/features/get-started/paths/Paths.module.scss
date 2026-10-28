@@ -14,7 +14,7 @@
     background: $sq-ground;
     color: $sq-text;
 
-    @media (max-width: 760px) {
+    @include until(md) {
       padding-inline: $sq-pad-narrow;
     }
   }
@@ -36,9 +36,8 @@
     align-items: baseline;
     gap: 10px;
     padding-block: 14px;
-    box-shadow:
-      inset 0 1px 0 $sq-line,
-      inset 0 -1px 0 $sq-line;
+    border-block-start: 1px solid $sq-line;
+    border-block-end: 1px solid $sq-line;
 
     strong {
       font-size: 2rem;

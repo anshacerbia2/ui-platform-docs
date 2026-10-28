@@ -2,8 +2,18 @@
 @use "sass:map";
 @use "../settings" as *;
 
+// The layout's breakpoints (settings/_breakpoints.scss), in the range syntax: `from` a
+// width up, and `until` it, below it, so the two meet with no gap and no overlap. Every
+// layout width of the site is one of these (the owner, 2026-10-29); the strip's cells
+// leave by its own width (@container strip) and the ruler by its own (full-width).
 @mixin from($name) {
-  @media (min-width: map.get($breakpoints, $name)) {
+  @media (width >= #{map.get($breakpoints, $name)}) {
+    @content;
+  }
+}
+
+@mixin until($name) {
+  @media (width < #{map.get($breakpoints, $name)}) {
     @content;
   }
 }
@@ -32,14 +42,14 @@
   margin-inline: auto;
   border-inline: 1px solid $sq-line;
 
-  @media (max-width: $sq-ruler-min - 0.02px) {
+  @media (width < #{$sq-ruler-min}) {
     border-inline: 0;
   }
 }
 
 /// Below the ruler's width, where the column is the full width.
 @mixin full-width {
-  @media (max-width: $sq-ruler-min - 0.02px) {
+  @media (width < #{$sq-ruler-min}) {
     @content;
   }
 }

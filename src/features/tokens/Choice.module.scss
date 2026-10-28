@@ -1,0 +1,75 @@
+@use "layers";
+@use "settings" as *;
+@use "tools" as *;
+
+// The token pages' mode choice and the roots that follow it: a root paints its own
+// ground and lines, names its mode in its corner, and lets a sample take a colour
+// token through `[data-color-token]` (src/generated/swatches.css).
+@layer docs.features {
+  // The mode switch under the head.
+  .choice {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 10px 16px;
+    padding: 14px $sq-pad;
+
+    @include until(md) {
+      padding-inline: $sq-pad-narrow;
+    }
+  }
+
+  .choiceLabel {
+    color: $sq-muted;
+    @include hud(10.5px, 500, 0.14em);
+  }
+
+  .root {
+    display: grid;
+    background: $sq-ground;
+    color: $sq-text;
+
+    [data-color-token] {
+      color: var(--token-color);
+    }
+  }
+
+  // The strip that names the mode lies over the lines before and after it, in the line
+  // colour made opaque, so it merges with a table's or a row's line instead of doubling it.
+  .rootLabel {
+    position: relative;
+    z-index: 1;
+    margin-block: -1px;
+    padding: 8px $sq-pad;
+    border-block: 1px solid color-mix(in oklab, $sq-text 16%, $sq-ground);
+    color: $sq-faint;
+    text-align: end;
+    @include hud(10px, 500, 0.14em);
+
+    @include until(md) {
+      padding-inline: $sq-pad-narrow;
+    }
+  }
+
+  .value {
+    color: $sq-muted;
+    font: 400 11px/1.45 $sq-mono;
+    overflow-wrap: anywhere;
+  }
+
+  .ratio {
+    color: $sq-text;
+    font: 500 12.5px/1.4 $sq-mono;
+    white-space: nowrap;
+
+    span {
+      margin-inline-start: 6px;
+      color: var(--ds-color-danger-text-default-default);
+      @include hud(10px, 600, 0.12em);
+    }
+
+    &[data-pass] span {
+      color: var(--ds-color-success-text-default-default);
+    }
+  }
+}

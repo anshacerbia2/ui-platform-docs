@@ -6,6 +6,15 @@
   opacity: 0;
   translate: 0 28px;
   filter: blur(8px);
+  // its own layer while it moves, so a rise is composited, not repainted each frame
+  will-change: opacity, translate, filter;
+}
+
+// A block that holds a canvas (the landing's assembly) rises without the blur: a blur
+// over a WebGL canvas and a 6rem headline is repainted every frame and stutters.
+[data-sq-reveal]:has(canvas) {
+  filter: none;
+  will-change: opacity, translate;
 }
 
 [data-sq-reveal="in"] {

@@ -37,15 +37,12 @@ export const SECTIONS: {
   },
 ];
 
-/** Where a reader starts: a nav link, and the nav's primary call to action. */
+/** Where a reader starts: a nav link, and the menu's call to action. */
 export const GET_STARTED: Route = "/get-started";
 
-/**
- * The nav strip's areas: the docs home, then the four contracts. `echo` marks a link
- * the strip's call to action repeats, so it is the first to leave a narrow strip.
- */
-export const NAV_LINKS: { href: Route; label: string; echo?: true }[] = [
-  { href: GET_STARTED, label: "Get started", echo: true },
+/** The nav strip's areas: the docs home, then the four contracts. */
+export const NAV_LINKS: { href: Route; label: string }[] = [
+  { href: GET_STARTED, label: "Get started" },
   ...SECTIONS.map(({ href, label }) => ({ href, label })),
 ];
 

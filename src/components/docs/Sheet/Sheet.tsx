@@ -39,7 +39,7 @@ export function Sheet({
   const name = label ?? title;
   return (
     <section id={id} data-sheet={title} className={styles.sheet} aria-labelledby={headingId}>
-      <div className={styles.bar}>
+      <div className={styles.bar} data-sheet-bar="">
         <span className={styles.number} aria-hidden="true" />
         {labelledBy ? (
           <span className={styles.label}>{name}</span>

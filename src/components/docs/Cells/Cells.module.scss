@@ -17,14 +17,14 @@
       background: $sq-ground;
     }
 
-    @media (min-width: 761px) {
+    @include from(md) {
       &[data-columns="2"],
       &[data-columns="4"] {
         grid-template-columns: repeat(2, minmax(0, 1fr));
       }
     }
 
-    @media (min-width: 981px) {
+    @include from(lg) {
       &[data-columns="3"] {
         grid-template-columns: repeat(3, minmax(0, 1fr));
       }

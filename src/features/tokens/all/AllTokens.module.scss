@@ -1,0 +1,56 @@
+@use "layers";
+@use "settings" as *;
+@use "tools" as *;
+
+@layer docs.features {
+  // A group jumped to from the contents lands under its sheet's held bar: the contents
+  // scroll to this anchor, set above the group's title by a little less than the bar's
+  // 45px, so a sheet's first group also brings the sheet's line past the nav's and the
+  // sheet becomes here (its head's 32px of padding takes the difference).
+  .anchor {
+    position: relative;
+    inset-block-start: -40px;
+    display: block;
+  }
+
+  // One line between two groups: the table above ends without a line of its own (its
+  // last row draws none), and the first group sits under its sheet's bar line.
+  .group + .group {
+    border-block-start: 1px solid $sq-line;
+  }
+
+  // A group's head reads like a path: the domain dimmed, the group plain, its count in
+  // the HUD voice at the right; the table's own top line closes it.
+  .head {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 16px;
+    margin: 0;
+    padding: 32px $sq-pad 12px;
+
+    @include until(md) {
+      padding-inline: $sq-pad-narrow;
+    }
+  }
+
+  .path {
+    color: $sq-text;
+    font: 500 14px/1.3 $sq-mono;
+
+    span {
+      color: $sq-faint;
+    }
+  }
+
+  .count {
+    color: $sq-muted;
+    @include hud(10px, 500, 0.14em);
+  }
+
+  .token {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+  }
+}

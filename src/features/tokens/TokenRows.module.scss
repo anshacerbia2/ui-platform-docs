@@ -1,0 +1,86 @@
+@use "layers";
+@use "settings" as *;
+@use "tools" as *;
+
+// Token rows: specimen, name, value, one line between rows.
+@layer docs.features {
+  .rows {
+    margin: 0;
+    padding: 0;
+    border-block-start: 1px solid $sq-line;
+    list-style: none;
+  }
+
+  .row {
+    display: grid;
+    grid-template-columns: minmax(0, 13rem) minmax(0, 1fr) minmax(0, 9rem);
+    align-items: center;
+    gap: 24px;
+    padding: 18px $sq-pad;
+    border-block-end: 1px solid $sq-line;
+
+    // the last row leaves its bottom line to what follows: the next group's line, or the
+    // next sheet's rule
+    &:last-child {
+      border-block-end: 0;
+    }
+
+    .rows[data-wide] & {
+      grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr) minmax(0, 8rem);
+    }
+
+    @include until(md) {
+      grid-template-columns: minmax(0, 1fr);
+      gap: 12px;
+      padding-inline: $sq-pad-narrow;
+
+      .rows[data-wide] & {
+        grid-template-columns: minmax(0, 1fr);
+      }
+    }
+  }
+
+  .specimen {
+    display: flex;
+    align-items: center;
+    min-inline-size: 0;
+    min-block-size: 32px;
+    color: $sq-text;
+  }
+
+  .text {
+    display: grid;
+    gap: 4px;
+    min-inline-size: 0;
+  }
+
+  .name {
+    color: $sq-text;
+    font: 600 13px/1.35 $sq-mono;
+    overflow-wrap: anywhere;
+  }
+
+  .css {
+    color: $sq-muted;
+    font: 400 11.5px/1.4 $sq-mono;
+    overflow-wrap: anywhere;
+  }
+
+  .note {
+    margin-block-start: 2px;
+    color: $sq-muted;
+    font-size: 13px;
+    line-height: 1.5;
+  }
+
+  .value {
+    color: $sq-muted;
+    font: 400 12px/1.45 $sq-mono;
+    overflow-wrap: anywhere;
+    text-align: end;
+
+    @include until(md) {
+      text-align: start;
+    }
+  }
+}
