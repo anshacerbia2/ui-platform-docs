@@ -26,7 +26,7 @@ html:has(dialog[data-lock][open]) {
   overflow: hidden;
 }
 
-// The ruler scrollbar replaces the native one from 1024px up (annex A 1.4;
+// The ruler scrollbar replaces the native one from the lg breakpoint up (annex A 1.4;
 // RulerScrollbar sets the attribute only while it is shown).
 html[data-ruler="on"] {
   scrollbar-width: none;

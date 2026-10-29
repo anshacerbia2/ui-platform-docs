@@ -2,6 +2,9 @@
 // drawn in scnehaux-design scnx-platform square.css). Roles are custom properties declared per mode in generic/_roles.scss;
 // the sizes below are the reference's expression-local values, guidance under
 // ADR-UIP-VIS-002, not tokens.
+@use "sass:map";
+@use "breakpoints" as *;
+
 $sq-ground: var(--sq-ground);
 $sq-text: var(--sq-text);
 $sq-muted: var(--sq-muted);
@@ -19,9 +22,26 @@ $sq-glass: var(--sq-glass);
 // (annex A 6.9). src/shared/lib/chrome.ts holds the same number for scripts.
 $sq-nav: 48px;
 // The column: centred, at most 1280px, between margins of 16px to 320px where the
-// ruler shows; below that width (chrome.ts RULER_MIN_WIDTH) it takes the full width,
-// the owner, 2026-10-27. generic/_document.scss declares --sq-col for each.
-$sq-ruler-min: 1024px;
+// ruler shows; below that width it takes the full width, the owner, 2026-10-27.
+// generic/_document.scss declares --sq-col for each. The ruler shows from the layout's
+// lg breakpoint, in rem, so the ruler, the column and the sidebar change together at any
+// font size; chrome.ts RULER_QUERY asks the same for the ruler's script.
+$sq-ruler-min: map.get($breakpoints, "lg");
+// The nav strip's cells leave by the strip's own width, a container query (tools
+// strip-at-most), at each of these widths or narrower: what the cells still shown need,
+// measured on 2026-10-29, plus about 6px (annex A 2.1). Change one here and every cell
+// that leaves with it follows (the owner, 2026-10-29).
+$sq-strip: (
+  // the sheet readout, which the ruler repeats; with it the strip needs 1080px
+  "readout": 1085px,
+  // the area links and the mode, where the menu cell stands in for them, as for the
+  // sidebar below lg
+  "links": 1023px,
+  // GitHub and the search's shortcut; the search's close turns square
+  "phone": 640px,
+  // the brand's name; its mark stays
+  "mark": 480px
+);
 $sq-margin: clamp(16px, 8vw, 320px);
 $sq-col: var(--sq-col);
 // Inline padding of bars, leads, and facts; 20px on narrow screens.

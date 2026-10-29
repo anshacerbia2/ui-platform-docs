@@ -9,7 +9,7 @@
 // cached, and a style is written only when it changes, through the CSSOM (the
 // site's Content-Security-Policy allows no style attribute in HTML).
 
-import { JUMP_LINE, NAV_LINE, RULER_MIN_WIDTH } from "@/shared/lib/chrome";
+import { JUMP_LINE, NAV_LINE, RULER_QUERY } from "@/shared/lib/chrome";
 import { schedule, scrollTop, unschedule } from "@/shared/lib/frame";
 import { glideTo, onGlideWrite } from "@/shared/lib/glide";
 import { currentSection } from "@/shared/lib/useHere";
@@ -136,7 +136,7 @@ export function mountRuler(
   if (!sheets.length) return noop;
   const doc = document.documentElement;
   const reduce = window.matchMedia("(prefers-reduced-motion: reduce)");
-  const wide = window.matchMedia(`(min-width: ${RULER_MIN_WIDTH}px)`);
+  const wide = window.matchMedia(RULER_QUERY);
   const cleanups: (() => void)[] = [];
   const listen = <T extends EventTarget>(
     target: T,

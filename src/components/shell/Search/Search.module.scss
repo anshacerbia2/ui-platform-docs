@@ -40,7 +40,7 @@
     }
 
     // on a phone's strip the icon alone (widths by the strip, SiteHeader.module.scss)
-    @container strip (max-width: 640px) {
+    @include strip-at-most(phone) {
       padding-inline: 16px;
 
       kbd {
@@ -211,7 +211,7 @@
 
     // where the strip's search is its icon alone, so is this: a square, the cross
     // without its key, as the menu's close (the owner, 2026-10-29)
-    @container strip (max-width: 640px) {
+    @include strip-at-most(phone) {
       justify-content: center;
       inline-size: $sq-nav;
       padding: 0;

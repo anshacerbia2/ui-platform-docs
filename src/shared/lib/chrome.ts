@@ -16,5 +16,9 @@ export const JUMP_LINE = NAV_LINE - 1;
 /** The selector of a page's sheets: every documentation section carries `data-sheet` with its name. */
 export const SHEET_SELECTOR = "main [data-sheet]";
 
-/** The ruler shows from this viewport width up; below it the native scrollbar stays (annex A 1.4). */
-export const RULER_MIN_WIDTH = 1024;
+/**
+ * Where the ruler shows (annex A 1.4): from the layout's lg breakpoint up, the query the
+ * stylesheets ask for the column and the sidebar (settings/_breakpoints.scss, 64rem), so
+ * the three change together at any font size. Below it the native scrollbar stays.
+ */
+export const RULER_QUERY = "(width >= 64rem)";

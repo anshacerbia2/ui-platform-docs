@@ -9,8 +9,8 @@
 //
 // Cells leave by the strip's own width, a container query, not the viewport's: a page
 // without the ruler keeps the native scrollbar, which the viewport's width counts and
-// the strip cannot use. Each width is what the cells still shown need, measured on
-// 2026-10-29, plus about 6px; the strip needs 1080px with every cell.
+// the strip cannot use. The widths are named once, in settings ($sq-strip), and asked
+// through the tools' strip-at-most().
 @layer docs.components {
   .header {
     container: strip / inline-size;
@@ -45,7 +45,7 @@
     @include focus-ring(-2px);
 
     // on a phone the mark alone; the name stays the link's accessible name
-    @container strip (max-width: 480px) {
+    @include strip-at-most(mark) {
       padding-inline: 16px;
 
       span {
@@ -62,8 +62,8 @@
     align-items: stretch;
     padding-inline: 4px;
 
-    // the menu cell stands in for them (TDD docs-site D22), as for the sidebar below 1024px
-    @container strip (max-width: 1023px) {
+    // the menu cell stands in for them (TDD docs-site D22), as for the sidebar below lg
+    @include strip-at-most(links) {
       display: none;
     }
   }
@@ -101,7 +101,7 @@
     border-inline-start: 1px solid $sq-line;
 
     // with the links gone the spacer follows the brand, whose own line stands
-    @container strip (max-width: 1023px) {
+    @include strip-at-most(links) {
       border-inline-start: 0;
     }
   }
@@ -146,7 +146,7 @@
     }
 
     // the first to leave: the ruler repeats it
-    @container strip (max-width: 1085px) {
+    @include strip-at-most(readout) {
       display: none;
     }
   }
@@ -157,14 +157,14 @@
 
   // the mode leaves with the links: the menu holds it (the owner, 2026-10-29)
   .withLinks {
-    @container strip (max-width: 1023px) {
+    @include strip-at-most(links) {
       display: none !important;
     }
   }
 
   // on a phone the menu holds GitHub too
   .wide {
-    @container strip (max-width: 640px) {
+    @include strip-at-most(phone) {
       display: none !important;
     }
   }

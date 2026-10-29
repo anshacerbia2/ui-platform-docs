@@ -26,7 +26,7 @@ function PageRuler() {
  * The ruler scrollbar and its section titles (TDD docs-site D15;
  * TDD docs-site annex A 4-8): docs chrome, not a @scnx/system component. It
  * reads the page's sheets (`main [data-sheet]`) and is rebuilt after each App
- * Router navigation; it replaces the native scrollbar from 1024px up, and below
+ * Router navigation; it replaces the native scrollbar from the lg breakpoint up, and below
  * that, and without JavaScript, the native scrollbar stays.
  */
 export function RulerScrollbar() {
