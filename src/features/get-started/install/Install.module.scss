@@ -5,8 +5,10 @@
 // Sheet 03 · Install (scnx-platform Docs-Home.html): which package, then the three
 // moves on a dark root.
 @layer docs.features {
+  // two columns from xl: at lg the steps' tabs wrapped and their code scrolled sideways
+  // (the owner, 2026-10-29)
   .install {
-    @include from(lg) {
+    @include from(xl) {
       grid-template-columns: minmax(0, 0.85fr) minmax(0, 1.4fr);
     }
   }

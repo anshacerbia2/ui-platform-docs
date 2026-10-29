@@ -33,7 +33,7 @@ export function SidebarGroups({
 
 /**
  * The pages of the reader's area, or, outside every area, the areas themselves. From
- * 1024px; below it the menu lists the same pages (TDD docs-site D22).
+ * the lg breakpoint; below it the menu lists the same pages (TDD docs-site D22).
  */
 export function DocsSidebar() {
   const groups = useContext(Groups);

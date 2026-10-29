@@ -18,6 +18,14 @@
   }
 }
 
+/// The nav strip at one of its widths ($sq-strip) or narrower, by the strip's own width:
+/// only for what lives in the strip (or opens from it, as the search does).
+@mixin strip-at-most($name) {
+  @container strip (width <= #{map.get($sq-strip, $name)}) {
+    @content;
+  }
+}
+
 @mixin focus-ring($offset: 2px) {
   &:focus-visible {
     outline: var(--ds-dimension-border-width-strong) solid $focus;
