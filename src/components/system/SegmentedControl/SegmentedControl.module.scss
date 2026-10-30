@@ -1,0 +1,9 @@
+@use "layers";
+
+@layer docs.components {
+  // Segments that do not fit the row go on to the next, inside the same well.
+  .control {
+    flex-wrap: wrap;
+    max-inline-size: 100%;
+  }
+}

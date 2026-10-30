@@ -3,7 +3,7 @@
 import { useMemo, useState } from "react";
 import { CopyButton } from "@/components/docs/CopyButton";
 import { InlineCode } from "@/components/docs/InlineCode";
-import { ToggleGroup } from "@/components/docs/ToggleGroup";
+import { SegmentedControl } from "@/components/system/SegmentedControl";
 import type { ModeValues } from "../tokens";
 import { ColorRoot, TokenValue } from "../Choice";
 import { Sample } from "./Sample";
@@ -54,20 +54,20 @@ export function SchemeExplorer({ schemes, roles, emphases, states, tokens }: Pro
   return (
     <div className={styles.explorer}>
       <div className={styles.explorerBar}>
-        <ToggleGroup
-          label="Scheme"
-          size="small"
-          options={schemes.map((value) => ({ value }))}
-          value={scheme}
-          onChange={setScheme}
-        />
-        <ToggleGroup
-          label="Role"
-          size="small"
-          options={roles.map((value) => ({ value }))}
-          value={role}
-          onChange={setRole}
-        />
+        <SegmentedControl aria-label="Scheme" size="small" value={scheme} onValueChange={setScheme}>
+          {schemes.map((value) => (
+            <SegmentedControl.Item key={value} value={value}>
+              {value}
+            </SegmentedControl.Item>
+          ))}
+        </SegmentedControl>
+        <SegmentedControl aria-label="Role" size="small" value={role} onValueChange={setRole}>
+          {roles.map((value) => (
+            <SegmentedControl.Item key={value} value={value}>
+              {value}
+            </SegmentedControl.Item>
+          ))}
+        </SegmentedControl>
       </div>
       <ColorRoot>
         <div className={styles.gridWrap}>

@@ -3,9 +3,9 @@
 import { useEffect, useRef, useState } from "react";
 import { Dim } from "@/components/docs/Dim";
 import { ArrowLeft, ArrowRight, Orbit, Reset } from "@/components/docs/Icons";
-import { ToggleGroup } from "@/components/docs/ToggleGroup";
 import { ToolButton } from "@/components/docs/ToolButton";
 import { Button } from "@/components/system/Button";
+import { SegmentedControl } from "@/components/system/SegmentedControl";
 import styles from "./Assembly.module.scss";
 import { type AssemblyHandle, type AssemblyState, mountAssembly } from "./controller";
 
@@ -86,12 +86,17 @@ export function Assembly({ swatches, version }: { swatches: string[]; version: s
         </div>
         {/* right under the stack: play with it without scrolling it out of view */}
         <div className={styles.controls}>
-          <ToggleGroup
-            label="Assembly"
-            options={SHAPES}
+          <SegmentedControl
+            aria-label="Assembly"
             value={state.assembled ? "assembled" : "apart"}
-            onChange={(shape) => handle.current?.hold(shape === "assembled" ? 1 : 0)}
-          />
+            onValueChange={(shape) => handle.current?.hold(shape === "assembled" ? 1 : 0)}
+          >
+            {SHAPES.map((shape) => (
+              <SegmentedControl.Item key={shape.value} value={shape.value}>
+                {shape.label}
+              </SegmentedControl.Item>
+            ))}
+          </SegmentedControl>
           <div role="group" aria-label="View" className={styles.tools}>
             <ToolButton
               label="Turn left a quarter"
@@ -120,7 +125,7 @@ export function Assembly({ swatches, version }: { swatches: string[]; version: s
         </div>
         <ol className={styles.parts}>
           {PARTS.map((part, i) => (
-            <li key={part.no} className={styles.part} data-part={i}>
+            <li key={part.no} className={styles.part} data-callout={i}>
               <b>
                 {part.no} {part.step}
               </b>

@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { Swatch } from "@/components/docs/Swatch";
-import { ToggleGroup } from "@/components/docs/ToggleGroup";
+import { SegmentedControl } from "@/components/system/SegmentedControl";
 import { ThemeRoot } from "@/components/system/Theme";
 import { withoutTransitions } from "@/shared/lib/withoutTransitions";
 import { specimens } from "@/generated/specimens";
@@ -55,20 +55,30 @@ export function Preview({ slug, spec, themes }: Props) {
   return (
     <div className={styles.preview}>
       <div className={styles.toolbar}>
-        <ToggleGroup
-          label="Theme"
+        <SegmentedControl
+          aria-label="Theme"
           size="small"
-          options={themes.map((id) => ({ value: id }))}
           value={theme}
-          onChange={(id) => withoutTransitions(() => setTheme(id))}
-        />
-        <ToggleGroup
-          label="Mode"
+          onValueChange={(id) => withoutTransitions(() => setTheme(id))}
+        >
+          {themes.map((id) => (
+            <SegmentedControl.Item key={id} value={id}>
+              {id}
+            </SegmentedControl.Item>
+          ))}
+        </SegmentedControl>
+        <SegmentedControl
+          aria-label="Mode"
           size="small"
-          options={MODES}
           value={mode}
-          onChange={(m) => withoutTransitions(() => setMode(m))}
-        />
+          onValueChange={(m) => withoutTransitions(() => setMode(m === "dark" ? "dark" : "light"))}
+        >
+          {MODES.map((m) => (
+            <SegmentedControl.Item key={m.value} value={m.value}>
+              {m.label}
+            </SegmentedControl.Item>
+          ))}
+        </SegmentedControl>
       </div>
       <div className={styles.body}>
         <ThemeRoot theme={theme} mode={mode}>
@@ -85,28 +95,36 @@ export function Preview({ slug, spec, themes }: Props) {
           {Object.entries(spec.options).map(([name, o]) => (
             <fieldset key={name} className={styles.control}>
               <legend className={styles.controlName}>{name}</legend>
-              <ToggleGroup
-                label={name}
+              <SegmentedControl
+                aria-label={name}
                 size="small"
-                options={o.values.map((value) => ({ value }))}
                 value={option[name] ?? ""}
-                onChange={(value) => setOption({ ...option, [name]: value })}
-              />
+                onValueChange={(value) => setOption({ ...option, [name]: value })}
+              >
+                {o.values.map((value) => (
+                  <SegmentedControl.Item key={value} value={value}>
+                    {value}
+                  </SegmentedControl.Item>
+                ))}
+              </SegmentedControl>
             </fieldset>
           ))}
           {propStates.length > 0 ? (
             <fieldset className={styles.control}>
               <legend className={styles.controlName}>state</legend>
-              <ToggleGroup
-                label="state"
+              <SegmentedControl
+                aria-label="state"
                 size="small"
-                options={[
-                  { value: "", label: "rest" },
-                  ...propStates.map((s) => ({ value: s.name })),
-                ]}
                 value={state}
-                onChange={setState}
-              />
+                onValueChange={setState}
+              >
+                <SegmentedControl.Item value="">rest</SegmentedControl.Item>
+                {propStates.map((s) => (
+                  <SegmentedControl.Item key={s.name} value={s.name}>
+                    {s.name}
+                  </SegmentedControl.Item>
+                ))}
+              </SegmentedControl>
             </fieldset>
           ) : null}
           {lineage.length > 0 ? (

@@ -4,7 +4,7 @@ import { Block } from "@/components/docs/Block";
 import { DataTable } from "@/components/docs/DataTable";
 import { FactGrid } from "@/components/docs/FactGrid";
 import { InlineCode } from "@/components/docs/InlineCode";
-import { Keys } from "@/components/docs/Keys";
+import { Kbd } from "@/components/system/Kbd";
 import type { PrimitiveSpec } from "@/shared/lib/reference";
 import styles from "./Reference.module.scss";
 
@@ -46,7 +46,12 @@ export function Accessibility({ spec, inherited }: { spec: PrimitiveSpec; inheri
             caption="Keyboard contract"
             head={["Key", "On", "When", "Result"]}
             rows={spec.keys.map((k) => [
-              <Keys key="k" value={k.key} />,
+              // a chord, `Shift+Tab`, is one keycap per key
+              <span key="k" className={styles.keys}>
+                {k.key.split("+").map((key) => (
+                  <Kbd key={key}>{key}</Kbd>
+                ))}
+              </span>,
               <InlineCode key="p">{k.part}</InlineCode>,
               k.condition,
               k.effect,

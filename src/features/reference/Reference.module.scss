@@ -12,6 +12,12 @@
     gap: 6px;
   }
 
+  // a chord's keycaps, side by side
+  .keys {
+    display: inline-flex;
+    gap: 4px;
+  }
+
   .ratio {
     display: inline-flex;
     align-items: center;

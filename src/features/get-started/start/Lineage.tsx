@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
-import { ToggleGroup } from "@/components/docs/ToggleGroup";
+import { SegmentedControl } from "@/components/system/SegmentedControl";
 import type { Lineage as LineageData } from "../data";
 import styles from "./Start.module.scss";
 
@@ -69,16 +69,21 @@ export function Lineage({ lineages }: { lineages: LineageData[] }) {
           <strong>One component, four contracts</strong>
           <p>Every page links all four. Pick one to trace it.</p>
         </div>
-        <ToggleGroup
-          label="Component"
+        <SegmentedControl
+          aria-label="Component"
           size="small"
-          options={lineages.map((l) => ({ value: l.slug, label: l.title }))}
           value={slug}
-          onChange={(value) => {
+          onValueChange={(value) => {
             setSlug(value);
             trace();
           }}
-        />
+        >
+          {lineages.map((l) => (
+            <SegmentedControl.Item key={l.slug} value={l.slug}>
+              {l.title}
+            </SegmentedControl.Item>
+          ))}
+        </SegmentedControl>
       </div>
       <div ref={chain} className={styles.chain} aria-live="polite">
         {current.contracts.map((contract, i) => (

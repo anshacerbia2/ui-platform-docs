@@ -119,7 +119,8 @@ export function mountAssembly(
   const view = figure.querySelector<HTMLElement>("[data-view]");
   const svg = figure.querySelector<SVGSVGElement>("[data-leaders]");
   if (!stage || !canvas || !specimen || !svg) return NO_HANDLE;
-  const parts = [...figure.querySelectorAll<HTMLElement>("[data-part]")];
+  // not `data-part`: that is the design system's anatomy hook, on the controls' segments too
+  const parts = [...figure.querySelectorAll<HTMLElement>("[data-callout]")];
   const leaders = [...svg.querySelectorAll<SVGPathElement>("path")];
   const dots = [...svg.querySelectorAll<SVGCircleElement>("circle")];
   const tags = [...svg.querySelectorAll<SVGTextElement>("text")];
