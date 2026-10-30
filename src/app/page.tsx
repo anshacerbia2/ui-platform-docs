@@ -1,5 +1,5 @@
-import { LandingPage } from "@/features/landing/LandingPage";
+import { FrontDoor } from "@/features/front-door/FrontDoor";
 
 export default function Page() {
-  return <LandingPage />;
+  return <FrontDoor />;
 }
