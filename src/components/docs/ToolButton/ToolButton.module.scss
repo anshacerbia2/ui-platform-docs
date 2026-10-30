@@ -2,7 +2,7 @@
 @use "settings" as *;
 @use "tools" as *;
 
-// A tool: the same cell as a ToggleGroup's button, framed on its own line.
+// A tool: a square cell, framed on its own line.
 @layer docs.components {
   .tool {
     display: inline-flex;

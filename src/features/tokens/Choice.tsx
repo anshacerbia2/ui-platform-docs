@@ -2,7 +2,7 @@
 
 import type { ReactNode } from "react";
 import { useThemeChoice } from "@/components/docs/ThemeChoice";
-import { ToggleGroup } from "@/components/docs/ToggleGroup";
+import { SegmentedControl } from "@/components/system/SegmentedControl";
 import { ThemeRoot } from "@/components/system/Theme";
 import { SITE_THEME } from "@/shared/lib/themes";
 import { withoutTransitions } from "@/shared/lib/withoutTransitions";
@@ -27,13 +27,18 @@ export function ChoiceBar() {
   return (
     <div className={styles.choice}>
       <span className={styles.choiceLabel}>Values shown in</span>
-      <ToggleGroup
-        label="Mode"
+      <SegmentedControl
+        aria-label="Mode"
         size="small"
-        options={MODES}
         value={mode}
-        onChange={(m) => withoutTransitions(() => setMode(m))}
-      />
+        onValueChange={(m) => withoutTransitions(() => setMode(m === "dark" ? "dark" : "light"))}
+      >
+        {MODES.map((m) => (
+          <SegmentedControl.Item key={m.value} value={m.value}>
+            {m.label}
+          </SegmentedControl.Item>
+        ))}
+      </SegmentedControl>
     </div>
   );
 }

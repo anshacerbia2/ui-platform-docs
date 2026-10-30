@@ -3,10 +3,10 @@
 import { useState } from "react";
 import { Cells } from "@/components/docs/Cells";
 import { Panel } from "@/components/docs/Panel";
-import { ToggleGroup } from "@/components/docs/ToggleGroup";
 import { Body, Title } from "@/components/docs/Type";
 import { Badge } from "@/components/system/Badge";
 import { Button } from "@/components/system/Button";
+import { SegmentedControl } from "@/components/system/SegmentedControl";
 import { Tabs } from "@/components/system/Tabs";
 import { TextField } from "@/components/system/TextField";
 import { ThemeRoot, useTheme } from "@/components/system/Theme";
@@ -44,21 +44,33 @@ export function ThemeLab({ lab, swatches }: { lab: Lab; swatches: string[] }) {
         <Panel>
           <div className={styles.control}>
             <span className={styles.controlName}>Theme</span>
-            <ToggleGroup
-              label="Theme"
-              options={themes.map((id) => ({ value: id }))}
+            <SegmentedControl
+              aria-label="Theme"
               value={theme}
-              onChange={(id) => withoutTransitions(() => setTheme(id))}
-            />
+              onValueChange={(id) => withoutTransitions(() => setTheme(id))}
+            >
+              {themes.map((id) => (
+                <SegmentedControl.Item key={id} value={id}>
+                  {id}
+                </SegmentedControl.Item>
+              ))}
+            </SegmentedControl>
           </div>
           <div className={styles.control}>
             <span className={styles.controlName}>Mode</span>
-            <ToggleGroup
-              label="Mode"
-              options={MODES}
+            <SegmentedControl
+              aria-label="Mode"
               value={mode}
-              onChange={(m) => withoutTransitions(() => setMode(m))}
-            />
+              onValueChange={(m) =>
+                withoutTransitions(() => setMode(m === "dark" ? "dark" : "light"))
+              }
+            >
+              {MODES.map((m) => (
+                <SegmentedControl.Item key={m.value} value={m.value}>
+                  {m.label}
+                </SegmentedControl.Item>
+              ))}
+            </SegmentedControl>
           </div>
           <ThemeRoot theme={theme} mode={mode}>
             <div

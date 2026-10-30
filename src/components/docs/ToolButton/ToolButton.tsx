@@ -15,8 +15,7 @@ type ToolButtonProps = Omit<
 
 /**
  * A tool on the drawing's lines: a square button with an icon, a short label, or both
- * (the docs' own control, beside `ToggleGroup`, which it matches). With `pressed` it
- * is a toggle, a raised cell when on.
+ * (the docs' own control). With `pressed` it is a toggle, a raised cell when on.
  */
 export function ToolButton({ label, icon, pressed, children, ...rest }: ToolButtonProps) {
   return (
