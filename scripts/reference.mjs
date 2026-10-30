@@ -655,7 +655,13 @@ export function figmaFiles() {
 // it. Each row: t title, h link, k kind, d a line about it.
 
 const SEARCH_PAGES = [
-  ["Home", "/", "Build interfaces you can prove: the system, its contracts, its evidence."],
+  ["Scnehaux UI", "/", "The front door: the design system, its primitives, and motion."],
+  [
+    "Design system",
+    "/system",
+    "Build interfaces you can prove: the system, its contracts, its evidence.",
+  ],
+  ["Motion library", "/motion", "In fabrication: the motion package, timed by the motion tokens."],
   [
     "Get started",
     "/get-started",

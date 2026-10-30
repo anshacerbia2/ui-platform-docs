@@ -1,8 +1,121 @@
 // While a theme or mode switches (shared/lib/withoutTransitions.ts), nothing
 // transitions: every part takes its new colours in the same frame.
+// The front door's stage keeps its edge running (a world's wipe is no colour change):
+// its panels carry data-sq-wipes and are left their own transition.
 html[data-sq-switching],
-html[data-sq-switching] *,
+html[data-sq-switching] *:not([data-sq-wipes]),
 html[data-sq-switching] *::before,
 html[data-sq-switching] *::after {
   transition: none !important;
+}
+
+// The front door's mode, wiped in (ModeSwitch `wipe`): the new page is drawn over the old
+// from the right, as a world is, a scan line on its edge (FrontDoor.module.scss
+// .modeScan carries the line's name). The old page holds still under it.
+// the line's own layer: named here, by its attribute, so the name is not hashed
+html[data-sq-wipe="new"] [data-mode-scan] {
+  view-transition-name: sq-mode-scan;
+}
+
+// The page under the wipe still takes the pointer where a browser lets it through (the
+// owner, 2026-10-30); where it does not (Chromium sends every click to the root),
+// ModeSwitch reads a click on its buttons' place itself. A mode chosen during the wipe is
+// kept and wiped in after; the same mode is never run twice; the worlds hold still.
+html[data-sq-wipe]::view-transition {
+  pointer-events: none;
+}
+
+// The two pages are laid one over the other, not blended: the browser's cross-fade adds
+// them (plus-lighter), and a dark page drawn over a light one would vanish into it.
+html[data-sq-wipe]::view-transition-old(root),
+html[data-sq-wipe]::view-transition-new(root) {
+  mix-blend-mode: normal;
+}
+
+html[data-sq-wipe]::view-transition-old(root) {
+  animation: none;
+}
+
+html[data-sq-wipe]::view-transition-new(root) {
+  animation: sq-mode-wipe 1050ms cubic-bezier(0.65, 0, 0.35, 1) both;
+}
+
+html[data-sq-wipe]::view-transition-group(sq-mode-scan) {
+  animation: sq-mode-scan 1050ms cubic-bezier(0.65, 0, 0.35, 1) both;
+}
+
+html[data-sq-wipe]::view-transition-old(sq-mode-scan) {
+  display: none;
+}
+
+html[data-sq-wipe]::view-transition-new(sq-mode-scan) {
+  animation: none;
+}
+
+// both ends written: from an inset to none would not interpolate, and the page would
+// flip over at the halfway mark
+@keyframes sq-mode-wipe {
+  from {
+    clip-path: inset(0 0 0 100%);
+  }
+
+  to {
+    clip-path: inset(0 0 0 0);
+  }
+}
+
+// Into dark the wipe runs the other way, from the left (ModeSwitch data-sq-wipe-dir), the
+// page drawn from the left edge and the line on its right edge.
+html[data-sq-wipe][data-sq-wipe-dir="ltr"]::view-transition-new(root) {
+  animation-name: sq-mode-wipe-ltr;
+}
+
+html[data-sq-wipe][data-sq-wipe-dir="ltr"]::view-transition-group(sq-mode-scan) {
+  animation-name: sq-mode-scan-ltr;
+}
+
+@keyframes sq-mode-wipe-ltr {
+  from {
+    clip-path: inset(0 100% 0 0);
+  }
+
+  to {
+    clip-path: inset(0 0 0 0);
+  }
+}
+
+// the line is the right edge of its 160px fade, so the fade starts a width to the left
+@keyframes sq-mode-scan-ltr {
+  from {
+    transform: translateX(-160px);
+    opacity: 0;
+  }
+
+  8%,
+  92% {
+    opacity: 1;
+  }
+
+  to {
+    transform: translateX(calc(100vw - 160px));
+    opacity: 0;
+  }
+}
+
+// the line rides the wipe's edge, showing only while it moves
+@keyframes sq-mode-scan {
+  from {
+    transform: translateX(100vw);
+    opacity: 0;
+  }
+
+  8%,
+  92% {
+    opacity: 1;
+  }
+
+  to {
+    transform: translateX(0);
+    opacity: 0;
+  }
 }

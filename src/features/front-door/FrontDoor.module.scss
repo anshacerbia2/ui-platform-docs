@@ -1,0 +1,1431 @@
+@use "layers";
+@use "settings" as *;
+@use "tools" as *;
+
+// A panel's wipe as a number from 0 (drawn) to 1 (held off at the right edge), so it
+// transitions, and the clip, the scan line and its fade all read one value.
+@property --reveal {
+  syntax: "<number>";
+  inherits: false;
+  initial-value: 1;
+}
+// The scope runs the tokens eight times slower than they are, the curve a share of
+// each cycle and the rest a hold, so the eye can follow it.
+$slow: 8;
+$travel: 0.6;
+
+// The front door (the owner, 2026-10-30): one stage the height of the screen, the worlds
+// stacked in it, the rail of their names under it, and no nav strip: the mark, the
+// repository and the mode on its top corners. Industrial: the Square chrome's lines, HUD
+// voice and signal, and a bench drawn as an engineering drawing.
+@layer docs.features {
+  // the corners' row, over the stage and out of its layout; only its links take the
+  // pointer, so a drag starts anywhere else on it
+  .top {
+    position: absolute;
+    inset: 0 0 auto;
+    z-index: 6;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    // the same inset both sides, the copy's: the icons' own boxes take their few pixels
+    padding: 20px calc(#{$sq-pad} - 8px) 0 $sq-pad;
+    pointer-events: none;
+
+    > * {
+      pointer-events: auto;
+    }
+
+    @include until(lg) {
+      padding: 14px calc(#{$sq-pad-narrow} - 8px) 0 $sq-pad-narrow;
+    }
+  }
+
+  .brand {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    color: $sq-text;
+    font-size: var(--ds-typography-body-small-font-size);
+    font-weight: 600;
+    letter-spacing: -0.01em;
+    text-decoration: none;
+    @include focus-ring(4px);
+  }
+
+  .tools {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+
+  .github {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    inline-size: 40px;
+    block-size: 40px;
+    color: $sq-muted;
+    @include focus-ring(-4px);
+
+    &:hover {
+      color: $sq-text;
+    }
+  }
+
+  // A mode's scan line: hidden, but for the view transition that wipes the mode in, where
+  // it is a layer of its own riding the edge (utilities/_switching.scss).
+  .modeScan {
+    position: fixed;
+    inset-block: 0;
+    inset-inline-start: 0;
+    z-index: 10;
+    inline-size: 160px;
+    box-sizing: border-box;
+    border-inline-start: 1px solid $sq-signal;
+    background: linear-gradient(
+      to right,
+      color-mix(in oklab, $sq-signal 16%, transparent),
+      transparent
+    );
+    pointer-events: none;
+    visibility: hidden;
+
+    // (its view-transition-name is given in utilities/_switching.scss, by its attribute:
+    // a module would hash the name, and the transition's rules would not find it)
+    :global(html[data-sq-wipe="new"]) & {
+      visibility: visible;
+    }
+
+    // into dark, from the left: the line on the fade's right, the fade toward it
+    :global(html[data-sq-wipe-dir="ltr"]) & {
+      border-inline-start: 0;
+      border-inline-end: 1px solid $sq-signal;
+      background: linear-gradient(
+        to left,
+        color-mix(in oklab, $sq-signal 16%, transparent),
+        transparent
+      );
+    }
+  }
+
+  .main {
+    display: grid;
+  }
+
+  // The stage is exactly the screen at every width, and nothing scrolls (the owner,
+  // 2026-10-30); only a screen too short to hold the copy and a bench at all, a phone
+  // turned on its side, lets the page run on and scroll.
+  .scene {
+    display: grid;
+    grid-template-rows: minmax(0, 1fr) auto;
+    block-size: 100dvh;
+
+    @include until(lg) {
+      @media (height < 560px) {
+        block-size: auto;
+      }
+    }
+  }
+
+  .stack {
+    position: relative;
+    display: grid;
+    overflow: clip;
+    container: stack / inline-size;
+    // a horizontal drag is the stage's; the page still pans up and down
+    touch-action: pan-y;
+
+    .scene[data-scrub] & {
+      cursor: grabbing;
+      user-select: none;
+    }
+
+    // narrower, two rows every world shares: the copy's, as tall as the tallest world's
+    // copy, then the bench's, the rest of the screen down to the rail (the panels and
+    // worlds take them by subgrid)
+    @include until(lg) {
+      grid-template-rows: auto minmax(0, 1fr);
+
+      @media (height < 560px) {
+        grid-template-rows: auto 24rem;
+      }
+    }
+  }
+
+  // Every panel in the one cell, and one edge between two of them (Scene.tsx): the
+  // world coming in on top, on its side of the edge, the world it covers laid whole
+  // beneath, the rest held off
+  // and still. Only the edge moves: going on it runs left until the top world fills the
+  // stage; going back it runs right until the one beneath does. Only the top world wipes,
+  // so there is only ever one scan line, and a world laid beneath or put away is so at
+  // once, never by a wipe of its own.
+  .panel {
+    --reveal: 1;
+
+    position: relative;
+    z-index: 0;
+    display: grid;
+    grid-area: 1 / 1;
+    grid-template-rows: minmax(0, 1fr);
+    min-inline-size: 0;
+    clip-path: inset(0 0 0 calc(var(--reveal) * 100%));
+
+    @include until(lg) {
+      grid-row: 1 / span 2;
+      grid-template-rows: subgrid;
+    }
+
+    &[data-state="top"] {
+      --reveal: 0;
+
+      z-index: 2;
+
+      @include motion {
+        transition: --reveal 1050ms $sq-draw-easing;
+      }
+    }
+
+    .scene[data-dir="back"] &[data-state="top"] {
+      --reveal: 1;
+    }
+
+    &[data-state="under"] {
+      --reveal: 0;
+
+      z-index: 1;
+    }
+
+    .scene[data-scrub] & {
+      transition: none;
+    }
+
+    // The scan line on the wipe's edge, the world's name riding its top. It shows only
+    // while the wipe is under way: its opacity is the sine of the wipe, 0 at either end.
+    // It takes the wipe from its panel by hand: the property does not inherit, so the
+    // panel's content is never restyled for it, frame by frame.
+    &::after {
+      --reveal: inherit;
+
+      content: attr(data-label);
+      position: absolute;
+      inset-block: 0;
+      inset-inline-start: 0;
+      z-index: 4;
+      inline-size: 160px;
+      padding: 14px 12px;
+      box-sizing: border-box;
+      border-inline-start: 1px solid $sq-signal;
+      background: linear-gradient(
+        to right,
+        color-mix(in oklab, $sq-signal 16%, transparent),
+        transparent
+      );
+      color: $sq-signal-text;
+      opacity: sin(calc(var(--reveal) * 180deg));
+      translate: calc(var(--reveal) * 100cqi) 0;
+      pointer-events: none;
+      @include hud(10px, 600, 0.14em);
+    }
+
+    // A world coming in from the left (the next world, or a drag to the right; the owner,
+    // 2026-10-30): it is
+    // drawn from the left edge, clipped on its right, and its scan line is its right
+    // edge, the fade and the name inside it.
+    .scene[data-side="left"] & {
+      clip-path: inset(0 calc(var(--reveal) * 100%) 0 0);
+    }
+
+    .scene[data-side="left"] &::after {
+      border-inline-start: 0;
+      border-inline-end: 1px solid $sq-signal;
+      background: linear-gradient(
+        to left,
+        color-mix(in oklab, $sq-signal 16%, transparent),
+        transparent
+      );
+      text-align: end;
+      translate: calc((1 - var(--reveal)) * 100cqi - 100%) 0;
+    }
+  }
+  // The X-ray lens (Scene.tsx): the next world, clipped to a square at the pointer and
+  // lifted over the current one, and a frame round the square with that world's name
+  // under it. --lx and --ly are the pointer in the stage, set a frame at a time.
+  $lens: 168px;
+
+  // (as specific as a side's clip, and after it, so the lens wins on either side)
+  .scene .panel[data-lens] {
+    z-index: 3;
+    clip-path: inset(
+      calc(var(--ly) - #{$lens * 0.5}) calc(100% - var(--lx) - #{$lens * 0.5})
+        calc(100% - var(--ly) - #{$lens * 0.5}) calc(var(--lx) - #{$lens * 0.5})
+    );
+  }
+
+  .lens {
+    position: absolute;
+    inset-block-start: 0;
+    inset-inline-start: 0;
+    z-index: 5;
+    inline-size: $lens;
+    block-size: $lens;
+    margin: ($lens * -0.5) 0 0 ($lens * -0.5);
+    box-sizing: border-box;
+    border: 1px solid $sq-signal;
+    // a crosshair's four ticks at the middle of each side
+    background:
+      linear-gradient($sq-signal, $sq-signal) top center / 1px 8px no-repeat,
+      linear-gradient($sq-signal, $sq-signal) bottom center / 1px 8px no-repeat,
+      linear-gradient($sq-signal, $sq-signal) left center / 8px 1px no-repeat,
+      linear-gradient($sq-signal, $sq-signal) right center / 8px 1px no-repeat;
+    opacity: 0;
+    pointer-events: none;
+
+    &[data-on] {
+      opacity: 1;
+    }
+
+    // over the first world there is no world before: the square is scanned empty
+    &[data-empty] {
+      background-color: $sq-ground;
+    }
+
+    &::after {
+      content: attr(data-label);
+      position: absolute;
+      inset-block-start: calc(100% + 1px);
+      inset-inline-start: -1px;
+      padding: 4px 7px;
+      background: $sq-signal;
+      color: var(--ds-color-primary-text-contrast-default);
+      white-space: nowrap;
+      @include hud(9.5px, 600, 0.14em);
+    }
+  }
+  // While a mode is wiped in, its scan line is the only one: a world's, if its wipe is
+  // under way, runs on unseen, and the worlds do not turn by themselves (the owner,
+  // 2026-10-30).
+  :global(html[data-sq-wipe]) .panel::after {
+    visibility: hidden;
+  }
+
+  // (as specific as the dwell's own rule and more, or its shorthand would set it running)
+  :global(html[data-sq-wipe]) .scene[data-playing] .tab[aria-selected="true"]::before {
+    animation-play-state: paused;
+  }
+
+  // ---- a world: the copy, then the bench -------------------------------------------
+
+  .world {
+    display: grid;
+    grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+    min-inline-size: 0;
+    background: $sq-ground;
+    color: $sq-text;
+
+    // Narrower, the copy and then the bench under it (the owner, 2026-10-30), on the
+    // stack's two rows: the copy's row is as tall as the tallest world's copy, so the
+    // bench, and the specimen on it, stands in the same place in every world, and a wipe
+    // still cuts one card in two.
+    @include until(lg) {
+      grid-row: 1 / span 2;
+      grid-template-columns: minmax(0, 1fr);
+      grid-template-rows: subgrid;
+    }
+  }
+
+  .copy {
+    position: relative;
+    display: grid;
+    grid-template-rows: auto minmax(0, 1fr) auto;
+    gap: 32px;
+    padding: 36px $sq-pad 0;
+    overflow: clip;
+    border-inline-end: 1px solid $sq-line;
+
+    // clear of the corners' row above it
+    @include from(lg) {
+      padding-block-start: 100px;
+    }
+
+    // clear of the corners' row; the claim right under the number, the specs left out
+    @include until(lg) {
+      grid-template-rows: auto auto;
+      align-content: start;
+      gap: 20px;
+      padding: 72px $sq-pad-narrow 28px;
+      border-inline-end: 0;
+      border-block-end: 1px solid $sq-line;
+    }
+  }
+
+  // The sheet's number, at one height in every world, so it stands in the same place in
+  // each; motion's chip fits inside that height and never moves the line (the owner,
+  // 2026-10-30).
+  .index {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    block-size: 24px;
+    margin: 0;
+    color: $sq-muted;
+    white-space: nowrap;
+    @include hud(11px, 500, 0.14em);
+
+    b {
+      color: $sq-signal-text;
+      font-weight: 600;
+    }
+  }
+
+  // its capitals in the box's middle: the line trimmed to them, the space a line keeps
+  // for descenders gone (the owner, 2026-10-30)
+  .soon {
+    display: inline-flex;
+    align-items: center;
+    block-size: 100%;
+    box-sizing: border-box;
+    padding-inline: 7px;
+    border: 1px solid $sq-signal;
+    color: $sq-signal-text;
+    line-height: 1;
+    text-box: trim-both cap alphabetic;
+  }
+
+  .claim {
+    position: relative;
+    z-index: 1;
+    display: grid;
+    align-self: center;
+    justify-items: start;
+    gap: 24px;
+  }
+
+  .title {
+    margin: 0;
+    font-size: clamp(3rem, 5.6vw, 6.25rem);
+    font-weight: var(--ds-typography-weight-medium);
+    letter-spacing: -0.055em;
+    line-height: 0.9;
+    text-wrap: balance;
+  }
+
+  .lede {
+    max-inline-size: 40ch;
+    margin: 0;
+    color: $sq-muted;
+    font-size: 1.0625rem;
+    line-height: 1.6;
+    text-wrap: pretty;
+
+    // a short phone keeps the claim and the way in, and gives the bench the room
+    @include until(lg) {
+      @media (height < 760px) {
+        display: none;
+      }
+    }
+  }
+
+  // the figures, on the sheet's own ground, so the number running under them is covered
+  .specs {
+    position: relative;
+    z-index: 1;
+    display: grid;
+    background: $sq-ground;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    margin: 0 calc(-1 * #{$sq-pad});
+    border-block-start: 1px solid $sq-line;
+
+    > div {
+      padding: 16px $sq-pad 22px;
+      border-inline-end: 1px solid $sq-line;
+
+      &:last-child {
+        border-inline-end: 0;
+      }
+    }
+
+    dt {
+      color: $sq-muted;
+      @include hud(10px, 500, 0.14em);
+    }
+
+    dd {
+      margin: 8px 0 0;
+      font-size: clamp(1.75rem, 2.6vw, 2.75rem);
+      font-variant-numeric: tabular-nums;
+      font-weight: var(--ds-typography-weight-medium);
+      letter-spacing: -0.045em;
+      line-height: 1;
+    }
+
+    // a small screen keeps the claim and the specimen; the figures are the landings'
+    // (the owner, 2026-10-30)
+    @include until(lg) {
+      display: none;
+    }
+  }
+
+  // The world's number, cut out of the sheet behind its copy: a stencil, lines only, its
+  // digits close. Cut by the column's right edge, and its foot runs under the figures,
+  // which cover it; below lg, where there are no figures, the copy's foot cuts it (the
+  // owner, 2026-10-30).
+  .numeral {
+    position: absolute;
+    // the foot's line of a 2 shows above the figures; the rest of the foot runs under
+    inset-block-end: 96px;
+    inset-inline-end: -0.14em;
+    color: transparent;
+    font-size: clamp(10rem, 21vw, 24rem);
+    font-weight: var(--ds-typography-weight-semibold);
+    letter-spacing: -0.02em;
+    line-height: 0.74;
+    pointer-events: none;
+    user-select: none;
+    -webkit-text-stroke: 1px $sq-line;
+
+    @include until(lg) {
+      inset-block-end: -0.05em;
+    }
+
+    // a 1 is narrow: cut as far as the others, it would be gone, so 01 stands further in
+    .world[data-world="primitives"] & {
+      inset-inline-end: 0.02em;
+    }
+  }
+
+  // ---- the bench: the specimen drawn as on a drawing ------------------------------
+
+  .bench {
+    position: relative;
+    display: grid;
+    grid-template: minmax(0, 1fr) / minmax(0, 1fr);
+    min-block-size: 0;
+    overflow: clip;
+    container: bench / size;
+    background-image: radial-gradient($sq-line 1px, transparent 1px);
+    background-position: center;
+    background-size: 22px 22px;
+    cursor: grab;
+  }
+
+  // the bench's name and how to move it, in its lower corner (the title block has the other)
+  .benchHead {
+    position: absolute;
+    inset: auto auto 0 0;
+    z-index: 2;
+    display: flex;
+    gap: 16px;
+    margin: 0;
+    padding: 14px $sq-pad;
+    color: $sq-muted;
+    pointer-events: none;
+    @include hud(10px, 500, 0.14em);
+
+    @media (pointer: coarse) {
+      > :last-child {
+        display: none;
+      }
+    }
+
+    @container bench (width < 560px) {
+      > :last-child {
+        display: none;
+      }
+    }
+  }
+
+  // the specimen between four crop marks, a dimension line under it
+  $mark: 14px;
+
+  .mount {
+    position: relative;
+    z-index: 1;
+    grid-area: 1 / 1;
+    place-self: center;
+    padding: 48px 52px 56px;
+
+    // beside the title block, which stands in the bench's corner where there is room;
+    // in every world, whatever it holds there, so the specimen stands in one place. The
+    // block stands as far in from the bench's right edge as the copy does from the left.
+    @container bench (width >= 840px) {
+      margin-inline-end: calc(300px + #{$sq-pad});
+    }
+    background:
+      linear-gradient($sq-cross, $sq-cross) left top / #{$mark} 1px no-repeat,
+      linear-gradient($sq-cross, $sq-cross) left top / 1px #{$mark} no-repeat,
+      linear-gradient($sq-cross, $sq-cross) right top / #{$mark} 1px no-repeat,
+      linear-gradient($sq-cross, $sq-cross) right top / 1px #{$mark} no-repeat,
+      linear-gradient($sq-cross, $sq-cross) left bottom / #{$mark} 1px no-repeat,
+      linear-gradient($sq-cross, $sq-cross) left bottom / 1px #{$mark} no-repeat,
+      linear-gradient($sq-cross, $sq-cross) right bottom / #{$mark} 1px no-repeat,
+      linear-gradient($sq-cross, $sq-cross) right bottom / 1px #{$mark} no-repeat;
+
+    // the card's width, as a dimension: a line with its two ends, the figure on it
+    &::before {
+      content: "";
+      position: absolute;
+      inset: auto 52px 18px;
+      block-size: 9px;
+      border-inline: 1px solid $sq-cross;
+      background: linear-gradient($sq-cross, $sq-cross) center / 100% 1px no-repeat;
+    }
+
+    &::after {
+      content: "380";
+      position: absolute;
+      inset-block-end: 16px;
+      inset-inline-start: 50%;
+      padding-inline: 8px;
+      background: $sq-ground;
+      color: $sq-muted;
+      translate: -50% 0;
+      @include hud(10px, 500, 0.1em);
+    }
+
+    // As large as the bench allows: the mount is 484 by 412 with the bench's name under
+    // it, 40px, so a step fits a bench at least 484z wide and 412z + 40 tall. Each step
+    // is smaller than the one before, so the last that matches is the one that fits.
+    @container bench (width < 484px) or (height < 452px) {
+      zoom: 0.9;
+    }
+
+    @container bench (width < 436px) or (height < 411px) {
+      zoom: 0.8;
+    }
+
+    @container bench (width < 387px) or (height < 370px) {
+      zoom: 0.7;
+    }
+
+    @container bench (width < 339px) or (height < 328px) {
+      zoom: 0.6;
+    }
+
+    @container bench (width < 290px) or (height < 287px) {
+      zoom: 0.5;
+    }
+
+    @container bench (height < 246px) {
+      zoom: 0.42;
+    }
+  }
+
+  // a release panel: its head, the claim, the target and the checks, then a foot of
+  // its own ground with the shortcut and the actions
+  .card {
+    display: grid;
+    gap: 14px;
+    inline-size: 380px;
+    box-sizing: border-box;
+    padding: 22px 22px 0;
+    border: 1px solid var(--ds-color-neutral-border-default-default);
+    background: var(--ds-color-neutral-surface-raised-default);
+    color: var(--ds-color-neutral-text-default-default);
+    text-align: start;
+  }
+
+  .cardFoot {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin: 4px -22px 0;
+    padding: 12px 22px;
+    border-block-start: 1px solid var(--ds-color-neutral-border-subtle-default);
+    background: var(--ds-color-neutral-surface-subtle-default);
+  }
+
+  .keys {
+    display: inline-flex;
+    gap: 4px;
+  }
+
+  .cardHead {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .cardMeta {
+    color: var(--ds-color-neutral-text-subtle-default);
+    font: 500 11px/1 $sq-mono;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+
+  .cardActions {
+    display: flex;
+    gap: 8px;
+  }
+
+  // A part under its balloon: the number in a circle in the margin, level with the
+  // part's middle, a leader to it (the owner, 2026-10-30). The buttons' balloon hangs
+  // under them. Out of the layout, so every world's
+  // specimen keeps one geometry.
+  .part {
+    position: relative;
+    display: block;
+
+    &::before {
+      content: attr(data-no);
+      position: absolute;
+      inset-block-start: calc(50% - 10px);
+      inset-inline-start: -50px;
+      display: grid;
+      place-items: center;
+      inline-size: 20px;
+      block-size: 20px;
+      box-sizing: border-box;
+      border: 1px solid $sq-cross;
+      border-radius: 50%;
+      background: $sq-ground;
+      color: $sq-text;
+      font: 600 9.5px/1 $sq-mono;
+    }
+
+    // the leader stops short of the part, a hair of air between them
+    &::after {
+      content: "";
+      position: absolute;
+      inset-block-start: 50%;
+      inset-inline-start: -30px;
+      inline-size: 24px;
+      border-block-start: 1px solid $sq-cross;
+    }
+
+    .cardActions & {
+      &::before {
+        inset-block-start: calc(100% + 24px);
+        inset-inline-start: calc(50% - 10px);
+      }
+
+      &::after {
+        inset-block-start: calc(100% + 6px);
+        inset-inline-start: 50%;
+        inline-size: 0;
+        block-size: 18px;
+        border-block-start: 0;
+        border-inline-start: 1px solid $sq-cross;
+      }
+
+      // two of one part: one balloon, on the last
+      &:first-child::before,
+      &:first-child::after {
+        display: none;
+      }
+    }
+
+    // a part holding an inline component (the badge, the keys, a button) is as tall as
+    // the component, not its line, so the balloon meets the component's middle
+    .cardHead &,
+    .cardFoot & {
+      display: flex;
+    }
+  }
+
+  // the bench's title block: the parts list and the sheet's facts, in the drawing's corner
+  .block {
+    position: absolute;
+    inset-block-end: 24px;
+    inset-inline-end: $sq-pad;
+    z-index: 2;
+    inline-size: 300px;
+    border: 1px solid $sq-line;
+    background: $sq-ground;
+    color: $sq-muted;
+    font: 500 11px/1.4 $sq-mono;
+
+    @container bench (width < 840px) {
+      display: none;
+    }
+  }
+
+  .blockHead,
+  .blockFoot {
+    display: flex;
+    justify-content: space-between;
+    margin: 0;
+    padding: 8px 12px;
+    @include hud(9.5px, 500, 0.14em);
+  }
+
+  .blockHead {
+    border-block-end: 1px solid $sq-line;
+    color: $sq-text;
+  }
+
+  .blockFoot {
+    justify-content: start;
+    gap: 10px;
+    border-block-start: 1px solid $sq-line;
+
+    > span + span {
+      padding-inline-start: 10px;
+      border-inline-start: 1px solid $sq-line;
+    }
+  }
+
+  .bom {
+    margin: 0;
+    padding: 6px 0;
+    list-style: none;
+
+    li {
+      display: grid;
+      grid-template-columns: 22px 78px minmax(0, 1fr);
+      column-gap: 8px;
+      padding: 3px 12px;
+    }
+
+    b {
+      color: $sq-signal-text;
+      font-weight: 600;
+    }
+
+    span:nth-of-type(1) {
+      color: $sq-text;
+    }
+
+    small {
+      grid-column: 3;
+      color: $sq-faint;
+      font-size: 10px;
+    }
+
+    li[data-bare] {
+      opacity: 0.5;
+    }
+
+    @container bench (height < 600px) {
+      display: none;
+    }
+  }
+
+  // ---- 02 primitives: the paint taken off ------------------------------------------
+
+  .world[data-world="primitives"] {
+    .bench {
+      background-color: var(--ds-color-neutral-surface-sunken-default);
+      background-image:
+        linear-gradient($sq-line 1px, transparent 1px),
+        linear-gradient(90deg, $sq-line 1px, transparent 1px),
+        linear-gradient(color-mix(in oklab, $sq-line 45%, transparent) 1px, transparent 1px),
+        linear-gradient(90deg, color-mix(in oklab, $sq-line 45%, transparent) 1px, transparent 1px);
+      background-position: -1px -1px;
+      background-size:
+        88px 88px,
+        88px 88px,
+        22px 22px,
+        22px 22px;
+    }
+
+    .mount::after,
+    .part::before {
+      background: var(--ds-color-neutral-surface-sunken-default);
+    }
+
+    // No fill, no shadow, no colour of its own: what is left is the structure. Only
+    // colours change, never a size, so the card keeps the geometry of the others.
+    .card,
+    .card * {
+      border-color: color-mix(in oklab, $sq-text 34%, transparent);
+      background: transparent;
+      box-shadow: none;
+      color: $sq-muted;
+    }
+
+    .card {
+      border-style: dashed;
+    }
+
+    // a native progress paints its fill in the browser's own parts: empty them too
+    .card progress {
+      outline: 1px dashed color-mix(in oklab, $sq-text 34%, transparent);
+
+      &::-webkit-progress-bar,
+      &::-webkit-progress-value {
+        background: transparent;
+      }
+
+      &::-moz-progress-bar {
+        background: transparent;
+      }
+    }
+
+    // markup only: there, but with no behavior to show
+    .part:not([data-behavior]) > * {
+      opacity: 0.3;
+    }
+
+    // the behavior's own elements, outlined in the signal, the focus walking them
+    .part[data-behavior] :is(button, input, label) {
+      color: $sq-text;
+      outline: 1px dashed $sq-signal;
+      outline-offset: 2px;
+    }
+
+    // the focus walks the tab order: the target's chosen segment (its radio is hidden, so
+    // the segment shows it), then the two actions
+    .part[data-behavior] :is(button, [data-part="item"][data-state="checked"]) {
+      @include motion {
+        animation: walk-focus 4.8s step-end infinite;
+      }
+    }
+
+    .part[data-no="04"] [data-part="item"] {
+      animation-delay: 0s;
+    }
+
+    .cardActions .part:first-child button {
+      animation-delay: 1.6s;
+    }
+
+    .cardActions .part:last-child button {
+      animation-delay: 3.2s;
+    }
+
+    .part[data-behavior]::before {
+      border-color: $sq-signal;
+      color: $sq-signal-text;
+    }
+  }
+
+  // the focus walking the tab order: each element holds it a third of the cycle
+  @keyframes walk-focus {
+    0% {
+      outline-style: solid;
+      outline-width: 2px;
+      outline-offset: 3px;
+    }
+
+    33.3% {
+      outline-style: dashed;
+      outline-width: 1px;
+      outline-offset: 2px;
+    }
+  }
+
+  // ---- 03 motion: the scope -------------------------------------------------------
+
+  // The scope's bench: the primitives' bench's large squares, 88px, without its fine
+  // ones (the owner, 2026-10-30). Its lines start a pitch in, so none lies on the bench's
+  // edge, which a line already draws: two would read as one doubled.
+  .screen {
+    background-image:
+      linear-gradient(90deg, $sq-line 1px, transparent 1px),
+      linear-gradient($sq-line 1px, transparent 1px);
+    background-position: -1px -1px;
+    background-size: 88px 88px;
+  }
+
+  .world[data-world="motion"] {
+    .mount::after {
+      background: $sq-ground;
+    }
+
+    .part::before,
+    .part::after {
+      display: none;
+    }
+
+    // The panel's frame holds still while its content keeps a cycle (Checks.tsx, the
+    // owner, 2026-10-30): out by the exit token, then in by the enter token, rising into
+    // place as it fades in, the body all at once and the foot a beat after it, the only
+    // stagger; then the checks run.
+    .card > * {
+      @include motion {
+        transition:
+          opacity var(--ds-motion-enter-duration) var(--ds-motion-enter-easing),
+          translate var(--ds-motion-enter-duration) var(--ds-motion-enter-easing);
+      }
+    }
+
+    .card > .cardFoot {
+      transition-delay: 120ms;
+    }
+
+    // the checks' bar follows its count frame by frame (Checks.tsx): its own transition,
+    // through the Progress's published hook, is off, so it never trails the count
+    .part[data-no="05"] {
+      --scnx-progress-transition-duration: 0ms;
+    }
+
+    .card[data-out] > * {
+      opacity: 0;
+      translate: 0 10px;
+
+      @include motion {
+        transition:
+          opacity var(--ds-motion-exit-duration) var(--ds-motion-exit-easing) 0ms,
+          translate var(--ds-motion-exit-duration) var(--ds-motion-exit-easing) 0ms;
+      }
+    }
+  }
+
+  // On its own page the scope is the whole screen, the plot inside the graticule's outer
+  // divisions; on the bench it is a gauge in the title block's corner, beside the card.
+  .scope {
+    position: absolute;
+    inset: 0;
+    display: grid;
+    grid-template: minmax(0, 1fr) / minmax(0, 1fr) auto;
+    gap: 24px;
+    padding: 40px 24px 24px 40px;
+    pointer-events: none;
+
+    @include until(md) {
+      grid-template: minmax(0, 1fr) auto / minmax(0, 1fr);
+      padding: 24px;
+    }
+
+    .bench & {
+      inset: 56px $sq-pad 24px auto;
+      grid-template: minmax(0, 1fr) auto / minmax(0, 1fr);
+      gap: 16px;
+      padding: 0;
+      inline-size: 300px;
+
+      @container bench (width < 840px) {
+        display: none;
+      }
+    }
+  }
+
+  .screenBox {
+    position: relative;
+
+    .bench & {
+      align-self: end;
+      aspect-ratio: 1;
+      max-block-size: 100%;
+      border: 1px solid $sq-line;
+      background-color: $sq-ground;
+      background-image:
+        linear-gradient(90deg, $sq-line 1px, transparent 1px),
+        linear-gradient($sq-line 1px, transparent 1px);
+      background-position: -1px -1px;
+      background-size: 10% 10%;
+    }
+  }
+
+  // the plot: time across, progress up
+  .plot {
+    position: absolute;
+    inset: 8%;
+    container-type: size;
+
+    .bench & {
+      inset: 13%;
+    }
+  }
+
+  .traces {
+    position: absolute;
+    inset: 0;
+    inline-size: 100%;
+    block-size: 100%;
+    overflow: visible;
+
+    // the curves drawn in from the start of time as the world comes on show: a wipe, as
+    // a dash would be measured in the plot's stretched units and break the line
+    @include motion {
+      .panel:not([inert]) & {
+        animation: trace-draw 1400ms 300ms $sq-draw-easing both;
+      }
+    }
+
+    path {
+      fill: none;
+      stroke: $sq-signal;
+      stroke-width: 1.5px;
+      vector-effect: non-scaling-stroke;
+    }
+
+    path:nth-child(2) {
+      stroke: $sq-text;
+    }
+
+    path:nth-child(3) {
+      stroke: $sq-muted;
+      stroke-dasharray: 2 4;
+    }
+  }
+
+  @keyframes trace-draw {
+    from {
+      clip-path: inset(-10% 110% -10% -10%);
+    }
+
+    to {
+      clip-path: inset(-10%);
+    }
+  }
+
+  // A rider crosses at one speed and climbs by its curve's own easing token, so its
+  // path is the curve; a cycle is the token's duration, slowed, and then a hold.
+  // A curve is named by the first motion role that uses its easing (front-door/data.ts);
+  // each role is written out, so every token named here is checked as published.
+  @mixin curve($easing, $duration) {
+    --curve-easing: #{$easing};
+    --curve-cycle: calc(#{$duration} * #{$slow} / #{$travel});
+  }
+
+  .scope [data-curve="attention"] {
+    @include curve(var(--ds-motion-attention-easing), var(--ds-motion-attention-duration));
+  }
+
+  .scope [data-curve="disclosure"] {
+    @include curve(var(--ds-motion-disclosure-easing), var(--ds-motion-disclosure-duration));
+  }
+
+  .scope [data-curve="enter"] {
+    @include curve(var(--ds-motion-enter-easing), var(--ds-motion-enter-duration));
+  }
+
+  .scope [data-curve="exit"] {
+    @include curve(var(--ds-motion-exit-easing), var(--ds-motion-exit-duration));
+  }
+
+  .scope [data-curve="feedback"] {
+    @include curve(var(--ds-motion-feedback-easing), var(--ds-motion-feedback-duration));
+  }
+
+  .rider {
+    position: absolute;
+    inset-block-end: 0;
+    inset-inline-start: 0;
+    color: $sq-signal;
+
+    i {
+      display: block;
+      inline-size: 9px;
+      block-size: 9px;
+      margin: -4.5px;
+      background: currentColor;
+      box-sizing: border-box;
+    }
+
+    &:nth-of-type(2) {
+      color: $sq-text;
+    }
+
+    &:nth-of-type(3) {
+      color: $sq-muted;
+    }
+
+    @include motion {
+      animation: ride-across var(--curve-cycle) linear infinite;
+
+      i {
+        animation: ride-up var(--curve-cycle) var(--curve-easing) infinite;
+      }
+    }
+  }
+
+  @keyframes ride-across {
+    0%,
+    15% {
+      translate: 0 0;
+    }
+
+    #{15% + $travel * 100%},
+    100% {
+      translate: 100cqi 0;
+    }
+  }
+
+  @keyframes ride-up {
+    0%,
+    15% {
+      translate: 0 0;
+    }
+
+    #{15% + $travel * 100%},
+    100% {
+      translate: 0 -100cqb;
+    }
+  }
+
+  // the curves' key, where the other worlds keep their title block
+  // the key beside the plot, or under it where the gauge is narrow
+  .legend {
+    align-self: end;
+    inline-size: 300px;
+
+    .bench & {
+      inline-size: auto;
+    }
+
+    @include until(md) {
+      inline-size: auto;
+    }
+
+    box-sizing: border-box;
+    margin: 0;
+    padding: 6px 0;
+    list-style: none;
+    border: 1px solid $sq-line;
+    background: $sq-ground;
+    color: $sq-muted;
+    font: 500 11px/1.4 $sq-mono;
+
+    li {
+      display: grid;
+      grid-template-columns: 24px minmax(0, 1fr);
+      column-gap: 10px;
+      padding: 5px 12px;
+
+      // each key a piece of its trace, drawn as the plot draws it: its line (solid, or
+      // dotted as exit's is) and its rider at the end, in its colour (the owner, 2026-10-30)
+      &::before {
+        content: "";
+        grid-row: 1 / span 2;
+        inline-size: 24px;
+        block-size: 7px;
+        margin-block-start: 4px;
+        color: $sq-signal;
+        background:
+          linear-gradient(currentColor, currentColor) right center / 7px 7px no-repeat,
+          linear-gradient(currentColor, currentColor) left center / calc(100% - 7px) 1.5px no-repeat;
+      }
+
+      &:nth-child(2)::before {
+        color: $sq-text;
+      }
+
+      &:nth-child(3)::before {
+        color: $sq-muted;
+        background:
+          linear-gradient(currentColor, currentColor) right center / 7px 7px no-repeat,
+          repeating-linear-gradient(90deg, currentColor 0 2px, transparent 2px 6px) left center /
+            calc(100% - 7px) 1.5px no-repeat;
+      }
+    }
+
+    b {
+      color: $sq-text;
+      font-weight: 500;
+    }
+
+    .slow {
+      margin-block-start: 4px;
+      padding-block-start: 9px;
+      border-block-start: 1px solid $sq-line;
+      @include hud(9.5px, 500, 0.14em);
+
+      &::before {
+        display: none;
+      }
+    }
+  }
+
+  // loops run only in the world on show
+  .panel[inert] :is(.part, .rider, .rider i, .traces, button, [data-part="item"]) {
+    animation-play-state: paused;
+  }
+
+  // ---- the rail -------------------------------------------------------------------
+
+  // the worlds' tabs, then the pause, a square at the end
+  .rail {
+    position: sticky;
+    inset-block-end: 0;
+    z-index: 5;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    border-block-start: 1px solid $sq-line;
+    background: $sq-ground;
+  }
+
+  .tabs {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .tab {
+    position: relative;
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr);
+    align-content: center;
+    column-gap: 14px;
+    row-gap: 4px;
+    min-block-size: 76px;
+    padding: 14px $sq-pad;
+    border: 0;
+    border-inline-end: 1px solid $sq-line;
+    background: none;
+    color: $sq-muted;
+    text-align: start;
+    cursor: pointer;
+    @include focus-ring(-4px);
+
+    // the world on show: a signal bar drawn across the tab's top; while the worlds turn
+    // by themselves it fills over the world's dwell, and the next comes on as it is full
+    &::before {
+      content: "";
+      position: absolute;
+      inset: -1px 0 auto;
+      block-size: 2px;
+      background: $sq-faint;
+      scale: 0 1;
+      transform-origin: left;
+
+      @include motion {
+        transition:
+          scale 700ms $sq-settle-easing,
+          background-color 200ms $sq-settle-easing;
+      }
+    }
+
+    &:hover {
+      color: $sq-text;
+
+      &::before {
+        scale: 0.16 1;
+      }
+    }
+
+    // a world not on the stage while a wipe is under way: it waits until the wipe is done
+    &[aria-disabled="true"] {
+      color: $sq-faint;
+      cursor: not-allowed;
+
+      &::before {
+        scale: 0 1;
+      }
+    }
+
+    &[aria-selected="true"] {
+      color: $sq-text;
+
+      &::before {
+        background: $sq-signal;
+        scale: 1;
+
+        @include motion {
+          .scene[data-playing] & {
+            animation: dwell 7s linear both;
+          }
+
+          .scene[data-held] & {
+            animation-play-state: paused;
+          }
+        }
+      }
+
+      b {
+        color: $sq-signal-text;
+      }
+    }
+
+    // the number and the name on one line, on one baseline, whether the package line
+    // under the name shows or not (the owner, 2026-10-30)
+    b {
+      align-self: baseline;
+      font: 600 11px/1.4 $sq-mono;
+      letter-spacing: 0.08em;
+    }
+
+    @include until(md) {
+      min-block-size: 60px;
+      padding: 12px 16px;
+      column-gap: 10px;
+    }
+
+    // a phone: the name alone, so a third of the width holds it on one line
+    @include until(sm) {
+      grid-template-columns: minmax(0, 1fr);
+      padding-inline: 12px;
+      text-align: center;
+
+      b {
+        display: none;
+      }
+    }
+  }
+
+  @keyframes dwell {
+    from {
+      scale: 0 1;
+    }
+  }
+
+  // pause and play: two bars or a triangle, drawn; gone where nothing turns by itself
+  .play {
+    display: grid;
+    place-items: center;
+    inline-size: 76px;
+    padding: 0;
+    border: 0;
+    background: none;
+    color: $sq-muted;
+    cursor: pointer;
+    @include focus-ring(-4px);
+
+    &:hover {
+      color: $sq-text;
+    }
+
+    i {
+      inline-size: 10px;
+      block-size: 12px;
+      background: linear-gradient(
+        to right,
+        currentColor 0 35%,
+        transparent 35% 65%,
+        currentColor 65%
+      );
+    }
+
+    &:not([data-playing]) i {
+      inline-size: 11px;
+      background: currentColor;
+      clip-path: polygon(0 0, 100% 50%, 0 100%);
+    }
+
+    @include until(md) {
+      inline-size: 60px;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      display: none;
+    }
+  }
+
+  // the world's name in the HUD voice, its letters shuffled as the pointer or the focus
+  // comes to it (Shuffle, a direct child of the tab, takes the tab as its host)
+  .tab > span:first-of-type {
+    align-self: baseline;
+    overflow: hidden;
+    color: inherit;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    @include hud(12px, 500, 0.12em);
+
+    // a phone: a third of the width, so a long name takes two lines rather than an ellipsis
+    @include until(sm) {
+      font-size: 11px;
+      letter-spacing: 0.08em;
+      line-height: 1.35;
+      white-space: normal;
+    }
+  }
+
+  .tabPackage {
+    grid-column: 2;
+    overflow: hidden;
+    color: $sq-muted;
+    font: 500 11px/1.3 $sq-mono;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+
+    i {
+      font-style: normal;
+      opacity: 0.7;
+    }
+
+    @include until(md) {
+      display: none;
+    }
+  }
+}

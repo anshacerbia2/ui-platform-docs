@@ -1,0 +1,39 @@
+@use "layers";
+@use "settings" as *;
+@use "tools" as *;
+
+// The motion page while its package is built: the plan beside the scope.
+@layer docs.features {
+  .hero {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1.1fr);
+
+    @include until(lg) {
+      grid-template-columns: minmax(0, 1fr);
+    }
+  }
+
+  .copy {
+    display: grid;
+    align-content: center;
+    justify-items: start;
+    gap: 24px;
+    padding: 72px $sq-pad;
+
+    @include until(md) {
+      padding: 48px $sq-pad-narrow;
+    }
+  }
+
+  .actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+
+  .screen {
+    position: relative;
+    block-size: 100%;
+    min-block-size: 26rem;
+    background-color: $sq-ground;
+  }
+}

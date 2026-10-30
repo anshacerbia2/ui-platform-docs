@@ -31,6 +31,8 @@ const reference = JSON.parse(
 );
 const ROUTES = [
   "/",
+  "/system",
+  "/motion",
   "/components",
   "/primitives",
   "/tokens",
@@ -172,14 +174,14 @@ try {
           await page.screenshot({
             path: path.join(
               shots,
-              `${route === "/" ? "landing" : route.slice(1).replaceAll("/", "-")}-${mode}.png`,
+              `${route === "/" ? "front-door" : route.slice(1).replaceAll("/", "-")}-${mode}.png`,
             ),
             fullPage: true,
           });
         }
         // A layout a page sets on a component wins over the component's default in a built
         // site too (TDD docs-site D4, the layer order): the landing's hero is two columns.
-        if (route === "/") {
+        if (route === "/system") {
           const columns = await page.evaluate(
             () =>
               getComputedStyle(
