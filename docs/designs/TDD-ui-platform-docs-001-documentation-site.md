@@ -248,10 +248,11 @@ a removed entry's page returns 404.
 3. The search and the menu (D22, annex B) were designed in the site, not drawn first
    in scnehaux-design as D13 asks of a change to the look. A board for both in
    scnx-platform, adopting or replacing annex B's look, would close it.
-4. The front door (D23, annex C) was designed in the site too, and needs the same board.
-   Its Primitives world leads to `/primitives`, which is still the primitives' index; a
-   landing of the primitives' own, as `/system` is the design system's, would complete
-   the two worlds.
+4. The front door (D23, annex C) was designed in the site too. Its board now exists:
+   scnehaux-design `scnx-platform/Docs-Front-Door.html` (2026-10-31) adopts the look as
+   built, so a change to it starts there. What stays open is its Primitives world, which
+   leads to `/primitives`, still the primitives' index; a landing of the primitives' own,
+   as `/system` is the design system's, would complete the two worlds.
 5. Motion is a world without a package. ui-platform has no motion package and none on
    its roadmap (2026-10-30); `/motion` says so and shows the motion tokens that ship. A
    package, proposed to ui-platform, would let the world lead somewhere of its own.
@@ -580,9 +581,11 @@ same line. Values are taken from the code: `src/features/front-door/` (`FrontDoo
 
 > **Status.** Since 2026-10-30 this annex is the source of the front door's behaviour.
 > The models are Radix's landing and Fubiz's News and TV, two worlds behind one door; the
-> look is the docs' own, in the Square chrome (D13), and has no board in scnehaux-design
-> yet (Open Questions 4). Its values are expression-local guidance (ADR-UIP-VIS-002), like
-> annexes A and B. Every figure on it is the reference's (D8).
+> look is the docs' own, in the Square chrome (D13), and is held by its board in
+> scnehaux-design, [`scnx-platform/Docs-Front-Door.html`](https://anshacerbia2.github.io/scnehaux-design/scnx-platform/Docs-Front-Door.html)
+> (2026-10-31), which adopts it as built: a change to the look starts on the board, a
+> change to the behaviour here. Its values are expression-local guidance
+> (ADR-UIP-VIS-002), like annexes A and B. Every figure on it is the reference's (D8).
 
 Terms used below:
 
